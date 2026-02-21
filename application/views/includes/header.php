@@ -53,7 +53,7 @@
                         </ul>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12">
-                        <div class="btn-style"><a href="#">Free Consultation</a></div>
+                        <div class="btn-style"><a href="<?= (uri_string() == '' || uri_string() == 'home') ? '#consultation-form' : site_url('contact') ?>" <?= (uri_string() == '' || uri_string() == 'home') ? 'onclick="event.preventDefault(); document.getElementById(\'consultation-form\').scrollIntoView({behavior:\'smooth\'});"' : '' ?>>Free Consultation</a></div>
                     </div>
                 </div>
             </div>

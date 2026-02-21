@@ -19,12 +19,13 @@
                         <td><span class="badge bg-light text-dark">#<?= $practice['id'] ?></span></td>
                     </tr>
                     <tr>
-                        <th>Icon Preview</th>
+                        <th>Main Image</th>
                         <td>
-                            <div class="text-center p-3 rounded d-inline-block" style="background: #f8fafc; color: #d0a15e; font-size: 32px; min-width: 80px;">
-                                <i class="<?= $practice['icon'] ?>"></i>
-                            </div>
-                            <div class="mt-2 small text-muted">Class: <code><?= $practice['icon'] ?></code></div>
+                            <?php if(!empty($practice['image'])): ?>
+                                <img src="<?= base_url($practice['image']) ?>" alt="" style="max-width: 300px; border: 1px solid #ddd; padding: 5px;">
+                            <?php else: ?>
+                                <span class="text-muted">No Image Uploaded</span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <tr>

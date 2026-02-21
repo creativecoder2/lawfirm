@@ -55,13 +55,18 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['about'] = 'welcome/about';
 $route['practice'] = 'welcome/practice';
+$route['practice/(:any)'] = 'welcome/practice/$1';
+$route['attorney/(:any)'] = 'welcome/attorney/$1';
 $route['case_studies'] = 'welcome/case_studies';
 $route['case_studies_details/(:any)'] = 'welcome/case_studies_details/$1';
 $route['blog'] = 'welcome/blog';
 $route['blog/category/(:any)'] = 'welcome/blog_category/$1';
+$route['blog/tag/(:any)'] = 'welcome/blog_tag/$1';
 $route['blog_detail/(:any)'] = 'welcome/blog_detail/$1';
 $route['blog_detail'] = 'welcome/blog_detail';
 $route['contact'] = 'welcome/contact';
+$route['contact_submit'] = 'welcome/contact_submit';
+$route['submit_appointment'] = 'welcome/submit_appointment';
 $route['attorneys_single'] = 'welcome/attorneys_single';
 
 

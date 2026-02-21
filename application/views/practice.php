@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="breadcumb-wrap text-center">
-                        <h2>Practice Area</h2>
+                        <h2 id="practice-breadcrumb-title"><?= !empty($practice['title']) ? $practice['title'] : 'Practice Area' ?></h2>
                         <ul>
                             <li><a href="<?= base_url() ?>">Home</a></li>
                             <li><span>Practice area details</span></li>
@@ -27,9 +27,9 @@
                                     <img src="<?= base_url('assets/images/practice/2.jpg') ?>" alt="">
                                 </div>
                                 <div class="field-content">
-                                    <h3><span>25</span>Years of Experience In This Field</h3>
+                                    <h3><span><?= isset($settings['experience_years']) ? $settings['experience_years'] : '25' ?></span><?= isset($settings['experience_text']) ? $settings['experience_text'] : 'Years of Experience In This Field' ?></h3>
                                     <div class="btns">
-                                        <div class="btn-style"><a href="#">Contact Us Now</a></div>
+                                        <div class="btn-style"><a href="<?= base_url('contact') ?>">Contact Us Now</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -40,41 +40,48 @@
                                 <h3 class="text-left">Category</h3>
                               </div>
                             <div class="practice-section">
-                                <ul>
-                                    <li><a href="#">Family Law</a></li>
-                                    <li><a href="#">Criminal Law</a></li>
-                                    <li><a href="#">Business Law</a></li>
-                                    <li><a href="#">Personal Injury</a></li>
-                                    <li><a href="#">Education Law</a></li>
-                                    <li><a href="#">Drugs Crime</a></li>
+                                <ul id="practice-category-list">
+                                    <?php if(!empty($all_practices)): ?>
+                                        <?php foreach($all_practices as $p): ?>
+                                            <li class="<?= (!empty($practice) && $practice['id'] == $p['id']) ? 'active' : '' ?>" data-id="<?= $p['id'] ?>">
+                                                <a href="<?= base_url('practice/'.$p['slug']) ?>" class="practice-cat-link" data-slug="<?= $p['slug'] ?>" data-title="<?= $p['title'] ?>"><?= $p['title'] ?></a>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </ul>
                             </div>
                           </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-8 col-12">
-                    <div class="practice-section-img">
-                        <img src="<?= base_url('assets/images/practice/3.jpg') ?>" alt="">
-                    </div>
-                    <div class="practice-section-text">
-                        <h2>Family Law</h2>
-                        <h5>I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born </h5>
-                        <p>I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, </p>
-                        <p>because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? </p>
-                    </div>
-                    <div class="organigation-area">
-                       
-                        <div class="organigation-text">
-                            <h2> Our Services Include:</h2>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>DUI/DWI Defense</span>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>Assualt battery</span>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>Federal Crime</span>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>Drug Crime</span>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>White collar crime</span>
-                            <span><i class="fa fa-check-square-o" aria-hidden="true"></i>Juvenite cream</span>
+                <div class="col-lg-8 col-12" id="practice-content-area">
+                    <?php if(!empty($practice)): ?>
+                        <div class="practice-section-img">
+                            <img src="<?= !empty($practice['image']) ? base_url($practice['image']) : base_url('assets/images/practice/3.jpg') ?>" alt="<?= $practice['title'] ?>">
                         </div>
-                    </div>
+                        <div class="practice-section-text">
+                            <h2><?= $practice['title'] ?></h2>
+                            <?php if(!empty($practice['subtitle'])): ?>
+                                <h5><?= $practice['subtitle'] ?></h5>
+                            <?php endif; ?>
+                            <div class="description-text">
+                                <?= $practice['description'] ?>
+                            </div>
+                        </div>
+                        
+                        <?php if(!empty($practice['services'])): ?>
+                            <div class="organigation-area">
+                                <div class="organigation-text">
+                                    <h2> Our Services Include:</h2>
+                                    <div class="services-list">
+                                        <?= $practice['services'] ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div class="alert alert-info">No practice area content found.</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -82,7 +89,7 @@
     <!-- .practice-details-area end -->
 
     <!--our team-->
-
+    <?php if(!empty($teams)): ?>
     <div class="team-area ptb-100-70">
         <div class="container">
             <div class="col-l2">
@@ -91,318 +98,93 @@
                     <h2>Qualified Attorneys</h2>
                 </div>
             </div>
-            <div class="team-active owl-carousel owl-theme owl-loaded">
-                
-                
-            <div class="owl-stage-outer"><div class="owl-stage" style="transform: translate3d(-2280px, 0px, 0px); transition: all; width: 6840px;"><div class="owl-item cloned" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/1.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Maaz Ahmed Warriach AHC</h4>
-                                    <span>Head Founder</span>
-                                    <p>Family gaurdian and constitutional law</p>
+            <div class="team-active owl-carousel owl-theme">
+                <?php foreach($teams as $team): ?>
+                    <div class="team-item">
+                        <div class="team-single">
+                            <div class="team-img">
+                                <img src="<?= base_url($team['image']) ?>" alt="<?= $team['name'] ?>">
+                                <div class="social-1st">
+                                    <ul>
+                                        <?php if(!empty($team['facebook'])): ?>
+                                            <li><a href="<?= $team['facebook'] ?>"><i class="fa fa-facebook"></i></a></li>
+                                        <?php endif; ?>
+                                        <?php if(!empty($team['twitter'])): ?>
+                                            <li><a href="<?= $team['twitter'] ?>"><i class="fa fa-twitter"></i></a></li>
+                                        <?php endif; ?>
+                                        <?php if(!empty($team['linkedin'])): ?>
+                                            <li><a href="<?= $team['linkedin'] ?>"><i class="fa fa-linkedin"></i></a></li>
+                                        <?php endif; ?>
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/2.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Shoaib Ashraf Bhatti</h4>
-                                    <span>Partner</span>
-                                    <p>Secretary Lahore Bar Association</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/3.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Muhammad Umer Farooq</h4>
-                                    <span>Partner</span>
-                                    <p>Criminal Lawyer</p>
-                                </div>
+                            <div class="team-content">
+                                <h4><a href="<?= base_url('attorney/' . (isset($team['slug']) ? $team['slug'] : $team['id'])) ?>"><?= $team['name'] ?></a></h4>
+                                <span><?= $team['designation'] ?></span>
+                                <p><?= isset($team['description']) ? $team['description'] : '' ?></p>
                             </div>
                         </div>
                     </div>
-                </div></div><div class="owl-item cloned" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/4.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Malik Kafeel Khokhar</h4>
-                                    <span>Partner</span>
-                                    <p>Corporate Lawyer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/5.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Arshad Aziz AHC</h4>
-                                    <span>Partner</span>
-                                    <p>Civil Litigation</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div></div><div class="owl-item active" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/1.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Maaz Ahmed Warriach AHC</h4>
-                                    <span>Head Founder</span>
-                                    <p>Family gaurdian and constitutional law</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/2.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Shoaib Ashraf Bhatti</h4>
-                                    <span>Partner</span>
-                                    <p>Secretary Lahore Bar Association</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/3.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Muhammad Umer Farooq</h4>
-                                    <span>Partner</span>
-                                    <p>Criminal Lawyer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div></div><div class="owl-item" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/4.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Malik Kafeel Khokhar</h4>
-                                    <span>Partner</span>
-                                    <p>Corporate Lawyer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/5.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Arshad Aziz AHC</h4>
-                                    <span>Partner</span>
-                                    <p>Civil Litigation</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div></div><div class="owl-item cloned" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/1.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Maaz Ahmed Warriach AHC</h4>
-                                    <span>Head Founder</span>
-                                    <p>Family gaurdian and constitutional law</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/2.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Shoaib Ashraf Bhatti</h4>
-                                    <span>Partner</span>
-                                    <p>Secretary Lahore Bar Association</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/3.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Muhammad Umer Farooq</h4>
-                                    <span>Partner</span>
-                                    <p>Criminal Lawyer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div></div><div class="owl-item cloned" style="width: 1110px; margin-right: 30px;"><div class="team-item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/4.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Malik Kafeel Khokhar</h4>
-                                    <span>Partner</span>
-                                    <p>Corporate Lawyer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                                <div class="team-img">
-                                    <img src="<?= base_url('assets/images/team/5.jpg') ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="team-content">
-                                    <h4>Arshad Aziz AHC</h4>
-                                    <span>Partner</span>
-                                    <p>Civil Litigation</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div></div></div></div><div class="owl-controls"><div class="owl-nav"><div class="owl-prev" style=""><i class="fa fa-angle-left"></i></div><div class="owl-next" style=""><i class="fa fa-angle-right"></i></div></div><div class="owl-dots" style=""><div class="owl-dot active"><span></span></div><div class="owl-dot"><span></span></div></div></div></div>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
+    <?php endif; ?>
 
+<style>
+#practice-category-list li.active a {
+    color: #bc9355;
+    font-weight: 700;
+    border-left: 3px solid #bc9355;
+    padding-left: 8px;
+}
+#practice-content-area {
+    transition: opacity 0.3s ease;
+}
+#practice-content-area.loading {
+    opacity: 0.4;
+    pointer-events: none;
+}
+</style>
 
+<script>
+$(document).ready(function() {
+    $(document).on('click', '.practice-cat-link', function(e) {
+        e.preventDefault();
+        var slug = $(this).data('slug');
+        var title = $(this).data('title');
+        var url = '<?= base_url("practice/") ?>' + slug;
 
+        // Update sidebar highlight
+        $('#practice-category-list li').removeClass('active');
+        $(this).closest('li').addClass('active');
+
+        // Show loading state
+        $('#practice-content-area').addClass('loading');
+
+        // AJAX request
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(response) {
+                $('#practice-content-area').html(response);
+                $('#practice-content-area').removeClass('loading');
+                $('#practice-breadcrumb-title').text(title);
+                // Update browser URL without reload
+                history.pushState({ slug: slug }, title, url);
+            },
+            error: function() {
+                $('#practice-content-area').removeClass('loading');
+            }
+        });
+    });
+
+    // Handle browser back/forward
+    window.onpopstate = function(event) {
+        if (event.state && event.state.slug) {
+            window.location.href = '<?= base_url("practice/") ?>' + event.state.slug;
+        }
+    };
+});
+</script>

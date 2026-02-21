@@ -20,39 +20,19 @@
     <div class="features-area ">
         <div class="container">
             <div class="row">
+                <?php foreach($about_features as $af): ?>
                 <div class="col-lg-4 col-md-6 col-sm-12 col-p">
                     <div class="features-item-2">
                         <div class="features-icon">
-                            <i class="fi flaticon-employee"></i>
+                            <i class="<?= $af['icon'] ?>"></i>
                         </div>
                         <div class="features-content">
-                            <p>Book Your</p>
-                            <h3>Appointment</h3>
+                            <p><?= $af['subtitle'] ?></p>
+                            <h3><?= $af['title'] ?></h3>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="features-item-2">
-                        <div class="features-icon">
-                            <i class="fi flaticon-balance"></i>
-                        </div>
-                        <div class="features-content">
-                            <p>Get Free</p>
-                            <h3>Expert Advice</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="features-item-2">
-                        <div class="features-icon">
-                            <i class="fi flaticon-network"></i>
-                        </div>
-                        <div class="features-content">
-                            <p>You Can Easily</p>
-                            <h3>Join Our Team</h3>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -63,11 +43,11 @@
             <div class="row">
                 <div class="col-lg-6 col-sm-12 col-m">
                     <div class="about-img">
-                       <img src="<?= base_url(isset($settings['about_image']) ? $settings['about_image'] : 'assets/images/about/img-2.png') ?>" alt=""> 
+                       <img src="<?= base_url($about['image']) ?>" alt=""> 
                     </div>
                     <div class="video-btn">
                         <ul>
-                            <li><a href="<?= isset($settings['video_url']) ? $settings['video_url'] : 'https://www.youtube.com/embed/uQBL7pSAXR8?autoplay=1' ?>" class="video-btn" data-type="iframe">
+                            <li><a href="<?= $about['video_url'] ?>" class="video-btn" data-type="iframe">
                             <i class="fi flaticon-play-button"></i>
                             </a>
                             </li>
@@ -77,11 +57,12 @@
                 <div class="col-lg-6 col-12">
                     <div class="about-content">
                         <div class="section-title">
-                            <h2><?= isset($settings['about_title']) ? $settings['about_title'] : 'About Us' ?></h2>
+                            <h2><?= $about['title'] ?></h2>
+                            <?php if($about['subtitle']): ?><span><?= $about['subtitle'] ?></span><?php endif; ?>
                         </div>
-                        <p><?= isset($settings['about_text']) ? nl2br($settings['about_text']) : 'Founded in 2020...' ?></p>
+                        <p><?= nl2br($about['description']) ?></p>
                         <div class="signature">
-                            <img src="<?= base_url(isset($settings['signature_image']) ? $settings['signature_image'] : 'assets/images/about/img-1.png') ?>" alt="">
+                            <img src="<?= base_url($about['signature_image']) ?>" alt="">
                         </div>
                     </div>
                 </div>

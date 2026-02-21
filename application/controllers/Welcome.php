@@ -75,6 +75,7 @@ class Welcome extends CI_Controller {
         $data['sliders'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('sliders')->result_array();
         $data['features'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('features')->result_array();
         $data['practice'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
+        $data['practice_areas'] = $data['practice']; // alias for the consultation form dropdown
         $data['testimonials'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('testimonials')->result_array();
         $data['teams'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
         $data['case_studies'] = $this->db->select('case_studies.*, case_categories.slug as category_slug, case_categories.name as category_name')
@@ -95,18 +96,65 @@ class Welcome extends CI_Controller {
 	public function about()
 	{
         $data['settings'] = $this->_get_settings();
+        $data['about'] = $this->db->get_where('about_us', ['id' => 1])->row_array();
+        $data['about_features'] = $this->db->order_by('priority', 'ASC')->get('about_features')->result_array();
+
 		$this->load->view('includes/header', $data);
 		$this->load->view('about', $data);
 		$this->load->view('includes/footer', $data);
 	}
 
-	public function practice()
+	public function practice($slug = null)
 	{
         $data['settings'] = $this->_get_settings();
+        
+        // Fetch all active practice areas for the sidebar/list
+        $data['all_practices'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
+
+        if ($slug) {
+            // Fetch specific practice area by slug
+            $data['practice'] = $this->db->get_where('practice_areas', ['slug' => $slug, 'is_active' => 1])->row_array();
+            if (empty($data['practice'])) redirect('practice');
+        } else {
+            // Default to the first practice area if no slug is provided
+            if (!empty($data['all_practices'])) {
+                $data['practice'] = $data['all_practices'][0];
+            } else {
+                $data['practice'] = null;
+            }
+        }
+
+        // If AJAX request, return only the content partial
+        if ($this->input->is_ajax_request()) {
+            $this->load->view('practice_content_partial', $data);
+            return;
+        }
+
+        // Fetch teams for the "Qualified Attorneys" section
+        $data['teams'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
+
 		$this->load->view('includes/header', $data);
 		$this->load->view('practice', $data);
 		$this->load->view('includes/footer', $data);
 	}
+
+    public function attorney($slug)
+    {
+        $data['settings'] = $this->_get_settings();
+        $data['attorney'] = $this->db->get_where('teams', ['slug' => $slug, 'is_active' => 1])->row_array();
+        
+        if (empty($data['attorney'])) {
+            // Try ID if slug fails (for older links)
+            if (is_numeric($slug)) {
+                $data['attorney'] = $this->db->get_where('teams', ['id' => $slug, 'is_active' => 1])->row_array();
+            }
+            if (empty($data['attorney'])) redirect('/');
+        }
+
+        $this->load->view('includes/header', $data);
+        $this->load->view('attorneys_single', $data);
+        $this->load->view('includes/footer', $data);
+    }
 
 	public function case_studies()
 	{
@@ -384,6 +432,73 @@ class Welcome extends CI_Controller {
 		$this->load->view('includes/footer', $data);
 	}
 
+    public function contact_submit()
+    {
+        if (!$this->input->is_ajax_request()) {
+            redirect('contact');
+        }
+
+        $name    = trim($this->input->post('name'));
+        $email   = trim($this->input->post('email'));
+        $phone   = trim($this->input->post('phone'));
+        $address = trim($this->input->post('address'));
+        $message = trim($this->input->post('message'));
+
+        if (empty($name) || empty($email) || empty($message)) {
+            echo json_encode(['status' => 'error', 'message' => 'Please fill all required fields.']);
+            return;
+        }
+
+        $this->db->insert('contact_messages', [
+            'name'    => $name,
+            'email'   => $email,
+            'phone'   => $phone,
+            'address' => $address,
+            'message' => $message,
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Your message has been sent! We will contact you shortly.']);
+    }
+
+    public function submit_appointment()
+    {
+        if ($this->input->is_ajax_request() || $this->input->post()) {
+            $data = $this->input->post();
+            
+            // Basic validation
+            if (empty($data['name']) || empty($data['phone'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Please fill Name and Phone fields.']);
+                return;
+            }
+
+            // Lookup consultation fee from practice_areas if category is given
+            $consultation_fee = null;
+            if (!empty($data['practice_category_id'])) {
+                $pa = $this->db->get_where('practice_areas', ['id' => $data['practice_category_id']])->row_array();
+                if ($pa) $consultation_fee = $pa['consultation_fee'] ?? null;
+            }
+
+            $insert_data = [
+                'attorney_id'          => $data['attorney_id'] ?? NULL,
+                'name'                 => $data['name'],
+                'email'                => $data['email'] ?? NULL,
+                'phone'                => $data['phone'] ?? NULL,
+                'address'              => $data['address'] ?? NULL,
+                'note'                 => $data['note'] ?? NULL,
+                'practice_category_id' => !empty($data['practice_category_id']) ? $data['practice_category_id'] : NULL,
+                'payment_method'       => $data['payment_method'] ?? NULL,
+                'consultation_fee'     => $consultation_fee,
+                'status'               => 'pending'
+            ];
+
+            if ($this->db->insert('appointments', $insert_data)) {
+                echo json_encode(['status' => 'success', 'message' => 'Your appointment request has been submitted successfully!']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+            }
+        }
+    }
+
     public function subscribe() {
         if ($this->input->post('email')) {
             $email = $this->input->post('email');
@@ -401,9 +516,7 @@ class Welcome extends CI_Controller {
 
 	public function attorneys_single()
 	{
-        $data['settings'] = $this->_get_settings();
-		$this->load->view('includes/header', $data);
-		$this->load->view('attorneys_single', $data);
-		$this->load->view('includes/footer', $data);
+        // Deprecated: redirect to home or first attorney
+        redirect('/');
 	}
 }

@@ -1,7 +1,7 @@
 <div class="content-header">
     <h1>
         Practice Areas
-        <small>Manage law firm practice areas with custom icons</small>
+        <small>Manage law firm practice areas with dynamic images</small>
     </h1>
 </div>
 
@@ -22,7 +22,7 @@
                     <thead>
                     <tr>
                         <th width="50">ID</th>
-                        <th width="100">Icon</th>
+                        <th width="100">Image</th>
                         <th>Title</th>
                         <th>Description</th>
                         <th width="150">Status</th>
@@ -35,8 +35,12 @@
                     <tr data-id="<?= $p['id'] ?>" data-priority="<?= isset($p['priority']) ? $p['priority'] : 0 ?>">
                         <td><?= $p['id'] ?></td>
                         <td>
-                            <div class="text-center p-2 rounded" style="background: #f8fafc; color: #d0a15e; font-size: 20px;">
-                                <i class="<?= $p['icon'] ?>"></i>
+                            <div class="text-center p-1 rounded" style="background: #f8fafc; border: 1px solid #eee;">
+                                <?php if(!empty($p['image'])): ?>
+                                    <img src="<?= base_url($p['image']) ?>" alt="" style="height: 40px; width: 40px; object-fit: cover;">
+                                <?php else: ?>
+                                    <span class="text-muted small">No Image</span>
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td>

@@ -55,6 +55,10 @@
                                         <input type="text" class="form-control" name="author" value="<?= $blog['author'] ?>" required>
                                     </div>
                                     <div class="form-group">
+                                        <label>Author Bio</label>
+                                        <textarea class="form-control" name="author_bio" rows="3" placeholder="Short description about the author"><?= $blog['author_bio'] ?></textarea>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Date Published</label>
                                         <input type="date" class="form-control" name="date_published" value="<?= $blog['date_published'] ?>" required>
                                     </div>

@@ -53,6 +53,10 @@
                                         <input type="text" class="form-control" name="author" required placeholder="e.g. Aliza Anne">
                                     </div>
                                     <div class="form-group">
+                                        <label>Author Bio</label>
+                                        <textarea class="form-control" name="author_bio" rows="3" placeholder="Short description about the author"></textarea>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Date Published</label>
                                         <input type="date" class="form-control" name="date_published" required value="<?= date('Y-m-d') ?>">
                                     </div>

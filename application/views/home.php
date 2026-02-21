@@ -93,15 +93,19 @@ practice areas, ensuring expert counsel for your specific needs</p>
                 <div class="col-lg-4 col-md-6 col-12">
                     <div class="practice-section">
                         <div class="practices-wrapper">
-                            <div class="practices-icon-wrapper">
+                            <div class="practices-icon-wrapper" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
                                 <div class="practice-dot">
                                    <div class="dots"></div>
                                 </div>
-                                <i class="<?= $p['icon'] ?>"></i>
+                                <?php if(!empty($p['image'])): ?>
+                                    <img src="<?= base_url($p['image']) ?>" alt="<?= $p['title'] ?>" style="width: 100%; height: 100%; object-fit: cover; ">
+                                <?php else: ?>
+                                    <i class="fi flaticon-law"></i>
+                                <?php endif; ?>
                             </div>
                             <div class="practice-content">
                                 <h2><?= $p['title'] ?></h2>
-                                <p><?= $p['description'] ?></p>
+                                <div class="description-content"><?= $p['description'] ?></div>
                             </div>
                         </div>
                     </div>
@@ -199,7 +203,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
     </div>
     <!--Testimonial Area End-->
     <!-- .contact area start -->
-    <div class="contact-area section-padding">
+    <div class="contact-area section-padding" id="consultation-form">
         <div class="container">
             <div class="row">
                 <div class="col-lg-5">
@@ -238,38 +242,85 @@ practice areas, ensuring expert counsel for your specific needs</p>
                 <div class="col col-lg-7 col-md-12 col-sm-12">
                     <div class="contact-content">
                         <div class="contact-form">
-                            <form method="post" class="contact-validation-active" id="contact-form">
+                            <form class="contact-validation-active" id="contact-form">
                                 <div class="half-col">
-                                    <input type="text" name="name" id="name" class="form-control" placeholder="Your Name">
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Your Name *" required>
                                 </div>
                                 <div class="half-col">
-                                    <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone">
+                                    <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone *" required>
                                 </div>
                                 <div class="half-col">
-                                    <input type="email" name="email" id="email" class="form-control" placeholder="Email">
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Email *" required>
                                 </div>
                                 <div class="half-col">
-                                <select name="address" id="address" class="form-control">
-                                    <option disabled selected>Family Law</option>
-                                    <option>Criminal Law</option>
-                                    <option>Business Law</option>
-                                    <option>Personal Injury</option>
-                                    <option>Education Law</option>
-                                    <option>Drugs Crime</option>
-                                </select>
+                                    <select name="practice_category_id" id="practice_category_id" class="form-control" required onchange="updateFee(this)">
+                                        <option value="" disabled selected>-- Select Practice Area --</option>
+                                        <?php if(!empty($practice_areas)): foreach($practice_areas as $pa): ?>
+                                        <option value="<?= $pa['id'] ?>" data-fee="<?= number_format($pa['consultation_fee'] ?? 0, 2) ?>">
+                                            <?= $pa['title'] ?><?= ($pa['consultation_fee'] > 0) ? ' — Rs. '.number_format($pa['consultation_fee'], 0) : '' ?>
+                                        </option>
+                                        <?php endforeach; endif; ?>
+                                    </select>
                                 </div>
                                 <div>
-                                    <textarea class="form-control" name="note"  id="note" placeholder="Case Description..."></textarea>
+                                    <textarea class="form-control" name="note" id="note" placeholder="Case Description..."></textarea>
                                 </div>
+
+                                <!-- Payment Method + Fee Summary -->
+                                <div id="payment-section" style="width:100%; margin: 18px 0 10px;">
+                                    <!-- Fee summary card (shown when a category with fee is selected) -->
+                                    <div id="payment-fee-summary" style="display:none; margin-bottom:14px; padding:14px 16px; background:linear-gradient(135deg,rgba(188,147,85,0.2),rgba(188,147,85,0.05)); border:1px solid rgba(188,147,85,0.4); border-radius:8px;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                            <div>
+                                                <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Selected Category</div>
+                                                <div id="summary-category" style="color:#fff; font-size:14px; font-weight:600; margin-top:2px;">—</div>
+                                            </div>
+                                            <div style="text-align:right;">
+                                                <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Consultation Fee</div>
+                                                <div id="summary-fee" style="color:#bc9355; font-size:22px; font-weight:700; margin-top:2px;">Rs. 0</div>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(188,147,85,0.2); color:#aaa; font-size:12px;">
+                                            <i class="fa fa-info-circle" style="color:#bc9355;"></i>&nbsp; Select your preferred payment method below to pay this amount
+                                        </div>
+                                    </div>
+                                    <!-- Free notice (shown for free categories) -->
+                                    <div id="payment-free-notice" style="display:none; margin-bottom:14px; padding:10px 14px; background:rgba(46,204,64,0.08); border:1px solid rgba(46,204,64,0.3); border-radius:8px; color:#aaa; font-size:13px;">
+                                        <i class="fa fa-check-circle" style="color:#2ecc40;"></i>&nbsp; This consultation is <strong style="color:#2ecc40;">free of charge</strong>. No payment required.
+                                    </div>
+                                    <p style="color:#ccc; margin-bottom:10px; font-size:14px;"><i class="fa fa-credit-card"></i>&nbsp; Select Payment Method</p>
+                                    <div class="payment-methods-grid">
+                                        <?php
+                                        $methods = [
+                                            ['id'=>'easypaisa',   'label'=>'EasyPaisa',    'icon'=>'assets/images/payments/easypaisa.svg'],
+                                            ['id'=>'jazzcash',    'label'=>'JazzCash',     'icon'=>'assets/images/payments/jazzcash.svg'],
+                                            ['id'=>'paypal',      'label'=>'PayPal',       'icon'=>'assets/images/payments/paypal.svg'],
+                                            ['id'=>'credit_card', 'label'=>'Credit Card',  'icon'=>'assets/images/payments/credit_card.svg'],
+                                            ['id'=>'pioneer',     'label'=>'Payoneer',     'icon'=>'assets/images/payments/pioneer.svg'],
+                                        ];
+                                        foreach($methods as $m): ?>
+                                        <label class="payment-method-card" for="pm_<?= $m['id'] ?>">
+                                            <input type="radio" name="payment_method" id="pm_<?= $m['id'] ?>" value="<?= $m['id'] ?>" required>
+                                            <span class="pm-inner">
+                                                <img src="<?= base_url($m['icon']) ?>" alt="<?= $m['label'] ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                <span class="pm-fallback" style="display:none;"><i class="fa fa-credit-card"></i></span>
+                                                <span class="pm-name"><?= $m['label'] ?></span>
+                                            </span>
+                                        </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="attorney_id" value="">
                                 <div class="submit-btn-wrapper">
-                                    <button type="submit" class="theme-btn">Appointment</button>
-                                    <div id="loader">
+                                    <button type="submit" class="theme-btn" id="appt-submit-btn">Book Appointment</button>
+                                    <div id="loader" style="display:none;">
                                         <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
                                     </div>
                                 </div>
                                 <div class="clearfix error-handling-messages">
-                                    <div id="success">Thank you</div>
-                                    <div id="error"> Error occurred while sending email. Please try again later. </div>
+                                    <div id="success" style="display:none;">Thank you</div>
+                                    <div id="error" style="display:none;">Error occurred while sending. Please try again.</div>
                                 </div>
                             </form>
                         </div>
@@ -278,6 +329,136 @@ practice areas, ensuring expert counsel for your specific needs</p>
             </div>
         </div>
     </div>
+    <!-- .contact area end -->
+
+    <style>
+    .payment-methods-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+    }
+    .payment-method-card {
+        cursor: pointer;
+        flex: 1 1 calc(20% - 10px);
+        min-width: 80px;
+    }
+    .payment-method-card input[type="radio"] { display: none; }
+    .pm-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 8px;
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        transition: all 0.25s ease;
+        gap: 6px;
+    }
+    .pm-inner img { width: 40px; height: 28px; object-fit: contain; }
+    .pm-name { font-size: 11px; color: #ccc; text-align: center; }
+    .payment-method-card input:checked + .pm-inner {
+        border-color: #bc9355;
+        background: rgba(188,147,85,0.15);
+        box-shadow: 0 0 0 2px rgba(188,147,85,0.3);
+    }
+    .payment-method-card input:checked + .pm-inner .pm-name { color: #bc9355; font-weight: 600; }
+    .payment-method-card:hover .pm-inner { border-color: #bc9355; }
+    </style>
+
+    <script>
+    function updateFee(sel) {
+        var opt      = sel.options[sel.selectedIndex];
+        var fee      = parseFloat(opt.getAttribute('data-fee') || 0);
+        var catName  = opt.text.split(' —')[0].trim(); // category name without the fee part
+        var feeSum   = document.getElementById('payment-fee-summary');
+        var freeNote = document.getElementById('payment-free-notice');
+
+        if (fee > 0) {
+            document.getElementById('summary-category').innerText = catName;
+            document.getElementById('summary-fee').innerText = 'Rs. ' + fee.toLocaleString('en-PK', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            feeSum.style.display   = 'block';
+            freeNote.style.display = 'none';
+        } else if (sel.value) {
+            // Category selected but fee is 0 = free
+            feeSum.style.display   = 'none';
+            freeNote.style.display = 'block';
+        } else {
+            feeSum.style.display   = 'none';
+            freeNote.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('load', function() {
+        var form = document.getElementById('contact-form');
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name     = document.getElementById('name').value.trim();
+            var phone    = document.getElementById('phone').value.trim();
+            var email    = document.getElementById('email').value.trim();
+            var cat      = document.getElementById('practice_category_id').value;
+            var note     = document.getElementById('note').value.trim();
+            var pmEl     = document.querySelector('input[name="payment_method"]:checked');
+
+            if (!name || !phone || !email || !cat) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon:'warning', title:'Missing Fields', text:'Please fill all required fields.', confirmButtonColor:'#bc9355' });
+                } return;
+            }
+            if (!pmEl) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon:'warning', title:'Payment Method Required', text:'Please select a payment method.', confirmButtonColor:'#bc9355' });
+                } return;
+            }
+
+            var btn = document.getElementById('appt-submit-btn');
+            btn.disabled = true; btn.innerText = 'Submitting...';
+            document.getElementById('loader').style.display = 'block';
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '<?= base_url("submit_appointment") ?>', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onload = function() {
+                btn.disabled = false; btn.innerText = 'Book Appointment';
+                document.getElementById('loader').style.display = 'none';
+                try {
+                    var res = JSON.parse(xhr.responseText);
+                    if (res.status === 'success') {
+                        form.reset();
+                        document.getElementById('payment-fee-summary').style.display = 'none';
+                        document.getElementById('payment-free-notice').style.display = 'none';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon:'success', title:'Appointment Booked!', text: res.message || 'We will contact you shortly.', confirmButtonColor:'#bc9355' });
+                        }
+                    } else {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon:'error', title:'Error', text: res.message || 'Something went wrong.', confirmButtonColor:'#bc9355' });
+                        }
+                    }
+                } catch(err) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon:'error', title:'Error', text:'Something went wrong. Please try again.', confirmButtonColor:'#bc9355' });
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                btn.disabled = false; btn.innerText = 'Book Appointment';
+                document.getElementById('loader').style.display = 'none';
+            };
+            var params = 'name=' + encodeURIComponent(name)
+                + '&phone=' + encodeURIComponent(phone)
+                + '&email=' + encodeURIComponent(email)
+                + '&practice_category_id=' + encodeURIComponent(cat)
+                + '&note=' + encodeURIComponent(note)
+                + '&payment_method=' + encodeURIComponent(pmEl.value)
+                + '&attorney_id=';
+            xhr.send(params);
+        });
+    });
+    </script>
     <!-- .contact area start -->
      <!-- expert-area start -->
     <div class="team-area ptb-100-70">
@@ -295,7 +476,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                         <?php foreach($team_chunk as $team): ?>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="team-single">
-                              <a href="<?= site_url('attorneys_single') ?>">  <div class="team-img">
+                              <a href="<?= site_url('attorney/'.$team['slug']) ?>">  <div class="team-img">
                                     <img src="<?= base_url($team['image']) ?>" alt="">
                                     <div class="social-1st">
                                         <ul>
@@ -305,8 +486,8 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                         </ul>
                                     </div>
                                 </div></a>
-                                <div class="team-content">
-                                    <h4><?= $team['name'] ?></h4>
+                                <div class="team-content text-center">
+                                    <h4><a href="<?= site_url('attorney/'.$team['slug']) ?>" style="color: inherit; text-decoration: none;"><?= $team['name'] ?></a></h4>
                                     <span><?= $team['designation'] ?></span>
                                     <p><!-- description not in db yet, maybe add later --></p>
                                 </div>

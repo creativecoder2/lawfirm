@@ -159,9 +159,9 @@
                                     <ul class="d-flex flex-wrap">
                                         <?php 
                                         // Mock Instagram feed using latest blog images
-                                        $insta_images = $this->db->select('image')->limit(6)->order_by('id', 'DESC')->get('blogs')->result_array();
+                                        $insta_images = $this->db->select('image, slug')->limit(6)->order_by('id', 'DESC')->get('blogs')->result_array();
                                         foreach($insta_images as $img): ?>
-                                            <li><a href="#"><img src="<?= base_url($img['image']) ?>" alt="" style="width: 80px; height: 80px; object-fit: cover; margin: 2px;"></a></li>
+                                            <li><a href="<?= site_url('blog-detail/'.$img['slug']) ?>"><img src="<?= base_url($img['image']) ?>" alt="" style="width: 80px; height: 80px; object-fit: cover; margin: 2px;"></a></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>

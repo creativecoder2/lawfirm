@@ -169,6 +169,93 @@ class Admin extends CI_Controller {
         redirect('admin/menus');
     }
 
+    // About Us Management
+    public function about_us() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            
+            // Handle Image Uploads
+            $upload_path = './assets/images/about/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, TRUE);
+            }
+
+            $config['upload_path']   = $upload_path;
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE;
+
+            $this->load->library('upload', $config);
+
+            $upload_fields = ['image', 'signature_image'];
+            foreach ($upload_fields as $field) {
+                if (!empty($_FILES[$field]['name'])) {
+                    $this->upload->initialize($config);
+                    if ($this->upload->do_upload($field)) {
+                        $uploadData = $this->upload->data();
+                        $data[$field] = 'assets/images/about/' . $uploadData['file_name'];
+                    }
+                }
+            }
+
+            $this->db->where('id', 1)->update('about_us', $data);
+            $this->session->set_flashdata('success', 'About Us content updated successfully');
+            redirect('admin/about_us');
+        }
+
+        $data['about'] = $this->db->get_where('about_us', ['id' => 1])->row_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/about_us/index', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function about_features() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $data['features'] = $this->db->order_by('priority', 'ASC')->get('about_features')->result_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/about_features/index', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function about_feature_add() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->insert('about_features', $data);
+            $this->session->set_flashdata('success', 'Feature added successfully');
+            redirect('admin/about_features');
+        }
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/about_features/add');
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function about_feature_edit($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->where('id', $id)->update('about_features', $data);
+            $this->session->set_flashdata('success', 'Feature updated successfully');
+            redirect('admin/about_features');
+        }
+        $data['feature'] = $this->db->get_where('about_features', ['id' => $id])->row_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/about_features/edit', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function about_feature_delete($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->delete('about_features');
+        $this->session->set_flashdata('success', 'Feature deleted successfully');
+        redirect('admin/about_features');
+    }
 
     // Sliders
     public function sliders() {
@@ -413,15 +500,38 @@ class Admin extends CI_Controller {
     public function practice_add() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-             $data = $this->input->post();
+            $data = $this->input->post();
+            
+            // Handle Slug
+            if (empty($data['slug'])) {
+                $data['slug'] = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $data['title'])));
+            }
+
+            // Handle Image Upload
+            $upload_path = './assets/images/practice/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, TRUE);
+            }
+
+            $config['upload_path']   = $upload_path;
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE;
+
+            $this->load->library('upload', $config);
+
+            if (!empty($_FILES['image']['name'])) {
+                if ($this->upload->do_upload('image')) {
+                    $uploadData = $this->upload->data();
+                    $data['image'] = 'assets/images/practice/' . $uploadData['file_name'];
+                }
+            }
+
             $this->db->insert('practice_areas', $data);
             $this->session->set_flashdata('success', 'Practice Area added successfully');
             redirect('admin/practice');
         }
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/practice/add');
-        $this->load->view('admin/includes/footer');
+        $this->load_view('admin/practice/add');
     }
 
     public function practice_delete($id) {
@@ -437,17 +547,40 @@ class Admin extends CI_Controller {
         $data['practice'] = $this->db->get_where('practice_areas', array('id' => $id))->row_array();
 
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $update_data = $this->input->post();
+            
+            // Handle Slug
+            if (empty($update_data['slug'])) {
+                $update_data['slug'] = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $update_data['title'])));
+            }
+
+            // Handle Image Upload
+            $upload_path = './assets/images/practice/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, TRUE);
+            }
+
+            $config['upload_path']   = $upload_path;
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE;
+
+            $this->load->library('upload', $config);
+
+            if (!empty($_FILES['image']['name'])) {
+                if ($this->upload->do_upload('image')) {
+                    $uploadData = $this->upload->data();
+                    $update_data['image'] = 'assets/images/practice/' . $uploadData['file_name'];
+                }
+            }
+
             $this->db->where('id', $id);
-            $this->db->update('practice_areas', $data);
+            $this->db->update('practice_areas', $update_data);
             $this->session->set_flashdata('success', 'Practice Area updated successfully');
             redirect('admin/practice');
         }
 
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/practice/edit', $data);
-        $this->load->view('admin/includes/footer');
+        $this->load_view('admin/practice/edit', $data);
     }
 
     public function practice_status($id, $status) {
@@ -554,29 +687,32 @@ class Admin extends CI_Controller {
     }
 
     public function team_add() {
-         if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-             $config['upload_path'] = './assets/images/team/';
+            $config['upload_path'] = './assets/images/team/';
             $config['allowed_types'] = 'gif|jpg|png|jpeg';
             $this->load->library('upload', $config);
 
+            $data = $this->input->post();
+            
+            // Generate slug if not provided
+            if (empty($data['slug'])) {
+                $data['slug'] = $this->_slugify($data['name']);
+            }
+
             if ($this->upload->do_upload('image')) {
                 $file_data = $this->upload->data();
-                $data = $this->input->post();
                 $data['image'] = 'assets/images/team/' . $file_data['file_name'];
                 $this->db->insert('teams', $data);
                 $this->session->set_flashdata('success', 'Team Member added successfully');
                 redirect('admin/teams');
             } else {
-                $error = array('error' => $this->upload->display_errors());
-                $this->session->set_flashdata('error', $error['error']);
-                 redirect('admin/teams');
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/team_add');
             }
         }
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/teams/add');
-        $this->load->view('admin/includes/footer');
+        $this->load_view('admin/teams/add');
     }
 
     public function team_delete($id) {
@@ -588,15 +724,18 @@ class Admin extends CI_Controller {
 
     public function team_edit($id) {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        
         $data['team'] = $this->db->get_where('teams', array('id' => $id))->row_array();
 
         if ($this->input->post()) {
-             $config['upload_path'] = './assets/images/team/';
+            $config['upload_path'] = './assets/images/team/';
             $config['allowed_types'] = 'gif|jpg|png|jpeg';
             $this->load->library('upload', $config);
 
             $update_data = $this->input->post();
+            
+            if (empty($update_data['slug'])) {
+                $update_data['slug'] = $this->_slugify($update_data['name']);
+            }
 
             if (!empty($_FILES['image']['name'])) {
                 if ($this->upload->do_upload('image')) {
@@ -614,17 +753,13 @@ class Admin extends CI_Controller {
             redirect('admin/teams');
         }
 
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/teams/edit', $data);
-        $this->load->view('admin/includes/footer');
+        $this->load_view('admin/teams/edit', $data);
     }
 
     public function team_status($id, $status) {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        $this->db->where('id', $id);
-        $this->db->update('teams', array('is_active' => $status));
-        $this->session->set_flashdata('success', 'Team status updated');
+        $this->db->where('id', $id)->update('teams', ['is_active' => $status]);
+        $this->session->set_flashdata('success', 'Team member status updated');
         redirect('admin/teams');
     }
 
@@ -1083,5 +1218,64 @@ class Admin extends CI_Controller {
             $this->db->update($table, ['priority' => $order['priority']]);
         }
         echo json_encode(['status' => 'success']);
+    }
+
+    // Appointments Management
+    public function appointments() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        
+        $this->db->select('appointments.*, teams.name as attorney_name');
+        $this->db->from('appointments');
+        $this->db->join('teams', 'appointments.attorney_id = teams.id', 'left');
+        $this->db->order_by('appointments.created_at', 'DESC');
+        $data['appointments'] = $this->db->get()->result_array();
+        
+        $this->load_view('admin/appointments/index', $data);
+    }
+
+    public function appointment_view($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        
+        $this->db->select('appointments.*, teams.name as attorney_name, practice_areas.title as practice_title');
+        $this->db->from('appointments');
+        $this->db->join('teams', 'appointments.attorney_id = teams.id', 'left');
+        $this->db->join('practice_areas', 'appointments.practice_category_id = practice_areas.id', 'left');
+        $this->db->where('appointments.id', $id);
+        $data['appointment'] = $this->db->get()->row_array();
+        
+        if (!$data['appointment']) redirect('admin/appointments');
+        
+        $this->load_view('admin/appointments/view', $data);
+    }
+
+    public function appointment_delete($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->delete('appointments');
+        $this->session->set_flashdata('success', 'Appointment deleted successfully');
+        redirect('admin/appointments');
+    }
+
+    // ==================== Contact Messages ====================
+
+    public function contact_messages() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $data['messages'] = $this->db->order_by('created_at', 'DESC')->get('contact_messages')->result_array();
+        $this->load_view('admin/contact_messages/index', $data);
+    }
+
+    public function contact_view($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $data['message'] = $this->db->get_where('contact_messages', ['id' => $id])->row_array();
+        if (!$data['message']) redirect('admin/contact_messages');
+        // Mark as read
+        $this->db->where('id', $id)->update('contact_messages', ['is_read' => 1]);
+        $this->load_view('admin/contact_messages/view', $data);
+    }
+
+    public function contact_delete($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->delete('contact_messages');
+        $this->session->set_flashdata('success', 'Message deleted successfully');
+        redirect('admin/contact_messages');
     }
 }

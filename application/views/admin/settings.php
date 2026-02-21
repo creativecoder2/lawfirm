@@ -118,6 +118,33 @@
                                 <label>Consultation Text</label>
                                 <textarea class="form-control editor" name="consultation_text"><?= isset($settings['consultation_text']) ? $settings['consultation_text'] : '' ?></textarea>
                             </div>
+
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px;">Practice Area Widget</h4>
+                            <div class="form-group">
+                                <label>Years of Experience <small class="text-muted">(Number shown in the big widget)</small></label>
+                                <input type="number" class="form-control" name="experience_years" value="<?= isset($settings['experience_years']) ? $settings['experience_years'] : '25' ?>" placeholder="25">
+                            </div>
+                            <div class="form-group">
+                                <label>Experience Widget Text</label>
+                                <input type="text" class="form-control" name="experience_text" value="<?= isset($settings['experience_text']) ? $settings['experience_text'] : 'Years of Experience In This Field' ?>" placeholder="Years of Experience In This Field">
+                            </div>
+
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px;">Contact Page Content</h4>
+                            <div class="form-group">
+                                <label>Contact Section Heading</label>
+                                <input type="text" class="form-control" name="contact_page_title" value="<?= isset($settings['contact_page_title']) ? $settings['contact_page_title'] : 'Our Contacts' ?>" placeholder="Our Contacts">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Section Sub-text</label>
+                                <textarea class="form-control" name="contact_page_text" rows="3" placeholder="Short paragraph under the heading..."><?= isset($settings['contact_page_text']) ? $settings['contact_page_text'] : '' ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Google Maps Embed URL</label>
+                                <input type="text" class="form-control" name="contact_map_url" value="<?= isset($settings['contact_map_url']) ? $settings['contact_map_url'] : '' ?>" placeholder="Paste the full Google Maps embed src URL here">
+                                <small class="text-muted">Go to Google Maps → Share → Embed a map → Copy the <code>src="..."</code> URL only.</small>
+                            </div>
                         </div>
 
                         <div class="box-footer">
