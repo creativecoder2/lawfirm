@@ -81,7 +81,14 @@
                                 <p>Legal Expert and Author at <?= $settings['company_name'] ?? 'Antigravity Law' ?>. Specializing in <?= $blog['category_name'] ?> and dedicated to providing clear legal insights.</p>
                                 <div class="socials">
                                     <ul class="social-lnk">
-                                        <?php if(!empty($settings['social_links'])): foreach($settings['social_links'] as $sl): ?>
+                                        <?php 
+                                        $has_author_links = false;
+                                        if(!empty($blog['author_facebook'])) { echo '<li><a href="'.$blog['author_facebook'].'" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>'; $has_author_links = true; }
+                                        if(!empty($blog['author_twitter'])) { echo '<li><a href="'.$blog['author_twitter'].'" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>'; $has_author_links = true; }
+                                        if(!empty($blog['author_linkedin'])) { echo '<li><a href="'.$blog['author_linkedin'].'" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>'; $has_author_links = true; }
+                                        if(!empty($blog['author_instagram'])) { echo '<li><a href="'.$blog['author_instagram'].'" target="_blank"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>'; $has_author_links = true; }
+
+                                        if(!$has_author_links && !empty($settings['social_links'])): foreach($settings['social_links'] as $sl): ?>
                                             <li><a href="<?= $sl['link'] ?>" target="_blank"><i class="<?= $sl['icon'] ?>" aria-hidden="true"></i></a></li>
                                         <?php endforeach; endif; ?>
                                     </ul>

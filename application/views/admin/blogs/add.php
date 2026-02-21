@@ -64,6 +64,24 @@
                                         <label>Video URL (YouTube/Vimeo)</label>
                                         <input type="text" class="form-control" name="video_url" placeholder="Optional video link">
                                     </div>
+                                    <hr>
+                                    <h4>Author Social Links</h4>
+                                    <div class="form-group">
+                                        <label>Author Facebook</label>
+                                        <input type="text" class="form-control" name="author_facebook" placeholder="https://facebook.com/username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Author Twitter</label>
+                                        <input type="text" class="form-control" name="author_twitter" placeholder="https://twitter.com/username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Author LinkedIn</label>
+                                        <input type="text" class="form-control" name="author_linkedin" placeholder="https://linkedin.com/in/username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Author Instagram</label>
+                                        <input type="text" class="form-control" name="author_instagram" placeholder="https://instagram.com/username">
+                                    </div>
                                 </div>
                             </div>
                         </div>
