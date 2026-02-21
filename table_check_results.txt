@@ -1,0 +1,33 @@
+Table: sliders
+Cols: id, image, title, subtitle, button_text, button_link, order_index, is_active, priority
+-------------------
+Table: features
+Cols: id, icon, title, subtitle, order_index, is_active, priority
+-------------------
+Table: practice
+Table practice does not exist
+-------------------
+Table: testimonials
+Cols: id, name, designation, image, message, order_index, is_active, priority
+-------------------
+Table: teams
+Cols: id, name, designation, image, facebook, twitter, linkedin, order_index, is_active, priority
+-------------------
+Table: case_studies
+Cols: id, category_id, title, slug, subtitle, description, category, image, is_active, order_index, priority
+-------------------
+Table: case_categories
+Cols: id, name, slug, is_active, created_at, priority
+-------------------
+Table: counters
+Cols: id, title, count_value, icon, is_active, order_index, priority
+-------------------
+Table: blogs
+Cols: id, title, author, date_published, image, link, is_active, order_index, priority
+-------------------
+Table: social_links
+Cols: id, title, icon, link, priority, created_at
+-------------------
+Table: menus
+Cols: id, title, link, priority, is_active, created_at
+-------------------
