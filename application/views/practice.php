@@ -88,48 +88,6 @@
     </div>
     <!-- .practice-details-area end -->
 
-    <!--our team-->
-    <?php if(!empty($teams)): ?>
-    <div class="team-area ptb-100-70">
-        <div class="container">
-            <div class="col-l2">
-                <div class="section-title-1  text-center">
-                    <span>Meet Our Experts</span>
-                    <h2>Qualified Attorneys</h2>
-                </div>
-            </div>
-            <div class="team-active owl-carousel owl-theme">
-                <?php foreach($teams as $team): ?>
-                    <div class="team-item">
-                        <div class="team-single">
-                            <div class="team-img">
-                                <img src="<?= base_url($team['image']) ?>" alt="<?= $team['name'] ?>">
-                                <div class="social-1st">
-                                    <ul>
-                                        <?php if(!empty($team['facebook'])): ?>
-                                            <li><a href="<?= $team['facebook'] ?>"><i class="fa fa-facebook"></i></a></li>
-                                        <?php endif; ?>
-                                        <?php if(!empty($team['twitter'])): ?>
-                                            <li><a href="<?= $team['twitter'] ?>"><i class="fa fa-twitter"></i></a></li>
-                                        <?php endif; ?>
-                                        <?php if(!empty($team['linkedin'])): ?>
-                                            <li><a href="<?= $team['linkedin'] ?>"><i class="fa fa-linkedin"></i></a></li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team-content">
-                                <h4><a href="<?= base_url('attorney/' . (isset($team['slug']) ? $team['slug'] : $team['id'])) ?>"><?= $team['name'] ?></a></h4>
-                                <span><?= $team['designation'] ?></span>
-                                <p><?= isset($team['description']) ? $team['description'] : '' ?></p>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
 
 <style>
 #practice-category-list li.active a {

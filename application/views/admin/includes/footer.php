@@ -152,6 +152,51 @@ $(document).ready(function() {
                 });
         });
     }
+
+    // Real-time Notifications Polling
+    function fetchNotifications() {
+        $.ajax({
+            url: '<?= site_url("admin/ajax_get_notifications") ?>',
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                if (res) {
+                    $('#notif-dropdown').html(res.html);
+                    
+                    var badge = $('.dropdown-toggle i.fa-bell-o').siblings('.badge-danger');
+                    if (res.total > 0) {
+                        if (badge.length) {
+                            badge.text(res.total);
+                        } else {
+                            $('<span class="badge badge-danger" style="position: absolute; top: -8px; right: -10px; background: #e74c3c; color: white; border-radius: 50%; padding: 3px 6px; font-size: 10px;">'+res.total+'</span>').insertAfter('.dropdown-toggle i.fa-bell-o');
+                        }
+                    } else {
+                        if (badge.length) badge.remove();
+                    }
+
+                    // Update Sidebar Badges
+                    updateSidebarBadge('.sidebar-count-appointments', res.appointments, 'danger');
+                    updateSidebarBadge('.sidebar-count-contacts', res.contacts, 'danger');
+                    updateSidebarBadge('.sidebar-count-subscribers', res.subscribers, 'danger');
+                }
+            }
+        });
+    }
+
+    function updateSidebarBadge(selector, count, colorClass) {
+        var el = $(selector);
+        if (el.length) {
+            el.text(count);
+            if (count > 0) {
+                el.show();
+            } else {
+                el.hide();
+            }
+        }
+    }
+
+    // Fetch every 15 seconds
+    setInterval(fetchNotifications, 15000);
 });
 </script>
 

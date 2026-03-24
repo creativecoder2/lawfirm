@@ -38,16 +38,19 @@
                                 <th style="background: #f9f9f9;">Requested Attorney</th>
                                 <td><span class="label label-info"><?= $appointment['attorney_name'] ?: 'General Inquiry' ?></span></td>
                             </tr>
-                            <?php if(!empty($appointment['practice_category_id'])): ?>
                             <tr>
                                 <th style="background: #f9f9f9;">Practice Category</th>
-                                <td><?= isset($appointment['practice_title']) ? $appointment['practice_title'] : '—' ?></td>
+                                <td>
+                                    <?php 
+                                    if($appointment['practice_category_id'] == 0) echo 'Free Consultation';
+                                    else echo $appointment['practice_title'] ?: '—';
+                                    ?>
+                                </td>
                             </tr>
-                            <?php endif; ?>
                             <?php if(!empty($appointment['consultation_fee'])): ?>
                             <tr>
                                 <th style="background: #f9f9f9;">Consultation Fee</th>
-                                <td><strong>Rs. <?= number_format($appointment['consultation_fee'], 0) ?></strong></td>
+                                <td><strong>$ <?= number_format($appointment['consultation_fee'], 0) ?></strong></td>
                             </tr>
                             <?php endif; ?>
                             <?php if(!empty($appointment['payment_method'])): ?>
@@ -55,15 +58,45 @@
                                 <th style="background: #f9f9f9;">Payment Method</th>
                                 <td>
                                     <?php
-                                    $pm_labels = ['easypaisa'=>'EasyPaisa','jazzcash'=>'JazzCash','paypal'=>'PayPal','credit_card'=>'Credit Card','pioneer'=>'Payoneer'];
+                                    $pm_labels = ['paypro'=>'PayPro','twocheckout'=>'2Checkout','easypaisa'=>'EasyPaisa','jazzcash'=>'JazzCash','paypal'=>'PayPal','credit_card'=>'Credit Card','pioneer'=>'Payoneer','manual'=>'Manual Transfer'];
                                     $pm = $appointment['payment_method'];
-                                    $pm_colors = ['easypaisa'=>'#2ecc40','jazzcash'=>'#e31f26','paypal'=>'#003087','credit_card'=>'#1a1f71','pioneer'=>'#FF4800'];
+                                    $pm_colors = ['paypro'=>'#bc9355','twocheckout'=>'#bc9355','easypaisa'=>'#2ecc40','jazzcash'=>'#e31f26','paypal'=>'#003087','credit_card'=>'#1a1f71','pioneer'=>'#FF4800','manual'=>'#607D8B'];
+                                    $pm_icons  = ['paypro'=>'fa-credit-card','twocheckout'=>'fa-credit-card','easypaisa'=>'fa-mobile','jazzcash'=>'fa-mobile','paypal'=>'fa-paypal','credit_card'=>'fa-credit-card','pioneer'=>'fa-globe','manual'=>'fa-money'];
                                     $color = $pm_colors[$pm] ?? '#777';
                                     $label = $pm_labels[$pm] ?? ucfirst($pm);
+                                    $icon  = $pm_icons[$pm] ?? 'fa-money';
                                     ?>
-                                    <span class="label" style="background:<?= $color ?>; font-size:13px; padding:5px 10px;">
-                                        <?= $label ?>
+                                    <span style="display:inline-block; background:<?= $color ?>; color:#fff; padding:5px 14px; border-radius:5px; font-size:13px; font-weight:600;">
+                                        <i class="fa <?= $icon ?>"></i> <?= $label ?>
                                     </span>
+                                </td>
+                            </tr>
+                            <?php endif; ?>
+                            <tr>
+                                <th style="background: #f9f9f9;">Payment Status</th>
+                                <td>
+                                    <?php 
+                                    $ps = $appointment['payment_status'] ?? 'pending';
+                                    $ps_map = [
+                                        'paid'    => ['bg'=>'#e8f5e9','color'=>'#2e7d32','icon'=>'fa-check-circle','label'=>'Paid'],
+                                        'pending' => ['bg'=>'#fff8e1','color'=>'#f57f17','icon'=>'fa-clock-o','label'=>'Pending'],
+                                        'failed'  => ['bg'=>'#ffebee','color'=>'#c62828','icon'=>'fa-times-circle','label'=>'Failed'],
+                                        'free'    => ['bg'=>'#e3f2fd','color'=>'#1565c0','icon'=>'fa-gift','label'=>'Free'],
+                                    ];
+                                    $s = $ps_map[$ps] ?? ['bg'=>'#f5f5f5','color'=>'#777','icon'=>'fa-question','label'=>ucfirst($ps)];
+                                    ?>
+                                    <span style="display:inline-block; background:<?= $s['bg'] ?>; color:<?= $s['color'] ?>; padding:5px 14px; border-radius:5px; font-size:13px; font-weight:600;">
+                                        <i class="fa <?= $s['icon'] ?>"></i> <?= $s['label'] ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <?php if(!empty($appointment['transaction_id'])): ?>
+                            <tr>
+                                <th style="background: #f9f9f9;">Transaction ID</th>
+                                <td>
+                                    <code style="background:#f5f5f5; padding:5px 12px; border-radius:4px; font-size:13px; color:#333; border:1px solid #e0e0e0;">
+                                        <?= $appointment['transaction_id'] ?>
+                                    </code>
                                 </td>
                             </tr>
                             <?php endif; ?>

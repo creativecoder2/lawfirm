@@ -48,7 +48,7 @@
                         <small class="text-muted">Appears in the "Our Services Include" section.</small>
                     </div>
                     <div class="form-group">
-                        <label>Consultation Fee (Rs.)</label>
+                        <label>Consultation Fee ($)</label>
                         <input type="number" step="0.01" min="0" class="form-control" name="consultation_fee" placeholder="e.g. 5000 — leave 0 if free">
                         <small class="text-muted">This fee will be shown when a visitor selects this category in the appointment form.</small>
                     </div>

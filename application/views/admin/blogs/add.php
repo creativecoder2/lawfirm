@@ -61,10 +61,6 @@
                                         <input type="date" class="form-control" name="date_published" required value="<?= date('Y-m-d') ?>">
                                     </div>
                                     <div class="form-group">
-                                        <label>Tags (Comma separated)</label>
-                                        <input type="text" class="form-control" name="tags" placeholder="e.g. Attorney, Lawyer, Fraud">
-                                    </div>
-                                    <div class="form-group">
                                         <label>Video URL (YouTube/Vimeo)</label>
                                         <input type="text" class="form-control" name="video_url" placeholder="Optional video link">
                                     </div>

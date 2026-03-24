@@ -63,10 +63,6 @@
                                         <input type="date" class="form-control" name="date_published" value="<?= $blog['date_published'] ?>" required>
                                     </div>
                                     <div class="form-group">
-                                        <label>Tags (Comma separated)</label>
-                                        <input type="text" class="form-control" name="tags" value="<?= $blog['tags'] ?>" placeholder="e.g. Attorney, Lawyer">
-                                    </div>
-                                    <div class="form-group">
                                         <label>Video URL</label>
                                         <input type="text" class="form-control" name="video_url" value="<?= $blog['video_url'] ?>" placeholder="Optional video link">
                                     </div>

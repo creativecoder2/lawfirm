@@ -154,7 +154,7 @@ a:focus {
     display: none;
     position: fixed;
     z-index: 999;
-    right: 15px;
+    left: 15px;
     bottom: 15px;
     -webkit-transition: all 0.2s;
     -moz-transition: all 0.2s;
@@ -531,6 +531,14 @@ preloader
     -moz-box-shadow: 0px 1px 5px rgba(0, 0, 0, .1);
     -webkit-box-shadow: 0px 1px 5px rgba(0, 0, 0, .1);
     animation: 600ms ease-in-out 0s normal none 1 running fadeInDown;
+}
+
+header.sticky .header-top-1 {
+    background: #fdfdfd;
+}
+
+header.sticky .header-style-1 {
+    background: #fff;
 }
 
 .header-style-2.sticky {
@@ -2735,6 +2743,7 @@ mobile menu
     flex-direction: column;
 }
 
+
 .breadcumb-area:before {
     content: "";
     width: 100%;
@@ -4143,4 +4152,81 @@ mobile menu
 .contact-area.contact-area-2.contact-area-3 h2 {
     margin-bottom: 40px;
     font-size: 30px;
+}
+
+/* Case Studies Search and Alphabetical List Styling */
+.Cases-list {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.Cases-list span {
+    color: #d0a15e;
+    float: left;
+    width: 100%;
+    margin: 10px;
+    border-bottom: 1px dashed #444;
+    padding-bottom: 10px;
+}
+
+.Cases-list a {
+    color: #2e2e2e;
+    float: left;
+    width: auto;
+    margin: 10px;
+    text-decoration: underline;
+}
+
+.Cases-list a:hover {
+    color: #d0a15e;
+    float: left;
+    width: auto;
+    margin: 10px;
+}
+
+/* Mobile UI Improvements */
+@media (max-width: 991px) {
+    .header-top-1 {
+        display: none !important;
+    }
+
+    .header-style-1 .logo img {
+        max-width: 150px !important;
+    }
+
+    .header-style-1 .search {
+        margin-left: auto;
+    }
+
+    .header-style-1 .search>ul>li>a i {
+        margin-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1 !important;
+        display: block;
+        color: #333 !important;
+    }
+
+    .header-style-1 .slicknav_btn {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        background: transparent !important;
+        padding: 5px !important;
+    }
+
+    .mobile_menu {
+        display: block !important;
+        margin-top: -19px;
+    }
+
+    .header-style-1 .row {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .header-style-1 .search ul li>ul {
+        right: 0 !important;
+        top: 100% !important;
+    }
 }

@@ -208,7 +208,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
             <div class="row">
                 <div class="col-lg-5">
                     <div class="contact-text">
-                        <h2><?= isset($settings['contact_section_title']) ? $settings['contact_section_title'] : 'Are You Interest To Contact With Us?' ?></h2>
+                        <h2>Book your Appointment</h2>
                         <p><?= isset($settings['contact_section_hours']) ? nl2br($settings['contact_section_hours']) : 'Mon – Thur: 8:00 AM – 9:00 PM<br>Friday: 2:00 PM – 6:00 PM<br>Saturday: 8:AM – 9:30 PM<br>ONLINE APPOINTMENT: 24/7' ?></p>
                         <div class="contact-sub">
                             <div class="contact-icon">
@@ -242,7 +242,8 @@ practice areas, ensuring expert counsel for your specific needs</p>
                 <div class="col col-lg-7 col-md-12 col-sm-12">
                     <div class="contact-content">
                         <div class="contact-form">
-                            <form class="contact-validation-active" id="contact-form">
+                            <form class="appointment-validation-active" id="cms-appointment-form">
+                                <input type="hidden" name="_token" id="_token" value="<?= md5(uniqid(mt_rand(), true)) ?>">
                                 <div class="half-col">
                                     <input type="text" name="name" id="name" class="form-control" placeholder="Your Name *" required>
                                 </div>
@@ -254,20 +255,23 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                 </div>
                                 <div class="half-col">
                                     <select name="practice_category_id" id="practice_category_id" class="form-control" required onchange="updateFee(this)">
-                                        <option value="" disabled selected>-- Select Practice Area --</option>
+                                        <option value="0" data-fee="0" selected>Free Consultation</option>
                                         <?php if(!empty($practice_areas)): foreach($practice_areas as $pa): ?>
                                         <option value="<?= $pa['id'] ?>" data-fee="<?= number_format($pa['consultation_fee'] ?? 0, 2) ?>">
-                                            <?= $pa['title'] ?><?= ($pa['consultation_fee'] > 0) ? ' — Rs. '.number_format($pa['consultation_fee'], 0) : '' ?>
+                                            <?= $pa['title'] ?>
                                         </option>
                                         <?php endforeach; endif; ?>
                                     </select>
+                                    <small id="fee-notice-text" style="display:block; margin-top:5px; color:#bc9355; font-size:12px; font-style:italic;">
+                                        Note: Some legal Cases may require a professional consultation fee.
+                                    </small>
                                 </div>
                                 <div>
                                     <textarea class="form-control" name="note" id="note" placeholder="Case Description..."></textarea>
                                 </div>
 
                                 <!-- Payment Method + Fee Summary -->
-                                <div id="payment-section" style="width:100%; margin: 18px 0 10px;">
+                                <div id="payment-section-container" style="display:none; width:100%; margin: 18px 0 10px;">
                                     <!-- Fee summary card (shown when a category with fee is selected) -->
                                     <div id="payment-fee-summary" style="display:none; margin-bottom:14px; padding:14px 16px; background:linear-gradient(135deg,rgba(188,147,85,0.2),rgba(188,147,85,0.05)); border:1px solid rgba(188,147,85,0.4); border-radius:8px;">
                                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -277,7 +281,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                             </div>
                                             <div style="text-align:right;">
                                                 <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Consultation Fee</div>
-                                                <div id="summary-fee" style="color:#bc9355; font-size:22px; font-weight:700; margin-top:2px;">Rs. 0</div>
+                                                <div id="summary-fee" style="color:#bc9355; font-size:22px; font-weight:700; margin-top:2px;">$ 0</div>
                                             </div>
                                         </div>
                                         <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(188,147,85,0.2); color:#aaa; font-size:12px;">
@@ -292,15 +296,11 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                     <div class="payment-methods-grid">
                                         <?php
                                         $methods = [
-                                            ['id'=>'easypaisa',   'label'=>'EasyPaisa',    'icon'=>'assets/images/payments/easypaisa.svg'],
-                                            ['id'=>'jazzcash',    'label'=>'JazzCash',     'icon'=>'assets/images/payments/jazzcash.svg'],
-                                            ['id'=>'paypal',      'label'=>'PayPal',       'icon'=>'assets/images/payments/paypal.svg'],
-                                            ['id'=>'credit_card', 'label'=>'Credit Card',  'icon'=>'assets/images/payments/credit_card.svg'],
-                                            ['id'=>'pioneer',     'label'=>'Payoneer',     'icon'=>'assets/images/payments/pioneer.svg'],
+                                            ['id'=>'paypro', 'label'=>'PayPro', 'icon'=>'https://paypro.com.pk/wp-content/uploads/2022/08/cropped-Logo_Blue.png']
                                         ];
                                         foreach($methods as $m): ?>
                                         <label class="payment-method-card" for="pm_<?= $m['id'] ?>">
-                                            <input type="radio" name="payment_method" id="pm_<?= $m['id'] ?>" value="<?= $m['id'] ?>" required>
+                                            <input type="radio" name="payment_method" id="pm_<?= $m['id'] ?>" value="<?= $m['id'] ?>" checked>
                                             <span class="pm-inner">
                                                 <img src="<?= base_url($m['icon']) ?>" alt="<?= $m['label'] ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                                 <span class="pm-fallback" style="display:none;"><i class="fa fa-credit-card"></i></span>
@@ -319,8 +319,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                     </div>
                                 </div>
                                 <div class="clearfix error-handling-messages">
-                                    <div id="success" style="display:none;">Thank you</div>
-                                    <div id="error" style="display:none;">Error occurred while sending. Please try again.</div>
+                                    <!-- Messages now handled by SweetAlert (Swal) -->
                                 </div>
                             </form>
                         </div>
@@ -332,6 +331,103 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <!-- .contact area end -->
 
     <style>
+    <style>
+    /* Attorney Card Premium Styling */
+    .cms-team-card {
+        padding: 10px;
+        transition: all 0.3s ease;
+    }
+    .cms-team-card .card-inner {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.03);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .cms-team-card:hover .card-inner {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+    .card-image-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 110%; /* Aspect ratio */
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    .card-image-wrapper img {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .cms-team-card:hover img {
+        transform: scale(1.05);
+    }
+    .social-hover {
+        position: absolute;
+        bottom: -40px;
+        left: 0; width: 100%;
+        background: rgba(188,147,85,0.9);
+        display: flex;
+        justify-content: center;
+        padding: 8px 0;
+        transition: bottom 0.3s ease;
+    }
+    .cms-team-card:hover .social-hover {
+        bottom: 0;
+    }
+    .social-hover ul {
+        display: flex;
+        gap: 15px;
+        margin: 0; padding: 0;
+        list-style: none;
+    }
+    .social-hover li a {
+        color: #fff;
+        font-size: 14px;
+        transition: opacity 0.2s;
+    }
+    .social-hover li a:hover { opacity: 0.8; }
+    
+    .card-content {
+        padding: 20px 15px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .card-content h4 {
+        margin: 0 0 5px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+    .card-content h4 a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .card-content h4 a:hover { color: #bc9355; }
+    .card-content .designation {
+        font-size: 13px;
+        color: #bc9355;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Override Owl Carousel for this section - removed overflow visible to hide peeking items */
+    .team-area .owl-item {
+        transition: transform 0.3s ease;
+    }
+
     .payment-methods-grid {
         display: flex;
         flex-wrap: wrap;
@@ -371,28 +467,37 @@ practice areas, ensuring expert counsel for your specific needs</p>
     function updateFee(sel) {
         var opt      = sel.options[sel.selectedIndex];
         var fee      = parseFloat(opt.getAttribute('data-fee') || 0);
-        var catName  = opt.text.split(' —')[0].trim(); // category name without the fee part
+        var catName  = opt.text.trim();
         var feeSum   = document.getElementById('payment-fee-summary');
         var freeNote = document.getElementById('payment-free-notice');
+        var paySec   = document.getElementById('payment-section-container');
 
         if (fee > 0) {
             document.getElementById('summary-category').innerText = catName;
-            document.getElementById('summary-fee').innerText = 'Rs. ' + fee.toLocaleString('en-PK', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('summary-fee').innerText = '$ ' + fee.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
             feeSum.style.display   = 'block';
             freeNote.style.display = 'none';
+            paySec.style.display   = 'block'; // Show payment methods
         } else if (sel.value) {
             // Category selected but fee is 0 = free
             feeSum.style.display   = 'none';
             freeNote.style.display = 'block';
+            paySec.style.display   = 'none'; // Hide payment methods for free categories
         } else {
             feeSum.style.display   = 'none';
             freeNote.style.display = 'none';
+            paySec.style.display   = 'none';
         }
     }
 
     window.addEventListener('load', function() {
-        var form = document.getElementById('contact-form');
+        var form = document.getElementById('cms-appointment-form');
         if (!form) return;
+
+        // Initialize fee on load for the default "Free Consultation"
+        var sel = document.getElementById('practice_category_id');
+        if(sel) updateFee(sel);
+
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             var name     = document.getElementById('name').value.trim();
@@ -407,7 +512,12 @@ practice areas, ensuring expert counsel for your specific needs</p>
                     Swal.fire({ icon:'warning', title:'Missing Fields', text:'Please fill all required fields.', confirmButtonColor:'#bc9355' });
                 } return;
             }
-            if (!pmEl) {
+
+            // check if fee is > 0
+            var opt = document.getElementById('practice_category_id').options[document.getElementById('practice_category_id').selectedIndex];
+            var fee = parseFloat(opt.getAttribute('data-fee') || 0);
+            
+            if (fee > 0 && !pmEl) {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({ icon:'warning', title:'Payment Method Required', text:'Please select a payment method.', confirmButtonColor:'#bc9355' });
                 } return;
@@ -427,6 +537,10 @@ practice areas, ensuring expert counsel for your specific needs</p>
                 try {
                     var res = JSON.parse(xhr.responseText);
                     if (res.status === 'success') {
+                        if (res.redirect) {
+                            window.location.href = res.redirect;
+                            return;
+                        }
                         form.reset();
                         document.getElementById('payment-fee-summary').style.display = 'none';
                         document.getElementById('payment-free-notice').style.display = 'none';
@@ -453,54 +567,14 @@ practice areas, ensuring expert counsel for your specific needs</p>
                 + '&email=' + encodeURIComponent(email)
                 + '&practice_category_id=' + encodeURIComponent(cat)
                 + '&note=' + encodeURIComponent(note)
-                + '&payment_method=' + encodeURIComponent(pmEl.value)
-                + '&attorney_id=';
+                + '&payment_method=' + encodeURIComponent(pmEl ? pmEl.value : '')
+                + '&attorney_id='
+                + '&_token=' + encodeURIComponent(document.getElementById('_token').value);
             xhr.send(params);
         });
     });
     </script>
     <!-- .contact area start -->
-     <!-- expert-area start -->
-    <div class="team-area ptb-100-70">
-        <div class="container">
-            <div class="col-l2">
-                <div class="section-title-1  text-center">
-                    <span>Meet Our Experts</span>
-                    <h2>Qualified Attorneys</h2>
-                </div>
-            </div>
-            <div class="team-active owl-carousel">
-                <?php if(!empty($teams)): foreach(array_chunk($teams, 3) as $team_chunk): ?>
-                <div class="team-item">
-                    <div class="row">
-                        <?php foreach($team_chunk as $team): ?>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="team-single">
-                              <a href="<?= site_url('attorney/'.$team['slug']) ?>">  <div class="team-img">
-                                    <img src="<?= base_url($team['image']) ?>" alt="">
-                                    <div class="social-1st">
-                                        <ul>
-                                            <?php if($team['facebook']): ?><li><a href="<?= $team['facebook'] ?>"><i class="fa fa-facebook" aria-hidden="true"></i></a></li><?php endif; ?>
-                                            <?php if($team['twitter']): ?><li><a href="<?= $team['twitter'] ?>"><i class="fa fa-twitter" aria-hidden="true"></i></a></li><?php endif; ?>
-                                            <?php if($team['linkedin']): ?><li><a href="<?= $team['linkedin'] ?>"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li><?php endif; ?>
-                                        </ul>
-                                    </div>
-                                </div></a>
-                                <div class="team-content text-center">
-                                    <h4><a href="<?= site_url('attorney/'.$team['slug']) ?>" style="color: inherit; text-decoration: none;"><?= $team['name'] ?></a></h4>
-                                    <span><?= $team['designation'] ?></span>
-                                    <p><!-- description not in db yet, maybe add later --></p>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-    </div>
-    <!-- expert-area end -->
     <!-- .counter-area start -->
     <div class="counter-area">
         <div class="container">
@@ -560,6 +634,72 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <!-- .footer-area start -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+
+            // Case Studies Infinite Scroll Logic
+            var $grid = jQuery('.grid');
+            if ($grid.length) {
+                var currentLimit = 4;
+                var currentFilter = '*';
+
+                function updateCaseStudiesFilter() {
+                    $grid.isotope({
+                        filter: function() {
+                            var $this = jQuery(this);
+                            var isMatched = (currentFilter === '*') || $this.is(currentFilter);
+                            if (!isMatched) return false;
+
+                            // Find the index among items that match currentFilter
+                            var selector = (currentFilter === '*') ? '.grid-item' : '.grid-item' + currentFilter;
+                            var index = $grid.find(selector).index($this);
+                            return index < currentLimit;
+                        }
+                    });
+                }
+
+                // Wait for imagesLoaded (handled in script.js, but we override here)
+                $grid.imagesLoaded(function() {
+                    updateCaseStudiesFilter();
+                });
+
+                // Override filter menu click
+                jQuery('.studies-menu').off('click', 'button');
+                jQuery('.studies-menu').on('click', 'button', function() {
+                    jQuery('.studies-menu button').removeClass('active');
+                    jQuery(this).addClass('active');
+                    
+                    currentFilter = jQuery(this).attr('data-filter');
+                    currentLimit = 4; // Reset limit when filter changes
+                    updateCaseStudiesFilter();
+                    
+                    // Trigger a layout update
+                    $grid.isotope('layout');
+                });
+
+                // Scroll to Load More
+                var isHandlingScroll = false;
+                jQuery(window).on('scroll', function() {
+                    if (isHandlingScroll) return;
+                    
+                    var totalMatching = (currentFilter === '*') ? 
+                        $grid.find('.grid-item').length : 
+                        $grid.find('.grid-item' + currentFilter).length;
+                    
+                    if (currentLimit >= totalMatching) return;
+
+                    var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
+                    var sectionBottom = jQuery('.studies-area').offset().top + jQuery('.studies-area').outerHeight();
+
+                    if (scrollY > sectionBottom - 150) {
+                        isHandlingScroll = true;
+                        setTimeout(function() {
+                            currentLimit += 4;
+                            updateCaseStudiesFilter();
+                            isHandlingScroll = false;
+                        }, 200); // Small debounce for smoother behavior
+                    }
+                });
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const cat = urlParams.get('cat');
             

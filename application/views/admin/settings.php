@@ -141,9 +141,67 @@
                                 <textarea class="form-control" name="contact_page_text" rows="3" placeholder="Short paragraph under the heading..."><?= isset($settings['contact_page_text']) ? $settings['contact_page_text'] : '' ?></textarea>
                             </div>
                             <div class="form-group">
-                                <label>Google Maps Embed URL</label>
+                                <label>Map Location Address</label>
+                                <input type="text" class="form-control" name="contact_map_address" value="<?= isset($settings['contact_map_address']) ? $settings['contact_map_address'] : '' ?>" placeholder="e.g. Mozang Chungi, Lahore">
+                                <small class="text-muted">Enter the address to show on the map. This is simpler than using embed code.</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Advanced: Google Maps Embed URL</label>
                                 <input type="text" class="form-control" name="contact_map_url" value="<?= isset($settings['contact_map_url']) ? $settings['contact_map_url'] : '' ?>" placeholder="Paste the full Google Maps embed src URL here">
-                                <small class="text-muted">Go to Google Maps → Share → Embed a map → Copy the <code>src="..."</code> URL only.</small>
+                                <small class="text-muted">If this is filled, it will take priority over the address above. Go to Google Maps → Share → Embed a map → Copy the <code>src="..."</code> URL only.</small>
+                            </div>
+
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px;">Free Consultation Page</h4>
+                            <div class="form-group">
+                                <label>Upper Section Title</label>
+                                <input type="text" class="form-control" name="free_consultation_title" value="<?= isset($settings['free_consultation_title']) ? $settings['free_consultation_title'] : 'Get a Free Consultation' ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Upper Section Description</label>
+                                <textarea class="form-control" name="free_consultation_desc" rows="3"><?= isset($settings['free_consultation_desc']) ? $settings['free_consultation_desc'] : '' ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Form Heading</label>
+                                <input type="text" class="form-control" name="free_consultation_form_title" value="<?= isset($settings['free_consultation_form_title']) ? $settings['free_consultation_form_title'] : 'Book your Appointment' ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Lower Section Title</label>
+                                <input type="text" class="form-control" name="free_consultation_footer_title" value="<?= isset($settings['free_consultation_footer_title']) ? $settings['free_consultation_footer_title'] : 'Why Choose Our Legal Services?' ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Lower Section Description</label>
+                                <textarea class="form-control" name="free_consultation_footer_desc" rows="3"><?= isset($settings['free_consultation_footer_desc']) ? $settings['free_consultation_footer_desc'] : '' ?></textarea>
+                            </div>
+
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px; color: #bc9355;"><i class="fa fa-credit-card"></i> PayPro Configuration (PKR Only)</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>PayPro Username</label>
+                                        <input type="text" class="form-control" name="paypro_username" value="<?= isset($settings['paypro_username']) ? $settings['paypro_username'] : '' ?>" placeholder="E.g. LE_Law_Firm">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>PayPro Password</label>
+                                        <input type="password" class="form-control" name="paypro_password" value="<?= isset($settings['paypro_password']) ? $settings['paypro_password'] : '' ?>" placeholder="Your Password">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>PayPro Client ID</label>
+                                        <input type="text" class="form-control" name="paypro_client_id" value="<?= isset($settings['paypro_client_id']) ? $settings['paypro_client_id'] : '' ?>" placeholder="Client ID">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>PayPro Client Secret</label>
+                                        <input type="password" class="form-control" name="paypro_client_secret" value="<?= isset($settings['paypro_client_secret']) ? $settings['paypro_client_secret'] : '' ?>" placeholder="Client Secret">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

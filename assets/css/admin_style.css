@@ -621,3 +621,146 @@ tr[data-id] {
     color: #d0a15e !important;
     border-left-color: #d0a15e !important;
 }
+/* Custom Tabs Styling by Antigravity */
+.nav-tabs {
+    border-bottom: 2px solid #edf2f7 !important;
+    display: flex !important;
+    gap: 15px !important;
+    padding: 0 5px !important;
+    margin: 20px 0 30px 0 !important;
+    list-style: none !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.nav-tabs > li {
+    margin-bottom: -2px !important;
+}
+
+.nav-tabs > li > a {
+    padding: 12px 25px !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    border: 2px solid transparent !important;
+    border-bottom: none !important;
+    border-radius: 10px 10px 0 0 !important;
+    transition: all 0.3s !important;
+    display: block !important;
+    text-decoration: none !important;
+    background: #f8fafc !important;
+}
+
+.nav-tabs > li.active > a {
+    color: #d0a15e !important;
+    background-color: #fff !important;
+    border-color: #edf2f7 !important;
+    border-bottom: 2px solid #fff !important;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.03) !important;
+}
+
+.nav-tabs > li > a:hover {
+    background-color: #f1f5f9 !important;
+    color: #d0a15e !important;
+}
+
+/* Form Group Polish */
+.form-group label {
+    font-weight: 600 !important;
+    color: #475569 !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+}
+
+.form-control {
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 10px 15px !important;
+    font-size: 14px !important;
+    transition: all 0.2s !important;
+    box-shadow: none !important;
+    height: auto !important;
+}
+
+.form-control:focus {
+    border-color: #d0a15e !important;
+    box-shadow: 0 0 0 3px rgba(208, 161, 94, 0.1) !important;
+}
+
+/* Help Text */
+.help-block {
+    font-size: 12px !important;
+    color: #94a3b8 !important;
+    margin-top: 5px !important;
+}
+
+/* Grid/Table Enhancements */
+.table-datatable {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    width: 100% !important;
+}
+
+.table-datatable thead th {
+    background-color: #fcfdfe !important;
+    border-top: 1px solid #edf2f7 !important;
+}
+
+.table-datatable tbody tr td {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    padding: 20px 0 !important;
+}
+
+/* Pagination Style Fix */
+.pagination > .active > a, 
+.pagination > .active > span, 
+.pagination > .active > a:hover, 
+.pagination > .active > span:hover, 
+.pagination > .active > a:focus, 
+.pagination > .active > span:focus {
+    background-color: #d0a15e !important;
+    border-color: #d0a15e !important;
+    color: #fff !important;
+}
+
+/* DataTables Control Alignment Fix */
+.dataTables_wrapper {
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin-bottom: 20px !important;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: right !important;
+}
+
+.dataTables_wrapper .dataTables_info {
+    float: left !important;
+    margin-top: 15px !important;
+    padding-top: 0 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: right !important;
+    margin-top: 10px !important;
+    padding-top: 0 !important;
+}
+
+/* Clear floats */
+.dataTables_wrapper:after {
+    content: '' !important;
+    display: table !important;
+    clear: both !important;
+}

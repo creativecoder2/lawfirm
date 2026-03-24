@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'welcome';
-$route['404_override'] = '';
+$route['404_override'] = 'welcome/error_404';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['about'] = 'welcome/about';
@@ -60,14 +60,19 @@ $route['attorney/(:any)'] = 'welcome/attorney/$1';
 $route['case_studies'] = 'welcome/case_studies';
 $route['case_studies_details/(:any)'] = 'welcome/case_studies_details/$1';
 $route['blog'] = 'welcome/blog';
+$route['blog/category'] = 'welcome/blog';
 $route['blog/category/(:any)'] = 'welcome/blog_category/$1';
-$route['blog/tag/(:any)'] = 'welcome/blog_tag/$1';
+$route['blog/category/(:any)/(:num)'] = 'welcome/blog_category/$1/$2';
 $route['blog_detail/(:any)'] = 'welcome/blog_detail/$1';
 $route['blog_detail'] = 'welcome/blog_detail';
 $route['contact'] = 'welcome/contact';
 $route['contact_submit'] = 'welcome/contact_submit';
+$route['free-consultation'] = 'welcome/free_consultation';
 $route['submit_appointment'] = 'welcome/submit_appointment';
 $route['attorneys_single'] = 'welcome/attorneys_single';
+$route['landmark'] = 'welcome/landmark';
+$route['page/(:any)'] = 'welcome/page/$1';
+$route['checkout/(:any)'] = 'welcome/checkout/$1';
 
 
 
@@ -76,3 +81,6 @@ $route['admin/login'] = 'admin/login';
 $route['admin/login_post'] = 'admin/login_post';
 $route['admin/logout'] = 'admin/logout';
 $route['admin/dashboard'] = 'admin/dashboard';
+
+// Catch-all route for direct slugs (must be at the bottom)
+$route['(:any)'] = 'welcome/resolve_slug/$1';

@@ -82,11 +82,15 @@
                 <div class="col col-xs-12">
                     <div class="contact-map">
                         <?php 
-                            $map_url = isset($settings['contact_map_url']) && !empty($settings['contact_map_url']) 
-                                ? $settings['contact_map_url'] 
-                                : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57763.58882182253!2d55.38442113562169!3d25.195692423227655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai!5e0!3m2!1sen!2s!4v1540725271741';
+                            if (!empty($settings['contact_map_url'])) {
+                                $map_src = $settings['contact_map_url'];
+                            } elseif (!empty($settings['contact_map_address'])) {
+                                $map_src = 'https://maps.google.com/maps?q=' . urlencode($settings['contact_map_address']) . '&t=&z=15&ie=UTF8&iwloc=B&output=embed';
+                            } else {
+                                $map_src = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57763.58882182253!2d55.38442113562169!3d25.195692423227655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai!5e0!3m2!1sen!2s!4v1540725271741';
+                            }
                         ?>
-                        <iframe src="<?= htmlspecialchars($map_url) ?>" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        <iframe src="<?= $map_src ?>" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                     </div>
                 </div>
             </div>

@@ -19,43 +19,47 @@
 
             <div class="box-body">
                 <table class="table table-striped table-hover table-datatable" data-table="practice_areas">
-                    <thead>
-                    <tr>
-                        <th width="50">ID</th>
-                        <th width="100">Image</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th width="150">Status</th>
-                        <th width="200">Actions</th>
-                        <th style="display:none;" class="priority-col">Priority</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($practice as $p): ?>
-                    <tr data-id="<?= $p['id'] ?>" data-priority="<?= isset($p['priority']) ? $p['priority'] : 0 ?>">
-                        <td><?= $p['id'] ?></td>
-                        <td>
-                            <div class="text-center p-1 rounded" style="background: #f8fafc; border: 1px solid #eee;">
-                                <?php if(!empty($p['image'])): ?>
-                                    <img src="<?= base_url($p['image']) ?>" alt="" style="height: 40px; width: 40px; object-fit: cover;">
-                                <?php else: ?>
-                                    <span class="text-muted small">No Image</span>
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                        <td>
-                            <strong><?= $p['title'] ?></strong>
-                        </td>
-                        <td>
-                            <span class="text-muted small"><?= strlen($p['description']) > 100 ? substr($p['description'], 0, 100).'...' : $p['description'] ?></span>
-                        </td>
-                        <td>
-                            <?php if($p['is_active'] == 1): ?>
-                                <a href="<?= base_url('admin/practice_status/'.$p['id'].'/0') ?>" class="btn btn-success btn-sm">Active</a>
-                            <?php else: ?>
-                                <a href="<?= base_url('admin/practice_status/'.$p['id'].'/1') ?>" class="btn btn-danger btn-sm">Inactive</a>
-                            <?php endif; ?>
-                        </td>
+                        <thead>
+                            <tr>
+                                <th width="50">ID</th>
+                                <th width="100">Image</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Footer</th>
+                                <th width="150">Actions</th>
+                                <th style="display:none;" class="priority-col">Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($practice as $p): ?>
+                                <tr data-id="<?= $p['id'] ?>" data-priority="<?= isset($p['priority']) ? $p['priority'] : 0 ?>">
+                                    <td><?= $p['id'] ?></td>
+                                    <td>
+                                        <div class="text-center p-1 rounded" style="background: #f8fafc; border: 1px solid #eee;">
+                                            <?php if(!empty($p['image'])): ?>
+                                                <img src="<?= base_url($p['image']) ?>" alt="" style="height: 40px; width: 40px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <span class="text-muted small">No Image</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong><?= $p['title'] ?></strong>
+                                    </td>
+                                    <td>
+                                        <?php if($p['is_active'] == 1): ?>
+                                            <a href="<?= base_url('admin/practice_status/'.$p['id'].'/0') ?>" class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i> Enabled</a>
+                                        <?php else: ?>
+                                            <a href="<?= base_url('admin/practice_status/'.$p['id'].'/1') ?>" class="btn btn-danger btn-sm"><i class="fa fa-times-circle"></i> Disabled</a>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if(isset($p['show_in_footer']) && $p['show_in_footer'] == 1): ?>
+                                            <a href="<?= site_url('admin/practice_footer_status/' . $p['id'] . '/0') ?>" class="btn btn-sm btn-success" title="Click to Hide from Footer"><i class="fa fa-toggle-on"></i> Show</a>
+                                        <?php else: ?>
+                                            <a href="<?= site_url('admin/practice_footer_status/' . $p['id'] . '/1') ?>" class="btn btn-sm btn-outline-secondary" title="Click to Show in Footer"><i class="fa fa-toggle-off"></i> Hide</a>
+                                        <?php endif; ?>
+                                    </td>
                         <td>
                             <div class="action-buttons">
                                 <a href="<?= base_url('admin/practice_view/'.$p['id']) ?>" class="btn btn-info btn-sm" title="View"><i class="fa fa-eye"></i></a>

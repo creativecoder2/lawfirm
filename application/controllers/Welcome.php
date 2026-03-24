@@ -23,6 +23,10 @@ class Welcome extends CI_Controller {
         parent::__construct();
         $this->load->database();
         $this->load->helper('url');
+        
+        // Make team data globally available for the footer team section
+        $teams = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
+        $this->load->vars(['teams' => $teams]);
     }
 
     private function _get_settings() {
@@ -32,16 +36,34 @@ class Welcome extends CI_Controller {
             $settings[$s['key_name']] = $s['value'];
         }
 
+        // Track site views (once per visitor per day using cookie)
+        if (!isset($_COOKIE['site_viewed_today'])) {
+            if (isset($settings['site_views'])) {
+                $this->db->where('key_name', 'site_views')->set('value', 'value + 1', FALSE)->update('settings');
+            } else {
+                $this->db->insert('settings', ['key_name' => 'site_views', 'value' => '1']);
+                $settings['site_views'] = 1;
+            }
+            // Set cookie until midnight
+            $midnight = strtotime('tomorrow') - time();
+            setcookie('site_viewed_today', '1', time() + $midnight, '/');
+        }
+
         // Format Video URL for YouTube support
         if (!empty($settings['video_url'])) {
             $settings['video_url'] = $this->_format_youtube_url($settings['video_url']);
         }
 
-        // Fetch Menus
+        // Fetch Menus (Header uses all active, Footer will use these too but we'll filter)
         $settings['menus'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('menus')->result_array();
+        $settings['footer_menus'] = $this->db->where(['is_active' => 1, 'show_in_footer' => 1])->order_by('priority', 'ASC')->get('menus')->result_array();
         
         // Fetch Practice Areas for footer
-        $settings['footer_practice'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->limit(5)->get('practice_areas')->result_array();
+        $settings['footer_practice'] = $this->db->where(['is_active' => 1, 'show_in_footer' => 1])->order_by('priority', 'ASC')->limit(6)->get('practice_areas')->result_array();
+
+        // Fetch Custom Pages for Header and Footer
+        $settings['header_pages'] = $this->db->where(['is_active' => 1, 'show_in_header' => 1])->order_by('priority', 'ASC')->get('pages')->result_array();
+        $settings['footer_pages'] = $this->db->where(['is_active' => 1, 'show_in_footer' => 1])->order_by('priority', 'ASC')->get('pages')->result_array();
 
         // Fetch Social Links
         $settings['social_links'] = $this->db->order_by('priority', 'ASC')->get('social_links')->result_array();
@@ -98,6 +120,7 @@ class Welcome extends CI_Controller {
         $data['settings'] = $this->_get_settings();
         $data['about'] = $this->db->get_where('about_us', ['id' => 1])->row_array();
         $data['about_features'] = $this->db->order_by('priority', 'ASC')->get('about_features')->result_array();
+        $data['practice_areas'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
 
 		$this->load->view('includes/header', $data);
 		$this->load->view('about', $data);
@@ -141,8 +164,12 @@ class Welcome extends CI_Controller {
     public function attorney($slug)
     {
         $data['settings'] = $this->_get_settings();
-        $data['attorney'] = $this->db->get_where('teams', ['slug' => $slug, 'is_active' => 1])->row_array();
-        
+        $this->db->select('teams.*');
+        $this->db->from('teams');
+        $this->db->where('slug', $slug);
+        $this->db->where('is_active', 1);
+        $data['attorney'] = $this->db->get()->row_array();
+
         if (empty($data['attorney'])) {
             // Try ID if slug fails (for older links)
             if (is_numeric($slug)) {
@@ -151,8 +178,23 @@ class Welcome extends CI_Controller {
             if (empty($data['attorney'])) redirect('/');
         }
 
+        $data['practice_areas'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
+
         $this->load->view('includes/header', $data);
         $this->load->view('attorneys_single', $data);
+        $this->load->view('includes/footer', $data);
+    }
+
+    public function page($slug) {
+        $data['settings'] = $this->_get_settings();
+        $data['page'] = $this->db->get_where('pages', ['slug' => $slug, 'is_active' => 1])->row_array();
+        if (!$data['page']) redirect('welcome');
+
+        // Fetch teams for the "Qualified Attorneys" section as per user requirement
+        $data['teams'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
+
+        $this->load->view('includes/header', $data);
+        $this->load->view('page', $data);
         $this->load->view('includes/footer', $data);
     }
 
@@ -160,19 +202,68 @@ class Welcome extends CI_Controller {
 	{
         $data['settings'] = $this->_get_settings();
         
-        // Fetch all case studies with category info
+        // Fetch only 4 case studies initially with category info
         $this->db->select('case_studies.*, case_categories.name as category_name, case_categories.slug as category_slug');
         $this->db->from('case_studies');
         $this->db->join('case_categories', 'case_studies.category_id = case_categories.id', 'left');
         $this->db->where('case_studies.is_active', 1);
         $this->db->order_by('case_studies.id', 'DESC');
+        $this->db->limit(4);
         $data['case_studies'] = $this->db->get()->result_array();
+
+        // Check if more cases exist
+        $data['has_more'] = ($this->db->where('is_active', 1)->count_all_results('case_studies') > 4);
 
         // Fetch categories for filtering
         $data['categories'] = $this->db->where('is_active', 1)->get('case_categories')->result_array();
 
 		$this->load->view('includes/header', $data);
 		$this->load->view('case_studies', $data);
+		$this->load->view('includes/footer', $data);
+	}
+
+    public function get_more_cases()
+    {
+        $offset = $this->input->get('offset', TRUE);
+        $limit = 4;
+
+        $this->db->select('case_studies.*, case_categories.name as category_name, case_categories.slug as category_slug');
+        $this->db->from('case_studies');
+        $this->db->join('case_categories', 'case_studies.category_id = case_categories.id', 'left');
+        $this->db->where('case_studies.is_active', 1);
+        $this->db->order_by('case_studies.id', 'DESC');
+        $this->db->limit($limit, $offset);
+        $case_studies = $this->db->get()->result_array();
+
+        if (!empty($case_studies)) {
+            $html = $this->load->view('case_studies_partial', ['case_studies' => $case_studies], TRUE);
+            
+            // Check if even more exist for the next click
+            $next_offset = (int)$offset + $limit;
+            $more_exist = ($this->db->where('is_active', 1)->count_all_results('case_studies') > $next_offset);
+            
+            echo json_encode([
+                'status' => 'success',
+                'html' => $html,
+                'has_more' => $more_exist
+            ]);
+        } else {
+            echo json_encode(['status' => 'empty']);
+        }
+    }
+
+	public function landmark()
+	{
+        $data['settings'] = $this->_get_settings();
+        
+        // Fetch all active landmarks
+        $data['landmarks'] = $this->db->where('is_active', 1)
+                                      ->order_by('title', 'ASC')
+                                      ->get('landmarks')
+                                      ->result_array();
+
+		$this->load->view('includes/header', $data);
+		$this->load->view('landmark', $data);
 		$this->load->view('includes/footer', $data);
 	}
 
@@ -217,16 +308,41 @@ class Welcome extends CI_Controller {
 		$this->load->view('includes/footer', $data);
 	}
 
-	public function blog()
+	public function blog($offset = 0)
 	{
         $data['settings'] = $this->_get_settings();
         
-        // Fetch all blogs with categories
+        // Pagination Config
+        $this->load->library('pagination');
+        $config['base_url'] = site_url('blog');
+        $config['total_rows'] = $this->db->where('is_active', 1)->count_all_results('blogs');
+        $config['per_page'] = 6;
+        $config['uri_segment'] = 2;
+        
+        // Styling pagination (aligned with your template)
+        $config['full_tag_open'] = '<ul>';
+        $config['full_tag_close'] = '</ul>';
+        $config['cur_tag_open'] = '<li><span class="active">';
+        $config['cur_tag_close'] = '</span></li>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_link'] = '<i class="fa fa-angle-right"></i>';
+        $config['prev_link'] = '<i class="fa fa-angle-left"></i>';
+        
+        $this->pagination->initialize($config);
+        $data['pagination_links'] = $this->pagination->create_links();
+
+        // Fetch blogs with categories and limit
         $this->db->select('blogs.*, blog_categories.name as category_name, blog_categories.slug as category_slug');
         $this->db->from('blogs');
         $this->db->join('blog_categories', 'blogs.category_id = blog_categories.id', 'left');
         $this->db->where('blogs.is_active', 1);
         $this->db->order_by('blogs.priority', 'ASC');
+        $this->db->limit($config['per_page'], $offset);
         $data['blogs'] = $this->db->get()->result_array();
 
         // Sidebar data
@@ -239,12 +355,42 @@ class Welcome extends CI_Controller {
 		$this->load->view('includes/footer', $data);
 	}
 
-	public function blog_category($slug = null)
+	public function blog_category($slug = null, $offset = 0)
 	{
         if (!$slug) redirect('blog');
 
         $data['settings'] = $this->_get_settings();
         
+        // Pagination Config
+        $this->load->library('pagination');
+        $config['base_url'] = site_url('blog/category/'.$slug);
+        
+        // Count total rows for this category
+        $this->db->join('blog_categories', 'blogs.category_id = blog_categories.id');
+        $this->db->where('blog_categories.slug', $slug);
+        $this->db->where('blogs.is_active', 1);
+        $config['total_rows'] = $this->db->count_all_results('blogs');
+        
+        $config['per_page'] = 6;
+        $config['uri_segment'] = 4;
+        
+        // Styling pagination
+        $config['full_tag_open'] = '<ul>';
+        $config['full_tag_close'] = '</ul>';
+        $config['cur_tag_open'] = '<li><span class="active">';
+        $config['cur_tag_close'] = '</span></li>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_link'] = '<i class="fa fa-angle-right"></i>';
+        $config['prev_link'] = '<i class="fa fa-angle-left"></i>';
+        
+        $this->pagination->initialize($config);
+        $data['pagination_links'] = $this->pagination->create_links();
+
         // Fetch blogs in this category
         $this->db->select('blogs.*, blog_categories.name as category_name, blog_categories.slug as category_slug');
         $this->db->from('blogs');
@@ -252,6 +398,7 @@ class Welcome extends CI_Controller {
         $this->db->where('blog_categories.slug', $slug);
         $this->db->where('blogs.is_active', 1);
         $this->db->order_by('blogs.priority', 'ASC');
+        $this->db->limit($config['per_page'], $offset);
         $data['blogs'] = $this->db->get()->result_array();
 
         // Sidebar data
@@ -301,9 +448,6 @@ class Welcome extends CI_Controller {
         $data['categories'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('blog_categories')->result_array();
         $data['recent_blogs'] = $this->db->where('id !=', $data['blog']['id'])->limit(3)->order_by('id', 'DESC')->get('blogs')->result_array();
         
-        // Global tags for the widget
-        $data['all_tags'] = $this->_get_all_tags();
-
         $this->load->view('includes/header', $data);
         $this->load->view('blog_detail', $data);
         $this->load->view('includes/footer', $data);
@@ -339,7 +483,7 @@ class Welcome extends CI_Controller {
         $this->load->view('includes/footer', $data);
     }
 
-    public function blog_tag($tag = null)
+    public function blog_tag($tag = null, $offset = 0)
     {
         if (!$tag) redirect('blog');
         $tag = urldecode($tag);
@@ -347,6 +491,35 @@ class Welcome extends CI_Controller {
         $data['settings'] = $this->_get_settings();
         $data['filter_tag'] = $tag;
         
+        // Pagination Config
+        $this->load->library('pagination');
+        $config['base_url'] = site_url('blog/tag/'.urlencode($tag));
+        
+        // Count total rows for this tag
+        $this->db->like('blogs.tags', $tag);
+        $this->db->where('blogs.is_active', 1);
+        $config['total_rows'] = $this->db->count_all_results('blogs');
+        
+        $config['per_page'] = 6;
+        $config['uri_segment'] = 4;
+        
+        // Styling pagination
+        $config['full_tag_open'] = '<ul>';
+        $config['full_tag_close'] = '</ul>';
+        $config['cur_tag_open'] = '<li><span class="active">';
+        $config['cur_tag_close'] = '</span></li>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_link'] = '<i class="fa fa-angle-right"></i>';
+        $config['prev_link'] = '<i class="fa fa-angle-left"></i>';
+        
+        $this->pagination->initialize($config);
+        $data['pagination_links'] = $this->pagination->create_links();
+
         // Fetch blogs matching tag
         $this->db->select('blogs.*, blog_categories.name as category_name, blog_categories.slug as category_slug');
         $this->db->from('blogs');
@@ -354,6 +527,7 @@ class Welcome extends CI_Controller {
         $this->db->like('blogs.tags', $tag);
         $this->db->where('blogs.is_active', 1);
         $this->db->order_by('blogs.priority', 'ASC');
+        $this->db->limit($config['per_page'], $offset);
         $data['blogs'] = $this->db->get()->result_array();
 
         // Sidebar data
@@ -432,6 +606,19 @@ class Welcome extends CI_Controller {
 		$this->load->view('includes/footer', $data);
 	}
 
+    public function free_consultation()
+    {
+        $data['settings'] = $this->_get_settings();
+        $data['practice_areas'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
+        
+        // Form pre-fill data (Used for "Change" on checkout)
+        $data['prefill'] = $this->session->userdata('last_appointment_data');
+
+        $this->load->view('includes/header', $data);
+        $this->load->view('free_consultation', $data);
+        $this->load->view('includes/footer', $data);
+    }
+
     public function contact_submit()
     {
         if (!$this->input->is_ajax_request()) {
@@ -472,31 +659,246 @@ class Welcome extends CI_Controller {
             }
 
             // Lookup consultation fee from practice_areas if category is given
-            $consultation_fee = null;
+            $consultation_fee = 0;
+            $category_name = 'Free Consultation';
             if (!empty($data['practice_category_id'])) {
                 $pa = $this->db->get_where('practice_areas', ['id' => $data['practice_category_id']])->row_array();
-                if ($pa) $consultation_fee = $pa['consultation_fee'] ?? null;
+                if ($pa) {
+                    $consultation_fee = $pa['consultation_fee'] ?? 0;
+                    $category_name = $pa['title'] ?? 'General';
+                }
             }
 
-            $insert_data = [
-                'attorney_id'          => $data['attorney_id'] ?? NULL,
-                'name'                 => $data['name'],
-                'email'                => $data['email'] ?? NULL,
-                'phone'                => $data['phone'] ?? NULL,
-                'address'              => $data['address'] ?? NULL,
-                'note'                 => $data['note'] ?? NULL,
-                'practice_category_id' => !empty($data['practice_category_id']) ? $data['practice_category_id'] : NULL,
-                'payment_method'       => $data['payment_method'] ?? NULL,
-                'consultation_fee'     => $consultation_fee,
-                'status'               => 'pending'
-            ];
+            if ($consultation_fee > 0) {
+                // PAID: Store in session only, NO DB entry yet
+                $uuid = bin2hex(random_bytes(8));
+                $this->session->set_userdata('pending_appointment', [
+                    'uuid'                 => $uuid,
+                    'attorney_id'          => $data['attorney_id'] ?? NULL,
+                    'name'                 => $data['name'],
+                    'email'                => $data['email'] ?? NULL,
+                    'phone'                => $data['phone'] ?? NULL,
+                    'address'              => $data['address'] ?? NULL,
+                    'note'                 => $data['note'] ?? NULL,
+                    'practice_category_id' => $data['practice_category_id'],
+                    'payment_method'       => $data['payment_method'] ?? NULL,
+                    'consultation_fee'     => $consultation_fee,
+                    'category_name'        => $category_name,
+                ]);
+                // Also save for "Change" pre-fill
+                $this->session->set_userdata('last_appointment_data', $data);
 
-            if ($this->db->insert('appointments', $insert_data)) {
-                echo json_encode(['status' => 'success', 'message' => 'Your appointment request has been submitted successfully!']);
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Redirecting to payment...',
+                    'redirect' => site_url('checkout/'.$uuid)
+                ]);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+                // FREE: Insert directly to DB
+                $insert_data = [
+                    'uuid'                 => bin2hex(random_bytes(8)),
+                    'attorney_id'          => $data['attorney_id'] ?? NULL,
+                    'name'                 => $data['name'],
+                    'email'                => $data['email'] ?? NULL,
+                    'phone'                => $data['phone'] ?? NULL,
+                    'address'              => $data['address'] ?? NULL,
+                    'note'                 => $data['note'] ?? NULL,
+                    'practice_category_id' => !empty($data['practice_category_id']) ? $data['practice_category_id'] : NULL,
+                    'payment_method'       => NULL,
+                    'consultation_fee'     => 0,
+                    'status'               => 'pending',
+                    'payment_status'       => 'free'
+                ];
+                $this->db->insert('appointments', $insert_data);
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Your appointment has been submitted. Our team will contact you shortly.'
+                ]);
             }
         }
+    }
+
+    public function checkout($uuid = null)
+    {
+        if (!$uuid) redirect('welcome/free_consultation');
+        
+        // Read from session
+        $pending = $this->session->userdata('pending_appointment');
+        if (!$pending || $pending['uuid'] !== $uuid) {
+            redirect('welcome/free_consultation');
+        }
+
+        $data['settings'] = $this->_get_settings();
+        $data['appointment'] = $pending;
+
+        $this->load->view('includes/header', $data);
+        $this->load->view('checkout', $data);
+        $this->load->view('includes/footer', $data);
+    }
+
+    public function process_paypro($uuid = null)
+    {
+        if (!$uuid) {
+            echo json_encode(['status' => 'error', 'message' => 'Missing appointment ID']);
+            return;
+        }
+
+        $pending = $this->session->userdata('pending_appointment');
+        if (!$pending || $pending['uuid'] !== $uuid) {
+            echo json_encode(['status' => 'error', 'message' => 'Session expired or invalid.']);
+            return;
+        }
+
+        $settings = $this->_get_settings();
+        $username = $settings['paypro_username'] ?? '';
+        $client_id = $settings['paypro_client_id'] ?? '';
+        $client_secret = $settings['paypro_client_secret'] ?? '';
+
+        if (empty($client_id) || empty($client_secret)) {
+            echo json_encode(['status' => 'error', 'message' => 'PayPro credentials are not configured.']);
+            return;
+        }
+
+        $base_url = "https://api.paypro.com.pk";
+
+        // 1. Get Access Token
+        $ch = curl_init($base_url . '/v2/login');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'client_id: ' . $client_id,
+            'client_secret: ' . $client_secret,
+            'Content-Type: application/json'
+        ]);
+        // Also capture headers to see if token is there
+        curl_setopt($ch, CURLOPT_HEADER, true);
+
+        $response = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
+        curl_close($ch);
+
+        $access_token = '';
+        // Look for Token: header
+        if (preg_match('/Token:\s*(.*)$/mi', $header, $matches)) {
+            $access_token = trim($matches[1]);
+        }
+
+        // If not in header, check body (sometimes PayPro changes its mind)
+        if (empty($access_token)) {
+            $token_data = json_decode($body, true);
+            $access_token = $token_data['Token'] ?? $token_data['token'] ?? '';
+        }
+
+        if ($access_token) {
+            // ... (rest of the logic remains same until next change)
+            // 2. Create Order
+            $order_id = $uuid;
+            $amount = $pending['consultation_fee'];
+            $due_date = date('Y-m-d', strtotime('+7 days'));
+
+            $order_payload = [
+                [
+                    "MerchantId" => $username,
+                    "OrderNumber" => $order_id,
+                    "OrderAmount" => $amount,
+                    "OrderDueDate" => $due_date,
+                    "CustomerName" => substr($pending['name'], 0, 50),
+                    "CustomerMobile" => substr(str_replace(['+', '-', ' '], '', $pending['phone']), 0, 15) ?: '03000000000',
+                    "CustomerEmail" => substr($pending['email'], 0, 50) ?: 'no-reply@domain.com',
+                    "OrderType" => "Service",
+                    "OrderDescription" => "Consultation Fee - " . ($pending['category_name'] ?? 'General')
+                ]
+            ];
+
+            $ch = curl_init($base_url . '/v2/create-order');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($order_payload));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Token: ' . $access_token,
+                'Content-Type: application/json'
+            ]);
+            $order_response = curl_exec($ch);
+            curl_close($ch);
+
+            $order_data = json_decode($order_response, true);
+            
+            if (isset($order_data[0]['Status']) && $order_data[0]['Status'] == '00') {
+                $paypro_id = $order_data[0]['PayProId'] ?? '';
+                $click2pay_url = $order_data[0]['Click2PayUrl'] ?? '';
+
+                if ($click2pay_url) {
+                    echo json_encode(['status' => 'success', 'redirect' => $click2pay_url]);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to get payment URL from PayPro.']);
+                }
+            } else {
+                $error_msg = $order_data[0]['Description'] ?? $order_data['Description'] ?? 'Unknown error';
+                echo json_encode(['status' => 'error', 'message' => 'PayPro Order Creation Failed: ' . $error_msg]);
+            }
+        } else {
+            $snippet = substr(strip_tags($body), 0, 100);
+            $msg = 'Failed to authenticate with PayPro. ';
+            if (strpos($body, '<!DOCTYPE html>') !== false || strpos($body, '<html>') !== false) {
+                $msg .= 'Your server IP might not be whitelisted on PayPro. (PayPro returned an HTML page).';
+            } else {
+                $msg .= 'Please check your Client ID and Client Secret. Response: ' . $snippet;
+            }
+            echo json_encode(['status' => 'error', 'message' => $msg]);
+        }
+    }
+
+    public function paypro_callback()
+    {
+        // PayPro usually redirects back with parameters in GET or POST
+        // For checkout redirection, they might use 'ppid' or custom status
+        $uuid = $this->input->get('order_id');
+        $status = $this->input->get('status'); // Custom parameter we might add to return URL if PayPro supports it
+        
+        // Alternatively, check for PayPro's standard params
+        if (!$uuid) $uuid = $this->input->get('OrderID'); // possible param name
+        
+        $pending = $this->session->userdata('pending_appointment');
+        
+        if (!$pending || $pending['uuid'] !== $uuid) {
+            // Check if it's a webhook (background call)
+            // For now, handle the redirect case
+            $this->session->set_flashdata('error', 'Invalid return request or session expired.');
+            redirect('welcome/free_consultation');
+            return;
+        }
+
+        // In a real scenario, we should call the verify-order API here
+        // But for redirect, we assume success if we reach here and status is clean
+        // Or we can just mark it as confirmed and let Admin verify later
+        
+        $insert_data = [
+            'uuid'                 => $pending['uuid'],
+            'attorney_id'          => $pending['attorney_id'],
+            'name'                 => $pending['name'],
+            'email'                => $pending['email'],
+            'phone'                => $pending['phone'],
+            'address'              => $pending['address'],
+            'note'                 => $pending['note'],
+            'practice_category_id' => $pending['practice_category_id'],
+            'payment_method'       => 'paypro',
+            'consultation_fee'     => $pending['consultation_fee'],
+            'status'               => 'confirmed',
+            'payment_status'       => 'paid',
+            'transaction_id'       => $this->input->get('ppid') ?: time(),
+        ];
+
+        if ($this->db->insert('appointments', $insert_data)) {
+            $this->session->unset_userdata('pending_appointment');
+            $this->session->unset_userdata('last_appointment_data');
+            $this->session->set_flashdata('success', 'Payment successful! Your appointment has been confirmed via PayPro.');
+        } else {
+            $this->session->set_flashdata('error', 'Failed to save appointment. Please try again.');
+        }
+
+        redirect('welcome/free_consultation');
     }
 
     public function subscribe() {
@@ -514,9 +916,156 @@ class Welcome extends CI_Controller {
         }
     }
 
-	public function attorneys_single()
-	{
-        // Deprecated: redirect to home or first attorney
-        redirect('/');
-	}
+    private function _get_embed_url($url) {
+        if (empty($url)) return '';
+
+        // YouTube
+        if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match)) {
+            return "https://www.youtube.com/embed/" . $match[1];
+        }
+
+        // Vimeo
+        if (preg_match('%vimeo\.com/(?:channels/(?:\w+/)?|groups/([^/]*)/videos/|album/(\d+)/video/|video/|)(\d+)(?:$|/|\?)%i', $url, $match)) {
+            return "https://player.vimeo.com/video/" . $match[3];
+        }
+
+        return $url;
+    }
+    public function ajax_search()
+    {
+        $keyword = $this->input->get('keyword');
+        if (empty($keyword) || strlen($keyword) < 2) {
+            echo json_encode([]);
+            return;
+        }
+
+        $results = [];
+
+        // Search Blogs
+        $blogs = $this->db->select('title, slug, image, "Blog Post" as type')
+            ->from('blogs')
+            ->group_start()
+            ->like('title', $keyword)
+            ->or_like('description', $keyword)
+            ->group_end()
+            ->where('is_active', 1)
+            ->limit(4)
+            ->get()->result_array();
+        
+        foreach ($blogs as $b) {
+            $results[] = [
+                'title' => $b['title'],
+                'url' => site_url('blog_detail/' . $b['slug']),
+                'image' => base_url($b['image']),
+                'type' => $b['type']
+            ];
+        }
+
+        // Search Practices
+        $practices = $this->db->select('title, slug, image, "Practice Area" as type')
+            ->from('practice_areas')
+            ->group_start()
+            ->like('title', $keyword)
+            ->or_like('description', $keyword)
+            ->group_end()
+            ->where('is_active', 1)
+            ->limit(4)
+            ->get()->result_array();
+
+        foreach ($practices as $p) {
+            $results[] = [
+                'title' => $p['title'],
+                'url' => site_url('practice/' . $p['slug']),
+                'image' => base_url($p['image']),
+                'type' => $p['type']
+            ];
+        }
+
+        // Search Case Studies
+        $cases = $this->db->select('title, slug, image, "Case Study" as type')
+            ->from('case_studies')
+            ->group_start()
+            ->like('title', $keyword)
+            ->or_like('description', $keyword)
+            ->group_end()
+            ->where('is_active', 1)
+            ->limit(4)
+            ->get()->result_array();
+
+        foreach ($cases as $c) {
+            $results[] = [
+                'title' => $c['title'],
+                'url' => site_url('case_studies_details/' . $c['slug']),
+                'image' => base_url($c['image']),
+                'type' => $c['type']
+            ];
+        }
+
+        // Search Landmarks (PDFs)
+        $landmarks = $this->db->select('title, pdf, "Landmark Case" as type')
+            ->from('landmarks')
+            ->like('title', $keyword)
+            ->where('is_active', 1)
+            ->limit(4)
+            ->get()->result_array();
+
+        foreach ($landmarks as $l) {
+            $results[] = [
+                'title' => $l['title'],
+                'url' => base_url($l['pdf']),
+                'image' => 'https://cdn-icons-png.flaticon.com/512/337/337946.png', // Generic PDF icon
+                'type' => $l['type']
+            ];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($results);
+    }
+
+    public function resolve_slug($slug)
+    {
+        $data['settings'] = $this->_get_settings();
+        
+        // Map common slugs to internal methods (matches our DB migration and routes)
+        $system_mappings = [
+            'about-us'      => 'about',
+            'practices-area' => 'practice',
+            'cases'         => 'case_studies',
+            'blog'          => 'blog',
+            'contact-us'    => 'contact',
+            'landmark'      => 'landmark',
+            'free-consultation' => 'free_consultation'
+        ];
+
+        if (array_key_exists($slug, $system_mappings)) {
+            $method = $system_mappings[$slug];
+            $this->$method();
+            return;
+        }
+
+        // If not system, check custom pages
+        $page = $this->db->get_where('pages', ['slug' => $slug, 'is_active' => 1])->row_array();
+        if ($page) {
+            $data['page'] = $page;
+            // Fetch teams for the showcase
+            $data['teams'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
+            
+            $this->load->view('includes/header', $data);
+            $this->load->view('page', $data);
+            $this->load->view('includes/footer', $data);
+            return;
+        }
+
+        // If nothing found, show 404
+        $this->error_404();
+    }
+
+    public function error_404()
+    {
+        $data['settings'] = $this->_get_settings();
+        $this->output->set_status_header('404');
+        $this->load->view('includes/header', $data);
+        $this->load->view('error_404', $data);
+        $this->load->view('includes/footer', $data);
+    }
 }

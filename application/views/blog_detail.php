@@ -22,23 +22,38 @@
                     <div class="blog-left-bar">
                         <div class="blog-item">
                             <div class="blog-img">
-                                <div class="blog-s2 <?= ($blog['video_url'] ? 'video-holder' : '') ?>">
+                                <div class="blog-s2">
                                     <img src="<?= base_url($blog['image']) ?>" alt="<?= $blog['title'] ?>">
-                                    <?php if($blog['video_url']): ?>
-                                        <a href="<?= $blog['video_url'] ?>" class="video-btn" data-type="iframe" target="_blank">
-                                            <i class="fa fa-play" aria-hidden="true"></i>
-                                        </a>
-                                    <?php endif; ?>
                                 </div>
                                 <ul class="post-meta">
                                     <li><img src="https://ui-avatars.com/api/?name=<?= urlencode($blog['author']) ?>&background=bc9355&color=fff" alt="" style="border-radius: 50%; width: 40px;"></li>
-                                    <li><a href="#">By <?= $blog['author'] ?></a></li>
+                                    <li><a href="">By <?= $blog['author'] ?></a></li>
                                     <li class="clr"><?= $blog['category_name'] ?></li>
                                     <li> <?= date('M d, Y', strtotime($blog['date_published'])) ?></li>
                                 </ul>
                             </div>
                             <div class="blog-content-2">
                                 <h2><?= $blog['title'] ?></h2>
+
+                                <?php if(!empty($blog['video_url'])): ?>
+                                    <div class="video-embed-container mt-4 mb-4" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                        <?php 
+                                            // Simple embed logic directly in view as fallback or if helper not used
+                                            $vid_url = $blog['video_url'];
+                                            if (strpos($vid_url, 'youtube.com') !== false || strpos($vid_url, 'youtu.be') !== false) {
+                                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $vid_url, $match);
+                                                $embed_url = "https://www.youtube.com/embed/" . $match[1];
+                                            } elseif (strpos($vid_url, 'vimeo.com') !== false) {
+                                                preg_match('%vimeo\.com/(?:channels/(?:\w+/)?|groups/([^/]*)/videos/|album/(\d+)/video/|video/|)(\d+)(?:$|/|\?)%i', $vid_url, $match);
+                                                $embed_url = "https://player.vimeo.com/video/" . $match[3];
+                                            } else {
+                                                $embed_url = $vid_url;
+                                            }
+                                        ?>
+                                        <iframe src="<?= $embed_url ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="blog-description">
                                     <?= $blog['description'] ?>
                                 </div>
@@ -52,14 +67,7 @@
                         <?php endif; ?>
 
                         <div class="tag-share">
-                            <div class="tag">
-                                <ul>
-                                    <?php if($blog['tags']): $tags = explode(',', $blog['tags']); foreach($tags as $t): ?>
-                                        <li><a href="<?= site_url('blog/tag/'.urlencode(trim($t))) ?>"><?= trim($t) ?></a></li>
-                                    <?php endforeach; endif; ?>
-                                </ul>
-                            </div>
-                            <div class="share">
+                            <div class="share" style="width: 100%; text-align: right;">
                                 <ul>
                                     <?php 
                                     $current_url = current_url();
@@ -68,6 +76,8 @@
                                     <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?= $current_url ?>" target="_blank"><i class="fa fa-facebook"></i></a></li>
                                     <li><a href="https://twitter.com/intent/tweet?text=<?= $share_title ?>&url=<?= $current_url ?>" target="_blank"><i class="fa fa-twitter"></i></a></li>
                                     <li><a href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $current_url ?>&title=<?= $share_title ?>" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+                                    <li><a href="https://api.whatsapp.com/send?text=<?= $share_title . ' ' . $current_url ?>" target="_blank"><i class="fa fa-whatsapp"></i></a></li>
+                                    <li><a href="javascript:void(0)" onclick="copyToClipboard('<?= $current_url ?>', this)" title="Copy Link"><i class="fa fa-link"></i></a></li>
                                     <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print" aria-hidden="true"></i></a></li>
                                 </ul>
                             </div>
@@ -292,18 +302,7 @@
                                     </div>
                                 </div>
                              </div>
-                             <div class="col-lg-12 col-md-6 col-12 col-g">
-                                <div class="widget tag-widget">
-                                    <h3>Tags</h3>
-                                    <ul>
-                                        <?php if(!empty($all_tags)): foreach(array_slice($all_tags, 0, 15) as $tag): ?>
-                                            <li><a href="<?= site_url('blog/tag/'.urlencode($tag)) ?>"><?= $tag ?></a></li>
-                                        <?php endforeach; else: ?>
-                                            <li>No tags found</li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </div>
-                             </div>
+                             
                              <div class="col-lg-12 col-md-6 col-12">
                                 <div class="widget instagram">
                                     <h3>Instagram Feed</h3>

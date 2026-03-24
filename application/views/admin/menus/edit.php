@@ -22,11 +22,6 @@
                             <input type="text" name="title" class="form-control" value="<?= $menu['title'] ?>" required>
                         </div>
                         <div class="form-group">
-                            <label>Link</label>
-                            <input type="text" name="link" class="form-control" value="<?= $menu['link'] ?>">
-                            <small class="text-muted">Use relative paths (e.g. contact) or absolute URLs.</small>
-                        </div>
-                        <div class="form-group">
                             <label>Priority</label>
                             <input type="number" name="priority" class="form-control" value="<?= $menu['priority'] ?>">
                         </div>
