@@ -1,6 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/leatherp/public_html/
+    - export DEPLOYPATH=/home/leatherp/legaleaglelaws
     - /bin/cp -R * $DEPLOYPATH
 
