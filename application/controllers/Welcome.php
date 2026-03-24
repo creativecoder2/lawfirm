@@ -765,10 +765,12 @@ class Welcome extends CI_Controller {
         $ch = curl_init($base_url . '/v2/login');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "");
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'client_id: ' . $client_id,
             'client_secret: ' . $client_secret,
-            'Content-Type: application/json'
+            'Content-Type: application/json',
+            'Content-Length: 0'
         ]);
         // Also capture headers to see if token is there
         curl_setopt($ch, CURLOPT_HEADER, true);

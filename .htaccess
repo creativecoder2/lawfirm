@@ -2,10 +2,10 @@
     RewriteEngine On
     RewriteBase /
 
-    # Force HTTPS (Proxy aware) - DISABLED FOR DIAGNOSIS
-    # RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    # RewriteCond %{HTTPS} off
-    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # Force HTTPS (Proxy aware)
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 
     # Remove index.php from URL
