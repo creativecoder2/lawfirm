@@ -2,7 +2,8 @@
     RewriteEngine On
     RewriteBase /
 
-    # Force HTTPS
+    # Force HTTPS (Proxy aware)
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
@@ -19,4 +20,5 @@
 
     ErrorDocument 404 /index.php
 </IfModule>
+
 
