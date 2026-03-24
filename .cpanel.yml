@@ -1,5 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/babalqar/public_html/
+    - export DEPLOYPATH=/home/leatherp/public_html/
     - /bin/cp -R * $DEPLOYPATH
+
