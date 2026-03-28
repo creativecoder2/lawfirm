@@ -760,13 +760,13 @@ class Welcome extends CI_Controller {
         }
 
         $is_demo = false; // SET TO FALSE FOR PRODUCTION
-        $base_url = $is_demo ? "https://demoapi.paypro.com.pk" : "https://v2.paypro.com.pk";
+        $base_host = $is_demo ? "https://demoapi.paypro.com.pk/v2" : "https://api.paypro.com.pk/v2";
 
         // 1. Get Access Token (API V2.1)
-        $auth_url = $is_demo ? $base_url . "/v2/ppro/auth" : $base_url . "/ppro/auth";
+        $auth_url = $base_host . "/ppro/auth";
         $auth_payload = json_encode([
-            'clientid' => $client_id,
-            'clientsecret' => $client_secret
+            'ClientID' => $client_id,
+            'ClientSecret' => $client_secret
         ]);
 
         $ch = curl_init($auth_url);
@@ -816,7 +816,7 @@ class Welcome extends CI_Controller {
                 ]
             ];
 
-            $create_url = $is_demo ? $base_url . "/v2/ppro/co" : $base_url . "/ppro/co";
+            $create_url = $base_host . "/ppro/co";
             $ch = curl_init($create_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
