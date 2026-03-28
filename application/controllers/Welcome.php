@@ -759,7 +759,7 @@ class Welcome extends CI_Controller {
             return;
         }
 
-        $is_demo = true; // Set to false for production
+        $is_demo = false; // SET TO FALSE FOR PRODUCTION
         $base_url = $is_demo ? "https://demoapi.paypro.com.pk" : "https://v2.paypro.com.pk";
 
         // 1. Get Access Token (API V2.1)
@@ -840,7 +840,11 @@ class Welcome extends CI_Controller {
                     echo json_encode(['status' => 'error', 'message' => 'Failed to get payment URL from PayPro.']);
                 }
             } else {
+                // Better error logging
                 $error_msg = $order_data[0]['Description'] ?? $order_data['Description'] ?? 'Unknown error';
+                if ($error_msg == 'Unknown error') {
+                    $error_msg .= ' Raw Response: ' . substr(strip_tags($order_response), 0, 200);
+                }
                 echo json_encode(['status' => 'error', 'message' => 'PayPro Order Creation Failed: ' . $error_msg]);
             }
         } else {
