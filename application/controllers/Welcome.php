@@ -759,14 +759,19 @@ class Welcome extends CI_Controller {
             return;
         }
 
-        $is_demo = false; // SET TO FALSE FOR PRODUCTION
+        $is_demo = true; // User provided credentials with 'Demo' in password, switching to true
         $base_host = $is_demo ? "https://demoapi.paypro.com.pk/v2" : "https://api.paypro.com.pk/v2";
+
+        // Hardcoded credentials as requested by user
+        $username = "LE_Law_Firm";
+        $client_id = "WkBTyYw6PSusC4l";
+        $client_secret = "AeoKOCQAQsKGox1";
 
         // 1. Get Access Token (API V2.1)
         $auth_url = $base_host . "/ppro/auth";
         $auth_payload = json_encode([
-            'clientid' => $client_id,
-            'clientsecret' => $client_secret
+            'ClientID' => $client_id,
+            'ClientSecret' => $client_secret
         ]);
 
         $ch = curl_init($auth_url);
