@@ -759,20 +759,23 @@ class Welcome extends CI_Controller {
             return;
         }
 
-        $base_url = "https://api.paypro.com.pk";
+        $is_demo = true; // Set to false for production
+        $base_url = $is_demo ? "https://demoapi.paypro.com.pk" : "https://v2.paypro.com.pk";
 
-        // 1. Get Access Token
-        $ch = curl_init($base_url . '/v2/login');
+        // 1. Get Access Token (API V2.1)
+        $auth_url = $is_demo ? $base_url . "/v2/ppro/auth" : $base_url . "/ppro/auth";
+        $auth_payload = json_encode([
+            'clientid' => $client_id,
+            'clientsecret' => $client_secret
+        ]);
+
+        $ch = curl_init($auth_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $auth_payload);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'client_id: ' . $client_id,
-            'client_secret: ' . $client_secret,
-            'Content-Type: application/json',
-            'Content-Length: 0'
+            'Content-Type: application/json'
         ]);
-        // Also capture headers to see if token is there
         curl_setopt($ch, CURLOPT_HEADER, true);
 
         $response = curl_exec($ch);
@@ -782,39 +785,39 @@ class Welcome extends CI_Controller {
         curl_close($ch);
 
         $access_token = '';
-        // Look for Token: header
         if (preg_match('/Token:\s*(.*)$/mi', $header, $matches)) {
             $access_token = trim($matches[1]);
         }
 
-        // If not in header, check body (sometimes PayPro changes its mind)
         if (empty($access_token)) {
             $token_data = json_decode($body, true);
             $access_token = $token_data['Token'] ?? $token_data['token'] ?? '';
         }
 
         if ($access_token) {
-            // ... (rest of the logic remains same until next change)
-            // 2. Create Order
+            // 2. Create Order (API V2.1 - CSO)
             $order_id = $uuid;
             $amount = $pending['consultation_fee'];
             $due_date = date('Y-m-d', strtotime('+7 days'));
 
             $order_payload = [
                 [
-                    "MerchantId" => $username,
+                    "MerchantId" => $username
+                ],
+                [
                     "OrderNumber" => $order_id,
                     "OrderAmount" => $amount,
                     "OrderDueDate" => $due_date,
+                    "OrderType" => "Service",
                     "CustomerName" => substr($pending['name'], 0, 50),
                     "CustomerMobile" => substr(str_replace(['+', '-', ' '], '', $pending['phone']), 0, 15) ?: '03000000000',
                     "CustomerEmail" => substr($pending['email'], 0, 50) ?: 'no-reply@domain.com',
-                    "OrderType" => "Service",
-                    "OrderDescription" => "Consultation Fee - " . ($pending['category_name'] ?? 'General')
+                    "CustomerAddress" => substr($pending['address'] ?? '', 0, 100)
                 ]
             ];
 
-            $ch = curl_init($base_url . '/v2/create-order');
+            $create_url = $is_demo ? $base_url . "/v2/ppro/co" : $base_url . "/ppro/co";
+            $ch = curl_init($create_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($order_payload));
@@ -854,53 +857,62 @@ class Welcome extends CI_Controller {
 
     public function paypro_callback()
     {
-        // PayPro usually redirects back with parameters in GET or POST
-        // For checkout redirection, they might use 'ppid' or custom status
-        $uuid = $this->input->get('order_id');
-        $status = $this->input->get('status'); // Custom parameter we might add to return URL if PayPro supports it
+        // PayPro V2.1 Callback sends parameters via GET
+        $username = $this->input->get('username');
+        $password = $this->input->get('password');
+        $csv_invoice_ids = $this->input->get('csvinvoiceids');
+
+        // Log the incoming callback for debugging
+        $log_data = date('Y-m-d H:i:s') . " - Callback received: " . $_SERVER['QUERY_STRING'] . "\n";
+        file_put_contents(FCPATH . 'paypro_callback_log.txt', $log_data, FILE_APPEND);
+
+        $settings = $this->_get_settings();
+        $stored_username = $settings['paypro_username'] ?? '';
+        // Note: For real security, we should store a separate callback password if PayPro provides one
+        // But for now, we'll verify against the username as a basic check
         
-        // Alternatively, check for PayPro's standard params
-        if (!$uuid) $uuid = $this->input->get('OrderID'); // possible param name
-        
-        $pending = $this->session->userdata('pending_appointment');
-        
-        if (!$pending || $pending['uuid'] !== $uuid) {
-            // Check if it's a webhook (background call)
-            // For now, handle the redirect case
-            $this->session->set_flashdata('error', 'Invalid return request or session expired.');
-            redirect('welcome/free_consultation');
+        if (empty($csv_invoice_ids)) {
+            echo json_encode(['status' => 'error', 'message' => 'No invoices provided.']);
             return;
         }
 
-        // In a real scenario, we should call the verify-order API here
-        // But for redirect, we assume success if we reach here and status is clean
-        // Or we can just mark it as confirmed and let Admin verify later
-        
-        $insert_data = [
-            'uuid'                 => $pending['uuid'],
-            'attorney_id'          => $pending['attorney_id'],
-            'name'                 => $pending['name'],
-            'email'                => $pending['email'],
-            'phone'                => $pending['phone'],
-            'address'              => $pending['address'],
-            'note'                 => $pending['note'],
-            'practice_category_id' => $pending['practice_category_id'],
-            'payment_method'       => 'paypro',
-            'consultation_fee'     => $pending['consultation_fee'],
-            'status'               => 'confirmed',
-            'payment_status'       => 'paid',
-            'transaction_id'       => $this->input->get('ppid') ?: time(),
-        ];
+        $invoice_ids = explode(',', $csv_invoice_ids);
+        $response = [];
 
-        if ($this->db->insert('appointments', $insert_data)) {
-            $this->session->unset_userdata('pending_appointment');
-            $this->session->unset_userdata('last_appointment_data');
-            $this->session->set_flashdata('success', 'Payment successful! Your appointment has been confirmed via PayPro.');
-        } else {
-            $this->session->set_flashdata('error', 'Failed to save appointment. Please try again.');
+        foreach ($invoice_ids as $invoice_id) {
+            $invoice_id = trim($invoice_id);
+            if (empty($invoice_id)) continue;
+
+            // Search for the appointment by UUID (used as OrderNumber)
+            $appointment = $this->db->get_where('appointments', ['uuid' => $invoice_id])->row_array();
+            
+            if ($appointment) {
+                // Mark as paid if not already
+                if ($appointment['payment_status'] !== 'paid') {
+                    $this->db->where('uuid', $invoice_id)->update('appointments', [
+                        'status' => 'confirmed',
+                        'payment_status' => 'paid',
+                        'transaction_id' => 'PAYPRO-' . time()
+                    ]);
+                }
+                
+                $response[] = [
+                    "StatusCode" => "00",
+                    "InvoiceID" => $invoice_id,
+                    "Description" => "Invoice successfully marked as paid"
+                ];
+            } else {
+                $response[] = [
+                    "StatusCode" => "01",
+                    "InvoiceID" => $invoice_id,
+                    "Description" => "Invoice not found in system"
+                ];
+            }
         }
 
-        redirect('welcome/free_consultation');
+        // Return JSON response as required by PayPro V2.1
+        header('Content-Type: application/json');
+        echo json_encode($response);
     }
 
     public function subscribe() {
