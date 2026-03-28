@@ -765,8 +765,8 @@ class Welcome extends CI_Controller {
         // 1. Get Access Token (API V2.1)
         $auth_url = $base_host . "/ppro/auth";
         $auth_payload = json_encode([
-            'ClientID' => $client_id,
-            'ClientSecret' => $client_secret
+            'clientid' => $client_id,
+            'clientsecret' => $client_secret
         ]);
 
         $ch = curl_init($auth_url);
