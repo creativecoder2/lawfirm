@@ -157,9 +157,11 @@
 
     .video-overlay-bottom p {
         margin: 0;
-        font-size: 0.95rem;
-        opacity: 0.9;
+        font-size: 1rem;
+        color: #fff;
+        opacity: 1;
         line-height: 1.4;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
     }
 
     /* Play/Pause Indicator */
