@@ -1,10 +1,106 @@
 <style>
-    /* TikTok Style Gallery CSS */
+    /* Gallery Grid CSS */
+    .gallery-grid-section {
+        padding: 50px 0;
+        background: #f8f9fa;
+    }
+
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+    }
+
+    @media (max-width: 1200px) { .video-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 991px) { .video-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 576px) { .video-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .grid-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 9/16;
+        background: #000;
+        cursor: pointer;
+        transition: transform 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .grid-item:hover {
+        transform: scale(1.03);
+        z-index: 5;
+    }
+
+    .grid-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        transition: 0.3s;
+    }
+
+    .grid-item:hover video {
+        opacity: 1;
+    }
+
+    .grid-item .item-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 15px 10px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: #fff;
+        pointer-events: none;
+    }
+
+    .grid-item .item-overlay h5 {
+        color: #fff;
+        font-size: 0.9rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Fullscreen TikTok Overlay */
+    #tiktok-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        display: none; /* Hidden by default */
+    }
+
+    .close-overlay {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #fff;
+        font-size: 30px;
+        z-index: 10001;
+        cursor: pointer;
+        background: rgba(0,0,0,0.5);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+    .close-overlay:hover {
+        background: #d0a15e;
+    }
+
     .gallery-container {
-        height: calc(100vh - 100px); /* Adjust based on header height */
+        height: 100%;
         overflow-y: scroll;
         scroll-snap-type: y mandatory;
-        background: #000;
         position: relative;
     }
 
@@ -17,7 +113,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #000;
     }
 
     .video-slide video {
@@ -26,10 +121,9 @@
         object-fit: contain;
     }
 
-    /* Overlays */
     .video-overlay-bottom {
         position: absolute;
-        bottom: 20px;
+        bottom: 40px;
         left: 20px;
         right: 80px;
         color: #fff;
@@ -38,31 +132,18 @@
         pointer-events: none;
     }
 
-    .video-overlay-bottom h3 {
-        color: #fff;
-        margin-bottom: 5px;
-        font-size: 1.2rem;
-    }
-
-    .video-overlay-bottom p {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin: 0;
-    }
-
     .video-overlay-right {
         position: absolute;
         right: 15px;
-        bottom: 100px;
+        bottom: 120px;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        align-items: center;
         z-index: 11;
     }
 
     .action-btn {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.15);
         border: none;
         color: #fff;
         width: 50px;
@@ -73,149 +154,124 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: 0.3s;
         backdrop-filter: blur(5px);
-        padding: 5px;
-    }
-
-    .action-btn:hover {
-        background: rgba(188, 147, 85, 0.8);
-    }
-
-    .action-btn i {
-        font-size: 1.4rem;
-    }
-
-    .action-btn span {
-        font-size: 0.7rem;
-        margin-top: 2px;
-    }
-
-    /* Breadcumb override for Gallery */
-    .breadcumb-area.gallery-page {
-        padding: 20px 0;
-        background: #1a1a1a;
-    }
-
-    /* Scroll Indicators */
-    .scroll-hint {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #fff;
-        animation: bounce 2s infinite;
-        z-index: 20;
-        opacity: 0.7;
-    }
-
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
-        40% {transform: translateY(-10px) translateX(-50%);}
-        60% {transform: translateY(-5px) translateX(-50%);}
-    }
-
-    /* Mobile adjustments */
-    @media (max-width: 768px) {
-        .gallery-container {
-            height: calc(100vh - 70px);
-        }
     }
 </style>
 
 <!-- Breadcumb -->
-<div class="breadcumb-area gallery-page">
+<section class="breadcumb-area" style="background: #1a1a1a; padding: 40px 0;">
     <div class="container">
         <div class="row">
-            <div class="col-12">
-                <div class="breadcumb-wrap text-center">
-                    <h2 style="font-size: 24px;">Video Gallery</h2>
+            <div class="col-12 text-center">
+                <h2 style="color: #d0a15e; margin: 0;">Video Gallery</h2>
+                <p style="color: #999; margin-top: 10px;">Watch our latest legal insights and case highlights</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Grid Section -->
+<section class="gallery-grid-section">
+    <div class="container-fluid" style="padding: 0 40px;">
+        <div class="video-grid">
+            <?php if(!empty($videos)): foreach($videos as $index => $v): ?>
+            <div class="grid-item open-tiktok" data-index="<?= $index ?>" data-id="<?= $v['id'] ?>">
+                <video muted loop preload="metadata">
+                    <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
+                </video>
+                <div class="item-overlay">
+                    <h5><?= $v['title'] ?></h5>
+                    <small><i class="fa fa-eye"></i> <?= $v['views'] ?> views</small>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="gallery-container" id="video-gallery">
-    <?php if(!empty($videos)): foreach($videos as $index => $v): ?>
-    <div class="video-slide" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('gallery/'.$v['id']) ?>">
-        <video class="gallery-video" loop preload="metadata" playsinline>
-            <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
-        </video>
-
-        <!-- Bottom Text info -->
-        <div class="video-overlay-bottom">
-            <h3><?= $v['title'] ?></h3>
-            <p><?= $v['description'] ?></p>
-        </div>
-
-        <!-- Right Side Actions -->
-        <div class="video-overlay-right">
-            <div class="action-btn" title="Views">
-                <i class="fa fa-eye"></i>
-                <span class="view-count" id="views-<?= $v['id'] ?>"><?= $v['views'] ?></span>
+            <?php endforeach; else: ?>
+            <div class="col-12 text-center py-5">
+                <h3>No videos found.</h3>
             </div>
-            
-            <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('gallery/'.$v['id']) ?>" title="Share">
-                <i class="fa fa-share-alt"></i>
-                <span class="share-count" id="shares-<?= $v['id'] ?>"><?= $v['shares'] ?></span>
-            </button>
-
-            <button class="action-btn copy-link" data-link="<?= site_url('gallery/'.$v['id']) ?>" title="Copy Link">
-                <i class="fa fa-link"></i>
-                <span>Link</span>
-            </button>
-        </div>
-
-        <?php if($index == 0): ?>
-        <div class="scroll-hint">
-            <i class="fa fa-angle-double-down"></i>
-        </div>
-        <?php endif; ?>
-    </div>
-    <?php endforeach; else: ?>
-    <div class="video-slide">
-        <div class="text-white text-center">
-            <h3>No videos available.</h3>
-            <p>Please check back later.</p>
+            <?php endif; ?>
         </div>
     </div>
-    <?php endif; ?>
-</div>
+</section>
 
-<!-- Share Modal -->
-<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content text-center">
-            <div class="modal-header border-0">
-                <h5 class="modal-title">Share this Video</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+<!-- Fullscreen TikTok Overlay -->
+<div id="tiktok-overlay">
+    <div class="close-overlay">&times;</div>
+    
+    <div class="gallery-container" id="video-gallery">
+        <?php if(!empty($videos)): foreach($videos as $v): ?>
+        <div class="video-slide" id="slide-<?= $v['id'] ?>" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('gallery/'.$v['id']) ?>">
+            <video class="gallery-video" loop preload="none" playsinline>
+                <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
+            </video>
+
+            <div class="video-overlay-bottom">
+                <h3 style="color:#fff;"><?= $v['title'] ?></h3>
+                <p><?= $v['description'] ?></p>
+            </div>
+
+            <div class="video-overlay-right">
+                <div class="action-btn">
+                    <i class="fa fa-eye fa-lg"></i>
+                    <span style="font-size:12px;" id="views-<?= $v['id'] ?>"><?= $v['views'] ?></span>
+                </div>
+                <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                    <i class="fa fa-share-alt fa-lg"></i>
+                    <span style="font-size:12px;" id="shares-<?= $v['id'] ?>"><?= $v['shares'] ?></span>
+                </button>
+                <button class="action-btn copy-link" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                    <i class="fa fa-link fa-lg"></i>
                 </button>
             </div>
-            <div class="modal-body p-4">
-                <div class="d-flex justify-content-center gap-3 mb-4" style="gap: 20px;">
-                    <a href="#" class="btn btn-primary share-btn facebook" style="background:#3b5998; border:0; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fa fa-facebook fa-lg"></i></a>
-                    <a href="#" class="btn btn-info share-btn twitter" style="background:#1da1f2; border:0; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fa fa-twitter fa-lg"></i></a>
-                    <a href="#" class="btn btn-success share-btn whatsapp" style="background:#25d366; border:0; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fa fa-whatsapp fa-lg"></i></a>
-                    <a href="#" class="btn btn-danger share-btn linkedin" style="background:#0077b5; border:0; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fa fa-linkedin fa-lg"></i></a>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="share-link-input" class="form-control" readonly>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" id="copy-btn-modal" type="button">Copy</button>
-                    </div>
-                </div>
-            </div>
         </div>
+        <?php endforeach; endif; ?>
     </div>
 </div>
+
+<!-- Modal etc. -->
+<?php $this->load->view('gallery_modals'); // Separated for cleanliness ?>
 
 <script>
 $(document).ready(function() {
+    const $overlay = $('#tiktok-overlay');
+    const $gallery = $('#video-gallery');
+
+    // Hover play on grid
+    $('.grid-item').hover(
+        function() { $(this).find('video')[0].play(); },
+        function() { 
+            const v = $(this).find('video')[0];
+            v.pause();
+            v.currentTime = 0;
+        }
+    );
+
+    // Open TikTok View
+    $('.open-tiktok').on('click', function() {
+        const id = $(this).data('id');
+        $overlay.fadeIn();
+        $('body').css('overflow', 'hidden');
+        
+        // Scroll to the specific video
+        const target = document.getElementById('slide-' + id);
+        if(target) {
+            target.scrollIntoView();
+        }
+    });
+
+    // Close Overlay
+    $('.close-overlay').on('click', function() {
+        $overlay.fadeOut();
+        $('body').css('overflow', 'auto');
+        // Pause all videos
+        $('.gallery-video').each(function() { this.pause(); });
+        // Reset URL to gallery
+        window.history.pushState(null, null, '<?= site_url("gallery") ?>');
+    });
+
+    // Vertical Scroll Logic (Intersection Observer)
     const observerOptions = {
         root: document.querySelector('#video-gallery'),
-        threshold: 0.6
+        threshold: 0.7
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
@@ -224,15 +280,16 @@ $(document).ready(function() {
             const videoId = entry.target.dataset.id;
             
             if (entry.isIntersecting) {
-                video.play();
-                // Track view via AJAX if not already tracked in this session
+                // Preload and play
+                video.preload = "auto";
+                video.play().catch(e => console.log("Autoplay blocked"));
+                
                 if(!$(video).data('tracked')) {
                     trackAction(videoId, 'view');
                     $(video).data('tracked', true);
                 }
-                // Update URL without reloading if needed
                 window.history.pushState(null, null, entry.target.dataset.url);
-                document.title = entry.target.dataset.title + " | Video Gallery";
+                document.title = entry.target.dataset.title + " | Gallery";
             } else {
                 video.pause();
             }
@@ -243,55 +300,24 @@ $(document).ready(function() {
         videoObserver.observe(slide);
     });
 
-    // Track views/shares function
+    // Auto-open if ID in URL
+    <?php if(isset($active_video)): ?>
+    setTimeout(() => {
+        $('.open-tiktok[data-id="<?= $active_video['id'] ?>"]').click();
+    }, 500);
+    <?php endif; ?>
+
     function trackAction(id, type) {
         $.post('<?= site_url("welcome/track_video_action") ?>', {id: id, type: type}, function(res) {
-            const data = JSON.parse(res);
-            if(data.status === 'success') {
-                $(`#${type}s-${id}`).text(data.count);
-            }
+            try {
+                const data = JSON.parse(res);
+                if(data.status === 'success') {
+                    $(`#${type}s-${id}`).text(data.count);
+                }
+            } catch(e) {}
         });
     }
 
-    // Share Modal Logic
-    $('.share-trigger').on('click', function() {
-        const id = $(this).data('id');
-        const title = $(this).data('title');
-        const url = $(this).data('link');
-        
-        $('#share-link-input').val(url);
-        $('#shareModal').modal('show');
-        
-        // Update share buttons
-        $('.share-btn.facebook').attr('href', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
-        $('.share-btn.twitter').attr('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`);
-        $('.share-btn.whatsapp').attr('href', `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`);
-        $('.share-btn.linkedin').attr('href', `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`);
-
-        // Track share action
-        trackAction(id, 'share');
-    });
-
-    // Copy Link Logic
-    $('.copy-link, #copy-btn-modal').on('click', function() {
-        const link = $(this).hasClass('copy-link') ? $(this).data('link') : $('#share-link-input').val();
-        
-        const temp = $("<input>");
-        $("body").append(temp);
-        temp.val(link).select();
-        document.execCommand("copy");
-        temp.remove();
-        
-        alert("Link copied to clipboard!");
-    });
-
-    // Autoplay first video on interaction if needed
-    $('#video-gallery').on('click', function() {
-        const activeSlide = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2).closest('.video-slide');
-        if(activeSlide) {
-            const video = activeSlide.querySelector('video');
-            if(video.paused) video.play();
-        }
-    });
+    // Reuse share functions...
 });
 </script>

@@ -620,7 +620,6 @@ class Welcome extends CI_Controller {
     }
 
     public function gallery($id = null) {
-        echo "Gallery method reached! ID: " . $id; die();
         $this->db->where('is_active', 1);
         if($id) {
             // Put the specific video first, then others by priority
