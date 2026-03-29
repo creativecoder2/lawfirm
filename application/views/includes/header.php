@@ -170,14 +170,14 @@
         <div class="header-style-1">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-6">
+                    <div class="col-lg-2 col-md-3 col-6">
                         <div class="logo">
                             <a href="<?= base_url() ?>">
                                 <img src="<?= base_url(isset($settings['site_logo']) ? $settings['site_logo'] : 'assets/images/logo/logo-2.png') ?>" alt="Logo">
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-8 d-none d-lg-block">
+                    <div class="col-lg-9 d-none d-lg-block">
                         <div class="main-menu">
                             <nav class="nav_mobile_menu">
                                 <ul>

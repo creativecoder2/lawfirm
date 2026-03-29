@@ -396,7 +396,7 @@ preloader
 }
 
 .main-menu nav ul li {
-    padding: 13px 14px;
+    padding: 13px 10px;
 }
 
 .main-menu nav ul li:first-child {
@@ -479,7 +479,7 @@ preloader
 .header-style-1 .main-menu nav ul li,
 .header-style-2 .main-menu nav ul li,
 .header-style-3 .main-menu nav ul li {
-    padding: 35px 14px;
+    padding: 35px 10px;
 }
 
 .header-style-1 .main-menu nav ul li:last-child,
