@@ -594,15 +594,6 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <!--Testimonial Area End-->
     <!-- area end -->
 
-    <!-- .contact area start -->
-    <div class="contact-area section-padding" id="consultation-form" style="background: #111; padding-top: 100px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-5">
-                    <div class="contact-text">
-                        <h2>Book your Appointment</h2>
-                        <p><?= isset($settings['contact_section_hours']) ? nl2br($settings['contact_section_hours']) : 'Mon – Thur: 8:00 AM – 9:00 PM<br>Friday: 2:00 PM – 6:00 PM<br>Saturday: 8:AM – 9:30 PM<br>ONLINE APPOINTMENT: 24/7' ?></p>
-                        <div class="contact-sub">
     <!-- blog-area start -->
     <div class="blog-area section-padding">
         <div class="container">
@@ -636,6 +627,26 @@ practice areas, ensuring expert counsel for your specific needs</p>
         </div>
     </div>
     <!-- blog-area start -->
+
+    <!-- .counter-area start -->
+    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="consulting-area text-center" style="width: 100%;">
+                    <span style="display: inline-block; padding: 5px 20px; border: 1px solid #bc9355; border-radius: 30px; color: #bc9355; margin-bottom: 20px;">Now Offering Online Consultations</span>
+                    <h1 style="color: #fff; margin-bottom: 20px;"><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
+                    <p style="color: #ccc; max-width: 800px; margin: 0 auto 30px;"><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights. Contact us today for a free, confidential consultation and let our experienced attorneys fight for the justice you deserve.' ?>
+                    </p>
+                    <div class="btns" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="theme-btn" style="background: #bc9355; color: #fff; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
+                        <a href="#consultation-form" class="theme-btn" style="background: transparent; border: 1px solid #bc9355; color: #bc9355; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Book Online Consultation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .counter-area end -->
+
     <!-- .footer-area start -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
