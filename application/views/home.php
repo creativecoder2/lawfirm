@@ -1,5 +1,6 @@
     <!-- start of hero -->
-    <!-- <section class="hero hero-slider-wrapper hero-style-1">
+    <?php /* 
+    <section class="hero hero-slider-wrapper hero-style-1">
         <div class="hero-slider">
             <?php if(!empty($sliders)): foreach($sliders as $slider): ?>
             <div class="slide">
@@ -18,7 +19,8 @@
             </div>
             <?php endforeach; endif; ?>
         </div>
-    </section> -->
+    </section>
+    */ ?>
     <!-- end of hero slider -->
 
 
@@ -150,29 +152,7 @@
     </div>
     <!-- .contact area end -->
 
-    <!-- .counter-area start -->
-    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="consulting-area">
-                    <span>Now Offering Online Consultations</span>
-                     <br clear="all">
-                    <h1><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
-                     <br clear="all">
-                    <p><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights...' ?>
-                    </p>
-                     <br clear="all">
-                    <a href="">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
-                    <a href="">Book Online Consultation</a>
-                     <br clear="all">
-                </div>
-                 <br clear="all">
-            </div>
-             <br clear="all">
-        </div>
-        <br clear="all">
-    </div>
-    <!-- .counter-area end -->
+
 
     <style>
     /* Attorney Card Premium Styling */
@@ -613,6 +593,16 @@ practice areas, ensuring expert counsel for your specific needs</p>
     </div>
     <!--Testimonial Area End-->
     <!-- area end -->
+
+    <!-- .contact area start -->
+    <div class="contact-area section-padding" id="consultation-form" style="background: #111; padding-top: 100px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="contact-text">
+                        <h2>Book your Appointment</h2>
+                        <p><?= isset($settings['contact_section_hours']) ? nl2br($settings['contact_section_hours']) : 'Mon – Thur: 8:00 AM – 9:00 PM<br>Friday: 2:00 PM – 6:00 PM<br>Saturday: 8:AM – 9:30 PM<br>ONLINE APPOINTMENT: 24/7' ?></p>
+                        <div class="contact-sub">
     <!-- blog-area start -->
     <div class="blog-area section-padding">
         <div class="container">
