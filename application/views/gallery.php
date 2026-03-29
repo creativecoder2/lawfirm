@@ -87,7 +87,7 @@
         height: 100%;
         background: #000;
         z-index: 9999;
-        display: none; /* Hidden by default */
+        display: none;
     }
 
     .close-overlay {
@@ -152,7 +152,7 @@
         position: absolute;
         bottom: 30px;
         left: 15px;
-        right: 80px; /* Increased to avoid overlap with right icons */
+        right: 80px;
         color: #fff;
         z-index: 10;
         padding: 15px 20px;
@@ -168,7 +168,7 @@
         font-weight: 700;
         letter-spacing: 0.5px;
         font-size: 1.1rem;
-        color: #fff !important; /* Force white color */
+        color: #fff !important;
         text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
@@ -215,7 +215,7 @@
 
     .video-progress-bar {
         height: 100%;
-        background: #d0a15e; /* Gold color */
+        background: #d0a15e;
         width: 0%;
         transition: width 0.1s linear;
         box-shadow: 0 0 10px rgba(208, 161, 94, 0.5);
@@ -229,56 +229,19 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        z-index: 15;
-        pointer-events: none;
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex; align-items: center; justify-content: center; color: #fff; z-index: 15; pointer-events: none; transition: 0.3s;
     }
+    .play-pause-indicator.show { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 
-    .play-pause-indicator.show {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0;
-        transition: transform 0.3s, opacity 0.5s;
-    }
-
-    .video-overlay-right {
-        position: absolute;
-        right: 15px;
-        bottom: 150px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        z-index: 11;
-    }
-
-    .action-btn {
-        background: rgba(255, 255, 255, 0.15);
-        border: none;
-        color: #fff;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        backdrop-filter: blur(5px);
-    }
+    .video-overlay-right { position: absolute; right: 15px; bottom: 150px; display: flex; flex-direction: column; gap: 20px; z-index: 11; }
+    .action-btn { background: rgba(255, 255, 255, 0.15); border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px); }
 </style>
 
 <!-- Breadcumb -->
 <section class="breadcumb-area" style="background: #1a1a1a; padding: 40px 0;">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 style="color: #d0a15e; margin: 0;">Video Gallery</h2>
-                <p style="color: #999; margin-top: 10px;">Watch our latest legal insights and case highlights</p>
-            </div>
-        </div>
+    <div class="container text-center">
+        <h2 style="color: #d0a15e; margin: 0;">Video Gallery</h2>
+        <p style="color: #999; margin-top: 10px;">Watch our latest legal insights and case highlights</p>
     </div>
 </section>
 
@@ -297,9 +260,7 @@
                 </div>
             </div>
             <?php endforeach; else: ?>
-            <div class="col-12 text-center py-5">
-                <h3>No videos found.</h3>
-            </div>
+            <div class="col-12 text-center py-5"><h3>No videos found.</h3></div>
             <?php endif; ?>
         </div>
     </div>
@@ -308,28 +269,21 @@
 <!-- Fullscreen TikTok Overlay -->
 <div id="tiktok-overlay">
     <div class="close-overlay">&times;</div>
-    
     <div class="gallery-container" id="video-gallery">
         <?php if(!empty($videos)): foreach($videos as $v): ?>
         <div class="video-slide" id="slide-<?= $v['id'] ?>" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('v/'.$v['id']) ?>">
             <div class="video-wrapper">
-                <div class="play-pause-indicator">
-                    <i class="fa fa-play fa-2x"></i>
-                </div>
+                <div class="play-pause-indicator"><i class="fa fa-play fa-2x"></i></div>
                 <video class="gallery-video" loop preload="none" playsinline>
                     <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
                 </video>
-
                 <div class="video-overlay-bottom">
                     <h3><?= $v['title'] ?></h3>
-                    <div class="description-container" id="desc-<?= $v['id'] ?>">
-                        <?= $v['description'] ?>
-                    </div>
+                    <div class="description-container" id="desc-<?= $v['id'] ?>"><?= $v['description'] ?></div>
                     <?php if(strlen($v['description']) > 80): ?>
                     <a class="read-more-btn" onclick="toggleReadMore(event, 'desc-<?= $v['id'] ?>')">Read more</a>
                     <?php endif; ?>
                 </div>
-
                 <div class="video-overlay-right">
                     <div class="action-btn">
                         <i class="fa fa-eye fa-lg"></i>
@@ -343,83 +297,52 @@
                         <i class="fa fa-link fa-lg"></i>
                     </button>
                 </div>
-
-                <div class="video-progress-container">
-                    <div class="video-progress-bar" id="progress-<?= $v['id'] ?>"></div>
-                </div>
+                <div class="video-progress-container"><div class="video-progress-bar" id="progress-<?= $v['id'] ?>"></div></div>
             </div>
         </div>
         <?php endforeach; endif; ?>
     </div>
 </div>
 
-<!-- Modal etc. -->
-<?php $this->load->view('gallery_modals'); // Separated for cleanliness ?>
+<?php $this->load->view('gallery_modals'); ?>
 
 <script>
-// Wait for jQuery to load
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof jQuery === 'undefined') {
-        // If jQuery is in footer, we might need a small delay or use window.load
-        window.addEventListener('load', initGallery);
-    } else {
-        initGallery();
-    }
+    if (typeof jQuery === 'undefined') { window.addEventListener('load', initGallery); } else { initGallery(); }
 });
 
 function initGallery() {
     const $ = jQuery;
     const $overlay = $('#tiktok-overlay');
-    const $gallery = $('#video-gallery');
-
+    
     // Hover play on grid
     $('.grid-item').hover(
-        function() { $(this).find('video')[0].play(); },
-        function() { 
-            const v = $(this).find('video')[0];
-            v.pause();
-            v.currentTime = 0;
-        }
+        function() { const v = $(this).find('video')[0]; if(v) v.play(); },
+        function() { const v = $(this).find('video')[0]; if(v) { v.pause(); v.currentTime = 0; } }
     );
 
     // Open TikTok View
-    $('.open-tiktok').on('click', function() {
+    $(document).on('click', '.open-tiktok', function() {
         const id = $(this).data('id');
         $overlay.fadeIn();
         $('body').css('overflow', 'hidden');
-        
-        // Scroll and Play
         const target = document.getElementById('slide-' + id);
         if(target) {
             target.scrollIntoView();
             const video = target.querySelector('video');
-            if(video) {
-                video.muted = false; // Unmute on click since it's user-initiated
-                video.play().catch(err => {
-                    console.log("Play failed, trying muted:", err);
-                    video.muted = true;
-                    video.play();
-                });
-            }
+            if(video) { video.muted = false; video.play().catch(() => { video.muted = true; video.play(); }); }
         }
     });
 
-    // Close Overlay
     $('.close-overlay').on('click', function() {
         $overlay.fadeOut();
         $('body').css('overflow', 'auto');
-        // Pause all videos
         $('.gallery-video').each(function() { this.pause(); });
-        // Reset URL to gallery
         window.history.pushState(null, null, '<?= site_url("gallery") ?>');
     });
 
     // Vertical Scroll Logic (Intersection Observer)
-    const observerOptions = {
-        root: document.querySelector('#video-gallery'),
-        threshold: 0.7
-    };
-
+    const observerOptions = { root: document.querySelector('#video-gallery'), threshold: 0.7 };
     let offset = 12;
     let loading = false;
     let hasMore = true;
@@ -432,7 +355,7 @@ function initGallery() {
             
             if (entry.isIntersecting) {
                 video.preload = "auto";
-                video.play().catch(e => console.log("Autoplay blocked"));
+                video.play().catch(() => {});
                 
                 // Load More check
                 const $allSlides = $('.video-slide');
@@ -441,13 +364,8 @@ function initGallery() {
                 }
 
                 // Unique View Tracking
-                const viewed = JSON.parse(localStorage.getItem('gallery_viewed') || '[]');
-                if (!viewed.includes(videoId)) {
-                    trackAction(videoId, 'view');
-                    viewed.push(videoId);
-                    localStorage.setItem('gallery_viewed', JSON.stringify(viewed));
-                }
-
+                trackAction(videoId, 'view');
+                
                 // Progress Bar
                 video.ontimeupdate = function() {
                     const percentage = (video.currentTime / video.duration) * 100;
@@ -463,18 +381,18 @@ function initGallery() {
         });
     }, observerOptions);
 
+    $('.video-slide').each(function() { videoObserver.observe(this); });
+
     function loadMoreVideos() {
         loading = true;
         $.get('<?= site_url("welcome/load_more_videos") ?>/' + offset, function(res) {
             try {
                 const data = JSON.parse(res);
-                if (data.status === 'success' && data.videos.length > 0) {
+                if(data.status === 'success' && data.videos.length > 0) {
                     renderNewVideos(data.videos);
                     offset += data.videos.length;
-                    if (data.videos.length < 12) hasMore = false;
-                } else {
-                    hasMore = false;
-                }
+                    if(data.videos.length < 12) hasMore = false;
+                } else { hasMore = false; }
             } catch(e) { hasMore = false; }
             loading = false;
         });
@@ -483,22 +401,17 @@ function initGallery() {
     function renderNewVideos(videos) {
         const container = document.getElementById('video-gallery');
         const gridContainer = document.querySelector('.video-grid');
-        
         videos.forEach(v => {
-            // Append to TikTok Overlay
             const slide = document.createElement('div');
             slide.className = 'video-slide';
             slide.id = `slide-${v.id}`;
             slide.dataset.id = v.id;
             slide.dataset.title = v.title;
             slide.dataset.url = `<?= site_url('v/') ?>${v.id}`;
-            
             slide.innerHTML = `
                 <div class="video-wrapper">
                     <div class="play-pause-indicator"><i class="fa fa-play fa-2x"></i></div>
-                    <video class="gallery-video" loop preload="none" playsinline>
-                        <source src="<?= base_url() ?>${v.video_path}" type="video/mp4">
-                    </video>
+                    <video class="gallery-video" loop preload="none" playsinline><source src="<?= base_url() ?>${v.video_path}" type="video/mp4"></video>
                     <div class="video-overlay-bottom">
                         <h3>${v.title}</h3>
                         <div class="description-container" id="desc-${v.id}">${v.description}</div>
@@ -506,9 +419,7 @@ function initGallery() {
                     </div>
                     <div class="video-overlay-right">
                         <div class="action-btn"><i class="fa fa-eye fa-lg"></i><span id="views-${v.id}">${v.views}</span></div>
-                        <button class="action-btn share-trigger" data-id="${v.id}" data-title="${v.title}" data-link="<?= site_url('v/') ?>${v.id}">
-                            <i class="fa fa-share-alt fa-lg"></i><span id="shares-${v.id}">${v.shares}</span>
-                        </button>
+                        <button class="action-btn share-trigger" data-id="${v.id}" data-title="${v.title}" data-link="<?= site_url('v/') ?>${v.id}"><i class="fa fa-share-alt fa-lg"></i><span id="shares-${v.id}">${v.shares}</span></button>
                     </div>
                     <div class="video-progress-container"><div class="video-progress-bar" id="progress-${v.id}"></div></div>
                 </div>
@@ -516,87 +427,48 @@ function initGallery() {
             container.appendChild(slide);
             videoObserver.observe(slide);
 
-            // Append to Grid
             const gridItem = document.createElement('div');
             gridItem.className = 'grid-item open-tiktok';
             gridItem.dataset.id = v.id;
-            gridItem.innerHTML = `
-                <video muted loop preload="metadata">
-                    <source src="<?= base_url() ?>${v.video_path}" type="video/mp4">
-                </video>
-                <div class="item-overlay">
-                    <h5>${v.title}</h5>
-                    <small><i class="fa fa-eye"></i> ${v.views} views</small>
-                </div>
-            `;
+            gridItem.innerHTML = `<video muted loop preload="metadata"><source src="<?= base_url() ?>${v.video_path}" type="video/mp4"></video><div class="item-overlay"><h5>${v.title}</h5><small>${v.views} views</small></div>`;
             gridContainer.appendChild(gridItem);
         });
     }
 
-    document.querySelectorAll('.video-slide').forEach(slide => {
-        videoObserver.observe(slide);
-    });
-
-    // Toggle Play/Pause on click
     $(document).on('click', '.gallery-video', function() {
         const video = this;
         const $indicator = $(video).parent().find('.play-pause-indicator');
         const $icon = $indicator.find('i');
-
-        if (video.paused) {
-            video.muted = false; // Always try to unmute on user click
-            video.play();
-            $icon.removeClass('fa-play').addClass('fa-pause');
-        } else {
-            video.pause();
-            $icon.removeClass('fa-pause').addClass('fa-play');
-        }
-
-        // Show indicator briefly
+        if (video.paused) { video.muted = false; video.play(); $icon.removeClass('fa-play').addClass('fa-pause'); }
+        else { video.pause(); $icon.removeClass('fa-pause').addClass('fa-play'); }
         $indicator.addClass('show');
-        setTimeout(() => {
-            $indicator.removeClass('show');
-        }, 800);
+        setTimeout(() => { $indicator.removeClass('show'); }, 800);
     });
 
-    // Auto-open if ID in URL
-    <?php if(isset($active_video)): ?>
-    setTimeout(() => {
-        $('.open-tiktok[data-id="<?= $active_video['id'] ?>"]').click();
-    }, 500);
+    <?php if(isset($active_video['id'])): ?>
+    setTimeout(() => { $('.open-tiktok[data-id="<?= $active_video['id'] ?>"]').click(); }, 500);
     <?php endif; ?>
 
     function trackAction(id, type) {
-        // Unique Share check (Views already handled in observer)
-        if (type === 'share') {
-            const shared = JSON.parse(localStorage.getItem('gallery_shared') || '[]');
-            if (shared.includes(id)) return; // Already shared in this browser
-            shared.push(id);
-            localStorage.setItem('gallery_shared', JSON.stringify(shared));
-        }
-
+        const key = `gallery_${type}ed`;
+        const items = JSON.parse(localStorage.getItem(key) || '[]');
+        if (items.includes(id)) return;
+        items.push(id);
+        localStorage.setItem(key, JSON.stringify(items));
         $.post('<?= site_url("welcome/track_video_action") ?>', {id: id, type: type}, function(res) {
-            try {
-                const data = JSON.parse(res);
-                if(data.status === 'success') {
-                    $(`#${type}s-${id}`).text(data.count);
-                }
+            try { 
+                const d = JSON.parse(res); 
+                if(d.status === 'success') $(`#${type}s-${id}`).text(d.count);
             } catch(e) {}
         });
     }
 }
-    function toggleReadMore(e, id) {
-        e.preventDefault();
-        e.stopPropagation();
-        const container = document.getElementById(id);
-        const btn = e.target;
-        
-        if (container.classList.contains('expanded')) {
-            container.classList.remove('expanded');
-            btn.innerText = 'Read more';
-        } else {
-            container.classList.add('expanded');
-            btn.innerText = 'Read less';
-        }
-    }
+
+function toggleReadMore(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    const container = document.getElementById(id);
+    const btn = e.target;
+    if (container.classList.contains('expanded')) { container.classList.remove('expanded'); btn.innerText = 'Read more'; }
+    else { container.classList.add('expanded'); btn.innerText = 'Read less'; }
+}
 </script>
