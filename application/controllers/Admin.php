@@ -2057,6 +2057,9 @@ class Admin extends CI_Controller {
                     unset($data['captured_thumb']);
                 }
 
+                $this->load->library('upload', $config);
+                $this->upload->initialize($config);
+
                 if ($this->upload->do_upload('video')) {
                     $uploadData = $this->upload->data();
                     $data['video_path'] = 'assets/videos/gallery/' . $uploadData['file_name'];
