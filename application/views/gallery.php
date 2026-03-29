@@ -113,11 +113,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background: #000;
+    }
+
+    .video-wrapper {
+        position: relative;
+        height: 100%;
+        width: auto;
+        aspect-ratio: 9/16;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
     }
 
     .video-slide video {
-        max-height: 100%;
-        max-width: 100%;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
     }
 
@@ -125,7 +137,7 @@
         position: absolute;
         bottom: 40px;
         left: 20px;
-        right: 80px;
+        right: 20px;
         color: #fff;
         text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
         z-index: 10;
@@ -200,27 +212,29 @@
     <div class="gallery-container" id="video-gallery">
         <?php if(!empty($videos)): foreach($videos as $v): ?>
         <div class="video-slide" id="slide-<?= $v['id'] ?>" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('gallery/'.$v['id']) ?>">
-            <video class="gallery-video" loop preload="none" playsinline>
-                <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
-            </video>
+            <div class="video-wrapper">
+                <video class="gallery-video" loop preload="none" playsinline>
+                    <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
+                </video>
 
-            <div class="video-overlay-bottom">
-                <h3 style="color:#fff;"><?= $v['title'] ?></h3>
-                <p><?= $v['description'] ?></p>
-            </div>
-
-            <div class="video-overlay-right">
-                <div class="action-btn">
-                    <i class="fa fa-eye fa-lg"></i>
-                    <span style="font-size:12px;" id="views-<?= $v['id'] ?>"><?= $v['views'] ?></span>
+                <div class="video-overlay-bottom">
+                    <h3 style="color:#fff;"><?= $v['title'] ?></h3>
+                    <p><?= $v['description'] ?></p>
                 </div>
-                <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('gallery/'.$v['id']) ?>">
-                    <i class="fa fa-share-alt fa-lg"></i>
-                    <span style="font-size:12px;" id="shares-<?= $v['id'] ?>"><?= $v['shares'] ?></span>
-                </button>
-                <button class="action-btn copy-link" data-link="<?= site_url('gallery/'.$v['id']) ?>">
-                    <i class="fa fa-link fa-lg"></i>
-                </button>
+
+                <div class="video-overlay-right">
+                    <div class="action-btn">
+                        <i class="fa fa-eye fa-lg"></i>
+                        <span style="font-size:12px;" id="views-<?= $v['id'] ?>"><?= $v['views'] ?></span>
+                    </div>
+                    <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                        <i class="fa fa-share-alt fa-lg"></i>
+                        <span style="font-size:12px;" id="shares-<?= $v['id'] ?>"><?= $v['shares'] ?></span>
+                    </button>
+                    <button class="action-btn copy-link" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                        <i class="fa fa-link fa-lg"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <?php endforeach; endif; ?>
