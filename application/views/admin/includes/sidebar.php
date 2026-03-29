@@ -137,7 +137,7 @@ $total_notifications = $count_appointments + $count_contacts + $count_subscriber
                 </li>
                 <li>
                     <a href="<?= site_url('admin/features') ?>" class="nav-link <?= is_active($segment, ['features', 'feature_add', 'feature_edit']) ?>">
-                        <i class="fa fa-star"></i> Features
+                        <i class="fa fa-th-large"></i> Home Action Cards
                     </a>
                 </li>
 

@@ -22,20 +22,25 @@
     <!-- end of hero slider -->
 
     <!--features start -->
-    <div class="features-area ">
+    <div class="features-area">
         <div class="container">
             <div class="row">
                 <?php if(!empty($features)): foreach($features as $feature): ?>
                 <div class="col-lg-4 col-md-6 col-sm-12 col-p">
-                    <div class="features-item-2">
-                        <div class="features-icon">
-                            <i class="<?= $feature['icon'] ?>"></i>
+                    <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" style="text-decoration: none; display: block;">
+                        <div class="features-item-2 h-100" style="transition: all 0.3s ease;">
+                            <div class="features-icon">
+                                <i class="<?= $feature['icon'] ?>"></i>
+                            </div>
+                            <div class="features-content">
+                                <p style="margin-bottom: 5px;"><?= $feature['subtitle'] ?></p>
+                                <h3 style="margin-bottom: 10px;"><?= $feature['title'] ?></h3>
+                                <div class="click-here" style="color: #d0a15e; font-weight: 600; font-size: 14px;">
+                                    Click here <i class="fa fa-angle-right"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="features-content">
-                            <p><?= $feature['subtitle'] ?></p>
-                            <h3><?= $feature['title'] ?></h3>
-                        </div>
-                    </div>
+                    </a>
                 </div>
                 <?php endforeach; endif; ?>
             </div>

@@ -2218,4 +2218,65 @@ class Admin extends CI_Controller {
         $this->session->set_flashdata('success', 'Video status updated');
         redirect('admin/gallery');
     }
+
+    // Home Action Cards (Features)
+    public function features() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        
+        // Auto-migrate if column missing
+        if (!$this->db->field_exists('link', 'features')) {
+            $this->load->dbforge();
+            $fields = array('link' => array('type' => 'VARCHAR', 'constraint' => '255', 'default' => '#', 'after' => 'title'));
+            $this->dbforge->add_column('features', $fields);
+        }
+
+        $data['features'] = $this->db->order_by('priority', 'ASC')->get('features')->result_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/features/index', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function feature_add() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->insert('features', $data);
+            $this->session->set_flashdata('success', 'Action Card added successfully');
+            redirect('admin/features');
+        }
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/features/add');
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function feature_edit($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->where('id', $id)->update('features', $data);
+            $this->session->set_flashdata('success', 'Action Card updated successfully');
+            redirect('admin/features');
+        }
+        $data['feature'] = $this->db->get_where('features', ['id' => $id])->row_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/features/edit', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function feature_delete($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->delete('features');
+        $this->session->set_flashdata('success', 'Action Card deleted successfully');
+        redirect('admin/features');
+    }
+
+    public function feature_status($id, $status) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->update('features', ['is_active' => $status]);
+        $this->session->set_flashdata('success', 'Status updated');
+        redirect('admin/features');
+    }
 }
