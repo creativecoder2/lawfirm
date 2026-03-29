@@ -610,63 +610,7 @@ class Admin extends CI_Controller {
         redirect('admin/social_links');
     }
     
-    // Features
-    public function features() {
-        if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        $data['features'] = $this->db->get('features')->result_array();
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/features/index', $data);
-        $this->load->view('admin/includes/footer');
-    }
-
-    public function feature_add() {
-        if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        if ($this->input->post()) {
-            $data = $this->input->post();
-            $this->db->insert('features', $data);
-            $this->session->set_flashdata('success', 'Feature added successfully');
-            redirect('admin/features');
-        }
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/features/add');
-        $this->load->view('admin/includes/footer');
-    }
-
-    public function feature_delete($id) {
-        if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        $this->db->delete('features', array('id' => $id));
-        $this->session->set_flashdata('success', 'Feature deleted successfully');
-        redirect('admin/features');
-    }
-
-    public function feature_edit($id) {
-        if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        
-        $data['feature'] = $this->db->get_where('features', array('id' => $id))->row_array();
-
-        if ($this->input->post()) {
-            $data = $this->input->post();
-            $this->db->where('id', $id);
-            $this->db->update('features', $data);
-            $this->session->set_flashdata('success', 'Feature updated successfully');
-            redirect('admin/features');
-        }
-
-        $this->load->view('admin/includes/header');
-        $this->load->view('admin/includes/sidebar');
-        $this->load->view('admin/features/edit', $data);
-        $this->load->view('admin/includes/footer');
-    }
-
-    public function feature_status($id, $status) {
-        if (!$this->session->userdata('logged_in')) redirect('admin/login');
-        $this->db->where('id', $id);
-        $this->db->update('features', array('is_active' => $status));
-        $this->session->set_flashdata('success', 'Feature status updated');
-        redirect('admin/features');
-    }
+    // Features moved to the end of file for better management
 
     // Practice Areas
      public function practice() {
@@ -2223,14 +2167,12 @@ class Admin extends CI_Controller {
     public function features() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         
-        /* 
         // Auto-migrate if column missing
         if (!$this->db->field_exists('link', 'features')) {
             $this->load->dbforge();
             $fields = array('link' => array('type' => 'VARCHAR', 'constraint' => '255', 'default' => '#', 'after' => 'title'));
             $this->dbforge->add_column('features', $fields);
         }
-        */
 
         $data['features'] = $this->db->order_by('priority', 'ASC')->get('features')->result_array();
         $this->load->view('admin/includes/header');
