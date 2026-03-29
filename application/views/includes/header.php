@@ -32,11 +32,25 @@
     $site_name  = $settings['site_title'] ?? 'Legal Eagle Law Firm';
     $final_title = $page_title . ($seo_title ?: $site_name);
 
-    $final_desc = isset($blog['description']) ? strip_tags(substr($blog['description'], 0, 160)) : ($seo_desc ?: 'Premium legal services by Legal Eagle Law Firm.');
+    if (isset($active_video['description'])) {
+        $final_desc = strip_tags(substr($active_video['description'], 0, 160));
+    } else if (isset($blog['description'])) {
+        $final_desc = strip_tags(substr($blog['description'], 0, 160));
+    } else {
+        $final_desc = $seo_desc ?: 'Premium legal services by Legal Eagle Law Firm.';
+    }
 
     $final_og_title = $seo_og_title ?: $final_title;
     $final_og_desc  = $seo_og_desc ?: $final_desc;
-    $final_og_image = $seo_og_image ? base_url($seo_og_image) : (isset($blog['image']) ? base_url($blog['image']) : (isset($settings['site_logo']) ? base_url($settings['site_logo']) : base_url('assets/images/logo/logo-2.png')));
+    
+    // Default OG Image logic
+    $default_og_image = (isset($settings['site_logo']) ? base_url($settings['site_logo']) : base_url('assets/images/logo/logo-2.png'));
+    
+    if (isset($active_video['thumbnail']) && !empty($active_video['thumbnail'])) {
+        $final_og_image = base_url($active_video['thumbnail']);
+    } else {
+        $final_og_image = $seo_og_image ? base_url($seo_og_image) : (isset($blog['image']) ? base_url($blog['image']) : $default_og_image);
+    }
     ?>
 
     <!-- Page Title -->

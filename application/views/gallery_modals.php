@@ -9,18 +9,36 @@
                 </button>
             </div>
             <div class="modal-body p-4">
-                <div class="d-flex justify-content-center gap-3 mb-4" style="gap: 20px;">
-                    <a href="#" class="btn btn-primary share-link facebook" target="_blank" style="background:#3b5998; border:0; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction: column;">
+                <div class="d-flex flex-wrap justify-content-center mb-4" style="gap: 15px;">
+                    <!-- Row 1 -->
+                    <a href="#" class="btn share-link facebook" target="_blank" style="background:#1877F2; color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
                         <i class="fa fa-facebook fa-lg"></i>
                         <span style="font-size:10px; margin-top:5px;">Facebook</span>
                     </a>
-                    <a href="#" class="btn btn-info share-link twitter" target="_blank" style="background:#1da1f2; border:0; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction: column;">
-                        <i class="fa fa-twitter fa-lg"></i>
-                        <span style="font-size:10px; margin-top:5px;">Twitter</span>
-                    </a>
-                    <a href="#" class="btn btn-success share-link whatsapp" target="_blank" style="background:#25d366; border:0; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction: column;">
+                    <a href="#" class="btn share-link whatsapp" target="_blank" style="background:#25D366; color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
                         <i class="fa fa-whatsapp fa-lg"></i>
                         <span style="font-size:10px; margin-top:5px;">WhatsApp</span>
+                    </a>
+                    <a href="#" class="btn share-link instagram" target="_blank" style="background:linear-gradient(45deg, #f09433 0%, #bc1888 100%); color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fa fa-instagram fa-lg"></i>
+                        <span style="font-size:10px; margin-top:5px;">Instagram</span>
+                    </a>
+                    <a href="#" class="btn share-link linkedin" target="_blank" style="background:#0077b5; color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fa fa-linkedin fa-lg"></i>
+                        <span style="font-size:10px; margin-top:5px;">LinkedIn</span>
+                    </a>
+                    <!-- Row 2 -->
+                    <a href="#" class="btn share-link twitter" target="_blank" style="background:#000; color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fa fa-twitter fa-lg"></i>
+                        <span style="font-size:10px; margin-top:5px;">X</span>
+                    </a>
+                    <a href="#" class="btn share-link snapchat" target="_blank" style="background:#FFFC00; color:#000; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fa fa-snapchat-ghost fa-lg"></i>
+                        <span style="font-size:10px; margin-top:5px;">Snap</span>
+                    </a>
+                    <a href="#" class="btn share-link tiktok" target="_blank" style="background:#000; color:#fff; width:70px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fa fa-music fa-lg"></i>
+                        <span style="font-size:10px; margin-top:5px;">TikTok</span>
                     </a>
                 </div>
                 <div class="input-group">
@@ -57,6 +75,12 @@ function initShareModal() {
         $('.share-link.facebook').attr('href', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
         $('.share-link.twitter').attr('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`);
         $('.share-link.whatsapp').attr('href', `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`);
+        $('.share-link.linkedin').attr('href', `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`);
+        
+        // Mobile-centric fallback for Snap/Instagram (intent based)
+        $('.share-link.snapchat').attr('href', `https://www.snapchat.com/scan?attachmentUrl=${encodeURIComponent(url)}`);
+        $('.share-link.instagram').attr('href', `https://www.instagram.com/`); // Instagram doesn't support web share API directly
+        $('.share-link.tiktok').attr('href', `https://www.tiktok.com/`); // TikTok doesn't support web share API directly
 
         // Track share
         $.post('<?= site_url("welcome/track_video_action") ?>', {id: id, type: 'share'}, function(res) {

@@ -76,6 +76,7 @@ $route['checkout/(:any)'] = 'welcome/checkout/$1';
 
 $route['gallery'] = 'welcome/gallery';
 $route['gallery/(:num)'] = 'welcome/gallery/$1';
+$route['v/(:num)'] = 'welcome/gallery/$1';
 $route['track_video_action'] = 'welcome/track_video_action';
 
 

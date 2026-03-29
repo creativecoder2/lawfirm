@@ -31,6 +31,21 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label>Change Thumbnail (Optional)</label>
+                                <input type="file" name="thumbnail" class="form-control">
+                                <p class="help-block">Leave blank to keep current thumbnail. Recommended: 1080x1920 JPG/PNG.</p>
+                                <?php if(!empty($video['thumbnail'])): ?>
+                                <div class="mt-2 text-center" style="background:#f0f0f0; padding:10px; border-radius:5px;">
+                                    <img src="<?= base_url($video['thumbnail']) ?>" style="max-height: 150px; border-radius:10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                    <p class="small text-muted mt-2">Current Thumbnail</p>
+                                </div>
+                                <?php else: ?>
+                                <div class="mt-2 text-center" style="background:#f0f0f0; padding:10px; border-radius:5px;">
+                                    <p class="small text-muted">No custom thumbnail uploaded.</p>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group">
                                 <label>Priority</label>
                                 <input type="number" class="form-control" name="priority" value="<?= $video['priority'] ?>">
                             </div>

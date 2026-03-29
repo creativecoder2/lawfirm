@@ -2027,8 +2027,19 @@ class Admin extends CI_Controller {
                     mkdir($config['upload_path'], 0777, TRUE);
                 }
 
-                $this->load->library('upload', $config);
-                $this->upload->initialize($config);
+                // Handle Thumbnail Upload
+                if (!empty($_FILES['thumbnail']['name'])) {
+                    $thumb_config['upload_path'] = './assets/videos/gallery/thumbnails/';
+                    $thumb_config['allowed_types'] = 'jpg|jpeg|png|webp';
+                    $thumb_config['encrypt_name'] = TRUE;
+                    if (!is_dir($thumb_config['upload_path'])) mkdir($thumb_config['upload_path'], 0777, TRUE);
+                    
+                    $this->load->library('upload', $thumb_config, 'thumb_upload');
+                    if ($this->thumb_upload->do_upload('thumbnail')) {
+                        $thumbData = $this->thumb_upload->data();
+                        $data['thumbnail'] = 'assets/videos/gallery/thumbnails/' . $thumbData['file_name'];
+                    }
+                }
 
                 if ($this->upload->do_upload('video')) {
                     $uploadData = $this->upload->data();
@@ -2067,6 +2078,20 @@ class Admin extends CI_Controller {
                 if ($this->upload->do_upload('video')) {
                     $uploadData = $this->upload->data();
                     $data['video_path'] = 'assets/videos/gallery/' . $uploadData['file_name'];
+                }
+            }
+
+            // Handle Thumbnail Upload
+            if (!empty($_FILES['thumbnail']['name'])) {
+                $thumb_config['upload_path'] = './assets/videos/gallery/thumbnails/';
+                $thumb_config['allowed_types'] = 'jpg|jpeg|png|webp';
+                $thumb_config['encrypt_name'] = TRUE;
+                if (!is_dir($thumb_config['upload_path'])) mkdir($thumb_config['upload_path'], 0777, TRUE);
+                
+                $this->load->library('upload', $thumb_config, 'thumb_upload');
+                if ($this->thumb_upload->do_upload('thumbnail')) {
+                    $thumbData = $this->thumb_upload->data();
+                    $data['thumbnail'] = 'assets/videos/gallery/thumbnails/' . $thumbData['file_name'];
                 }
             }
 

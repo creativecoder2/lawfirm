@@ -135,19 +135,62 @@
 
     .video-overlay-bottom {
         position: absolute;
-        bottom: 40px;
-        left: 20px;
-        right: 20px;
+        bottom: 30px;
+        left: 15px;
+        right: 15px;
         color: #fff;
-        text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
         z-index: 10;
         pointer-events: none;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .video-overlay-bottom h3 {
+        margin-bottom: 5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .video-overlay-bottom p {
+        margin: 0;
+        font-size: 0.95rem;
+        opacity: 0.9;
+        line-height: 1.4;
+    }
+
+    /* Play/Pause Indicator */
+    .play-pause-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        background: rgba(0,0,0,0.4);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        z-index: 15;
+        pointer-events: none;
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .play-pause-indicator.show {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+        transition: transform 0.3s, opacity 0.5s;
     }
 
     .video-overlay-right {
         position: absolute;
         right: 15px;
-        bottom: 120px;
+        bottom: 150px;
         display: flex;
         flex-direction: column;
         gap: 20px;
@@ -211,8 +254,11 @@
     
     <div class="gallery-container" id="video-gallery">
         <?php if(!empty($videos)): foreach($videos as $v): ?>
-        <div class="video-slide" id="slide-<?= $v['id'] ?>" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('gallery/'.$v['id']) ?>">
+        <div class="video-slide" id="slide-<?= $v['id'] ?>" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-url="<?= site_url('v/'.$v['id']) ?>">
             <div class="video-wrapper">
+                <div class="play-pause-indicator">
+                    <i class="fa fa-play fa-2x"></i>
+                </div>
                 <video class="gallery-video" loop preload="none" playsinline>
                     <source src="<?= base_url($v['video_path']) ?>" type="video/mp4">
                 </video>
@@ -227,11 +273,11 @@
                         <i class="fa fa-eye fa-lg"></i>
                         <span style="font-size:12px;" id="views-<?= $v['id'] ?>"><?= $v['views'] ?></span>
                     </div>
-                    <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                    <button class="action-btn share-trigger" data-id="<?= $v['id'] ?>" data-title="<?= htmlspecialchars($v['title']) ?>" data-link="<?= site_url('v/'.$v['id']) ?>">
                         <i class="fa fa-share-alt fa-lg"></i>
                         <span style="font-size:12px;" id="shares-<?= $v['id'] ?>"><?= $v['shares'] ?></span>
                     </button>
-                    <button class="action-btn copy-link" data-link="<?= site_url('gallery/'.$v['id']) ?>">
+                    <button class="action-btn copy-link" data-link="<?= site_url('v/'.$v['id']) ?>">
                         <i class="fa fa-link fa-lg"></i>
                     </button>
                 </div>
@@ -332,6 +378,27 @@ function initGallery() {
 
     document.querySelectorAll('.video-slide').forEach(slide => {
         videoObserver.observe(slide);
+    });
+
+    // Toggle Play/Pause on click
+    $(document).on('click', '.gallery-video', function() {
+        const video = this;
+        const $indicator = $(video).parent().find('.play-pause-indicator');
+        const $icon = $indicator.find('i');
+
+        if (video.paused) {
+            video.play();
+            $icon.removeClass('fa-play').addClass('fa-pause');
+        } else {
+            video.pause();
+            $icon.removeClass('fa-pause').addClass('fa-play');
+        }
+
+        // Show indicator briefly
+        $indicator.addClass('show');
+        setTimeout(() => {
+            $indicator.removeClass('show');
+        }, 800);
     });
 
     // Auto-open if ID in URL

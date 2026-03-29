@@ -26,6 +26,11 @@
                                 <p class="help-block">Allowed: mp4, webm, ogg. Max size: 50MB.</p>
                             </div>
                             <div class="form-group">
+                                <label>Video Thumbnail (Shown in sharing previews)</label>
+                                <input type="file" name="thumbnail" class="form-control">
+                                <p class="help-block">Recommended: 1080x1920 JPG or PNG.</p>
+                            </div>
+                            <div class="form-group">
                                 <label>Priority</label>
                                 <input type="number" class="form-control" name="priority" value="0">
                             </div>
