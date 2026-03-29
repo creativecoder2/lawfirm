@@ -47,9 +47,14 @@
                     </div>
                     <div class="video-btn">
                         <ul>
-                            <li><a href="<?= $about['video_url'] ?>" class="video-btn" data-type="iframe">
-                            <i class="fi flaticon-play-button"></i>
-                            </a>
+                            <li>
+                                <?php 
+                                    $v_href = !empty($about['video_file']) ? base_url($about['video_file']) : $about['video_url'];
+                                    $v_type = !empty($about['video_file']) ? 'video' : 'iframe';
+                                ?>
+                                <a href="<?= $v_href ?>" class="video-btn" data-type="<?= $v_type ?>">
+                                    <i class="fi flaticon-play-button"></i>
+                                </a>
                             </li>
                         </ul>
                     </div>
