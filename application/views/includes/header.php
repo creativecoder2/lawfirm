@@ -28,7 +28,7 @@
     $seo_custom_head = $settings['seo_custom_head'] ?? '';
 
     // Dynamic overrides for specific pages
-    $page_title = isset($blog['title']) ? $blog['title'] . ' | ' : (isset($practice['title']) ? $practice['title'] . ' | ' : '');
+    $page_title = isset($active_video['title']) ? $active_video['title'] . ' | ' : (isset($blog['title']) ? $blog['title'] . ' | ' : (isset($practice['title']) ? $practice['title'] . ' | ' : ''));
     $site_name  = $settings['site_title'] ?? 'Legal Eagle Law Firm';
     $final_title = $page_title . ($seo_title ?: $site_name);
 
@@ -57,7 +57,11 @@
     <meta property="og:description" content="<?= htmlspecialchars($final_og_desc) ?>" />
     <meta property="og:image" content="<?= $final_og_image ?>" />
     <meta property="og:url" content="<?= current_url() ?>" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="<?= isset($active_video) ? 'video.other' : 'website' ?>" />
+    <?php if(isset($active_video)): ?>
+    <meta property="og:video" content="<?= base_url($active_video['video_path']) ?>" />
+    <meta property="og:video:type" content="video/mp4" />
+    <?php endif; ?>
     <meta property="og:site_name" content="<?= htmlspecialchars($site_name) ?>" />
     <?php if($seo_fb_app): ?><meta property="fb:app_id" content="<?= htmlspecialchars($seo_fb_app) ?>" /><?php endif; ?>
 
@@ -188,6 +192,9 @@
                                             <a href="<?= site_url('page/'.$hpage['slug']) ?>"><?= $hpage['title'] ?></a>
                                         </li>
                                     <?php endforeach; endif; ?>
+                                    <li class="<?= ($this->uri->segment(1) == 'gallery') ? 'active' : '' ?>">
+                                        <a href="<?= site_url('gallery') ?>">Gallery</a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>

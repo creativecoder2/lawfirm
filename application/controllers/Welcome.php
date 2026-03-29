@@ -619,6 +619,49 @@ class Welcome extends CI_Controller {
         $this->load->view('includes/footer', $data);
     }
 
+    public function gallery($id = null) {
+        $this->db->where('is_active', 1);
+        if($id) {
+            // Put the specific video first, then others by priority
+            $this->db->order_by("id = $id DESC, priority ASC", '', FALSE);
+        } else {
+            $this->db->order_by('priority', 'ASC');
+        }
+        $data['videos'] = $this->db->get('video_gallery')->result_array();
+        
+        // SEO overrides for specific video if shared
+        $data['active_video'] = null;
+        if($id) {
+            foreach($data['videos'] as $v) {
+                if($v['id'] == $id) {
+                    $data['active_video'] = $v;
+                    break;
+                }
+            }
+        }
+
+        $data['settings'] = $this->_get_settings();
+        $this->load->view('includes/header', $data);
+        $this->load->view('gallery', $data);
+        $this->load->view('includes/footer');
+    }
+
+    // AJAX endpoint to track views/shares
+    public function track_video_action() {
+        $id = $this->input->post('id');
+        $type = $this->input->post('type'); // 'view' or 'share'
+        
+        if($id && ($type == 'view' || $type == 'share')) {
+            $column = ($type == 'view') ? 'views' : 'shares';
+            $this->db->set($column, $column . ' + 1', FALSE);
+            $this->db->where('id', $id);
+            $this->db->update('video_gallery');
+            
+            $new_count = $this->db->select($column)->get_where('video_gallery', ['id' => $id])->row()->$column;
+            echo json_encode(['status' => 'success', 'count' => $new_count]);
+        }
+    }
+
     public function contact_submit()
     {
         if (!$this->input->is_ajax_request()) {
