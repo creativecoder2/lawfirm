@@ -49,7 +49,7 @@ $twocheckout_merchant_code = isset($settings['twocheckout_merchant_code']) ? $se
                             <div class="col-12 text-center py-4 my-2" style="background: rgba(188,147,85,0.05); border-radius: 8px; border: 1px dashed rgba(188,147,85,0.3);">
                                 <label class="text-muted small text-uppercase">Consultation Category</label>
                                 <h4 class="text-dark mb-1 font-weight-bold"><?= $appointment['category_name'] ?? 'General Consultation' ?></h4>
-                                <h2 style="color: #bc9355; font-weight: 800;">$ <?= number_format($appointment['consultation_fee'] ?? 0, 2) ?></h2>
+                                <h2 style="color: #bc9355; font-weight: 800;">PKR <?= number_format($appointment['consultation_fee'] ?? 0, 2) ?></h2>
                             </div>
                         </div>
                         <div class="row">

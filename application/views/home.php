@@ -281,7 +281,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                                             </div>
                                             <div style="text-align:right;">
                                                 <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Consultation Fee</div>
-                                                <div id="summary-fee" style="color:#bc9355; font-size:22px; font-weight:700; margin-top:2px;">$ 0</div>
+                                                <div id="summary-fee" style="color:#bc9355; font-size:22px; font-weight:700; margin-top:2px;">PKR 0</div>
                                             </div>
                                         </div>
                                         <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(188,147,85,0.2); color:#aaa; font-size:12px;">
@@ -474,7 +474,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
 
         if (fee > 0) {
             document.getElementById('summary-category').innerText = catName;
-            document.getElementById('summary-fee').innerText = '$ ' + fee.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('summary-fee').innerText = 'PKR ' + fee.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
             feeSum.style.display   = 'block';
             freeNote.style.display = 'none';
             paySec.style.display   = 'block'; // Show payment methods

@@ -749,13 +749,17 @@ class Welcome extends CI_Controller {
             return;
         }
 
-        $settings = $this->_get_settings();
-        $username = $settings['paypro_username'] ?? '';
-        $client_id = $settings['paypro_client_id'] ?? '';
-        $client_secret = $settings['paypro_client_secret'] ?? '';
+        // Check if already paid to prevent back-navigation/re-payment
+        $pending = $this->db->get_where('appointments', ['uuid' => $uuid])->row_array();
+        if (!$pending) {
+            $this->session->set_flashdata('error', 'Appointment not found.');
+            redirect('welcome/free_consultation');
+            return;
+        }
 
-        if (empty($client_id) || empty($client_secret)) {
-            echo json_encode(['status' => 'error', 'message' => 'PayPro credentials are not configured.']);
+        if ($pending['payment_status'] === 'paid') {
+            $this->session->set_flashdata('success', 'This appointment has already been paid and confirmed.');
+            redirect('welcome/free_consultation');
             return;
         }
 
@@ -801,7 +805,7 @@ class Welcome extends CI_Controller {
 
         if ($access_token) {
             // 2. Create Order (API V2.1 - CSO)
-            $order_id = $uuid;
+            $order_id = $uuid . '-' . substr(time(), -5); // Add suffix to prevent 'already exists' error on retries
             $amount = $pending['consultation_fee'];
             $due_date = date('Y-m-d', strtotime('+7 days'));
 
@@ -814,10 +818,13 @@ class Welcome extends CI_Controller {
                     "OrderAmount" => $amount,
                     "OrderDueDate" => $due_date,
                     "OrderType" => "Service",
+                    "IssueDate" => date('Y-m-d'),
+                    "OrderExpireAfterSeconds" => "0",
                     "CustomerName" => substr($pending['name'], 0, 50),
                     "CustomerMobile" => substr(str_replace(['+', '-', ' '], '', $pending['phone']), 0, 15) ?: '03000000000',
                     "CustomerEmail" => substr($pending['email'], 0, 50) ?: 'no-reply@domain.com',
-                    "CustomerAddress" => substr($pending['address'] ?? '', 0, 100)
+                    "CustomerAddress" => substr($pending['address'] ?? '', 0, 100),
+                    "ReturnUrl" => site_url('welcome/free_consultation') // Return after success
                 ]
             ];
 
@@ -836,13 +843,14 @@ class Welcome extends CI_Controller {
             $order_data = json_decode($order_response, true);
             
             if (isset($order_data[0]['Status']) && $order_data[0]['Status'] == '00') {
-                $paypro_id = $order_data[0]['PayProId'] ?? '';
-                $click2pay_url = $order_data[0]['Click2PayUrl'] ?? '';
+                $paypro_id = $order_data[1]['PayProId'] ?? $order_data[0]['PayProId'] ?? '';
+                $click2pay_url = $order_data[1]['Click2Pay'] ?? $order_data[1]['short_Click2Pay'] ?? $order_data[0]['Click2PayUrl'] ?? $order_data[0]['ClickPayUrl'] ?? '';
 
                 if ($click2pay_url) {
                     echo json_encode(['status' => 'success', 'redirect' => $click2pay_url]);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Failed to get payment URL from PayPro.']);
+                    $raw = substr(strip_tags($order_response), 0, 300);
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to get payment URL from PayPro. Response: ' . $raw]);
                 }
             } else {
                 // Better error logging
@@ -892,13 +900,16 @@ class Welcome extends CI_Controller {
             $invoice_id = trim($invoice_id);
             if (empty($invoice_id)) continue;
 
-            // Search for the appointment by UUID (used as OrderNumber)
-            $appointment = $this->db->get_where('appointments', ['uuid' => $invoice_id])->row_array();
+            // Handle suffix (uuid-suffix)
+            $uuid = explode('-', $invoice_id)[0];
+
+            // Search for the appointment by UUID (used as base for OrderNumber)
+            $appointment = $this->db->get_where('appointments', ['uuid' => $uuid])->row_array();
             
             if ($appointment) {
                 // Mark as paid if not already
                 if ($appointment['payment_status'] !== 'paid') {
-                    $this->db->where('uuid', $invoice_id)->update('appointments', [
+                    $this->db->where('uuid', $uuid)->update('appointments', [
                         'status' => 'confirmed',
                         'payment_status' => 'paid',
                         'transaction_id' => 'PAYPRO-' . time()

@@ -150,7 +150,7 @@
                                             </div>
                                             <div style="text-align:right;">
                                                 <div style="color:#ccc; font-size:11px; text-transform:uppercase;">Fee</div>
-                                                <div id="summary-fee" style="color:#bc9355; font-size:20px; font-weight:700;">$ 0</div>
+                                                <div id="summary-fee" style="color:#bc9355; font-size:20px; font-weight:700;">PKR 0</div>
                                             </div>
                                         </div>
                                     </div>
@@ -227,7 +227,7 @@ function updateFee(sel) {
 
     if (fee > 0) {
         document.getElementById('summary-category').innerText = catName;
-        document.getElementById('summary-fee').innerText = '$ ' + fee.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        document.getElementById('summary-fee').innerText = 'PKR ' + fee.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
         feeSum.style.display   = 'block';
         freeNote.style.display = 'none';
         paySec.style.display   = 'block';
