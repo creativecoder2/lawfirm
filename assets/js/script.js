@@ -423,19 +423,40 @@ if ($(".odometer").length) {
     -------------------------------------------*/
     if ($(".video-btn").length) {
         $(".video-btn").on("click", function(){
-            $.fancybox({
-                href: this.href,
-                type: $(this).data("type"),
-                'title'         : this.title,
-                helpers     : {
-                    title : { type : 'inside' },
-                    media : {}
-                },
+            var type = $(this).data("type");
+            var href = this.href;
 
-                beforeShow : function(){
-                    $(".fancybox-wrap").addClass("gallery-fancybox");
-                }
-            });
+            if (type === 'video') {
+                $.fancybox({
+                    padding: 0,
+                    autoScale: false,
+                    transitionIn: 'none',
+                    transitionOut: 'none',
+                    title: this.title,
+                    width: 800,
+                    height: 450,
+                    href: href,
+                    type: 'html',
+                    content: '<video width="100%" height="auto" controls autoplay style="display:block;"><source src="' + href + '" type="video/mp4">Your browser does not support the video tag.</video>',
+                    beforeShow : function(){
+                        $(".fancybox-wrap").addClass("gallery-fancybox");
+                    }
+                });
+            } else {
+                $.fancybox({
+                    href: href,
+                    type: type,
+                    'title'         : this.title,
+                    helpers     : {
+                        title : { type : 'inside' },
+                        media : {}
+                    },
+
+                    beforeShow : function(){
+                        $(".fancybox-wrap").addClass("gallery-fancybox");
+                    }
+                });
+            }
             return false
         });
     }

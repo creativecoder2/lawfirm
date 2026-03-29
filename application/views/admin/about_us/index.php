@@ -28,9 +28,20 @@
                                 <label>Subtitle (Optional)</label>
                                 <input type="text" name="subtitle" class="form-control" value="<?= $about['subtitle'] ?>">
                             </div>
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label>Video URL (YouTube Embed Link)</label>
                                 <input type="text" name="video_url" class="form-control" value="<?= $about['video_url'] ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>OR Upload Video File</label>
+                                <input type="file" name="video_file" class="form-control">
+                                <?php if(!empty($about['video_file'])): ?>
+                                    <div class="mt-2 small">
+                                        <i class="fa fa-video-camera"></i> Current: <code><?= basename($about['video_file']) ?></code>
+                                        <a href="<?= base_url($about['video_file']) ?>" target="_blank" class="text-primary ml-2">View</a>
+                                    </div>
+                                <?php endif; ?>
+                                <small class="text-muted d-block mt-1">Allowed types: mp4, webm, ogg. Max size: 20MB.</small>
                             </div>
                         </div>
                         <div class="col-md-6">

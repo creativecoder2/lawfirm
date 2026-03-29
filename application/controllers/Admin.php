@@ -220,6 +220,26 @@ class Admin extends CI_Controller {
                 }
             }
 
+            // Handle Video Upload
+            if (!empty($_FILES['video_file']['name'])) {
+                $v_config['upload_path']   = './assets/videos/settings/';
+                $v_config['allowed_types'] = 'mp4|webm|ogg';
+                $v_config['max_size']      = 20480; // 20MB
+                $v_config['encrypt_name']  = TRUE;
+
+                if (!is_dir($v_config['upload_path'])) {
+                    mkdir($v_config['upload_path'], 0777, TRUE);
+                }
+
+                $this->load->library('upload', $v_config);
+                $this->upload->initialize($v_config);
+
+                if ($this->upload->do_upload('video_file')) {
+                    $uploadData = $this->upload->data();
+                    $data['video_file'] = 'assets/videos/settings/' . $uploadData['file_name'];
+                }
+            }
+
             foreach ($data as $key => $value) {
                 $this->db->replace('settings', ['key_name' => $key, 'value' => $value]);
             }
@@ -336,6 +356,24 @@ class Admin extends CI_Controller {
                         $uploadData = $this->upload->data();
                         $data[$field] = 'assets/images/about/' . $uploadData['file_name'];
                     }
+                }
+            }
+
+            // Handle Video Upload
+            if (!empty($_FILES['video_file']['name'])) {
+                $v_config['upload_path']   = './assets/videos/about/';
+                $v_config['allowed_types'] = 'mp4|webm|ogg';
+                $v_config['max_size']      = 20480; // 20MB
+                $v_config['encrypt_name']  = TRUE;
+
+                if (!is_dir($v_config['upload_path'])) {
+                    mkdir($v_config['upload_path'], 0777, TRUE);
+                }
+
+                $this->upload->initialize($v_config);
+                if ($this->upload->do_upload('video_file')) {
+                    $uploadData = $this->upload->data();
+                    $data['video_file'] = 'assets/videos/about/' . $uploadData['file_name'];
                 }
             }
 

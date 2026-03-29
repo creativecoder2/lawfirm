@@ -105,8 +105,19 @@
                                 <small class="text-muted">Tailored for signature png/jpg. Recommended size: 200x80px.</small>
                             </div>
                              <div class="form-group">
-                                <label>Video URL</label>
+                                <label>Video URL <small class="text-muted">(YouTube/Vimeo Embed Link)</small></label>
                                 <input type="text" class="form-control" name="video_url" value="<?= isset($settings['video_url']) ? $settings['video_url'] : '' ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>OR Upload Video File</label>
+                                <?php if(isset($settings['video_file']) && !empty($settings['video_file'])): ?>
+                                    <div class="mb-2">
+                                        <i class="fa fa-video-camera"></i> Current Video: <code><?= basename($settings['video_file']) ?></code>
+                                        <a href="<?= base_url($settings['video_file']) ?>" target="_blank" class="btn btn-xs btn-default">View</a>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" class="form-control" name="video_file">
+                                <small class="text-muted">Allowed types: mp4, webm, ogg. Max size: 20MB.</small>
                             </div>
 
                             <!-- Consultation Section -->

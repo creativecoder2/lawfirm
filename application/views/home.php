@@ -52,9 +52,14 @@
                     </div>
                     <div class="video-btn">
                         <ul>
-                            <li><a href="<?= isset($settings['video_url']) ? $settings['video_url'] : 'https://www.youtube.com/embed/uQBL7pSAXR8?autoplay=1' ?>" class="video-btn" data-type="iframe">
-                            <i class="fi flaticon-play-button"></i>
-                            </a>
+                            <li>
+                                <?php 
+                                    $v_href = !empty($settings['video_file']) ? base_url($settings['video_file']) : (isset($settings['video_url']) ? $settings['video_url'] : 'https://www.youtube.com/embed/uQBL7pSAXR8?autoplay=1');
+                                    $v_type = !empty($settings['video_file']) ? 'video' : 'iframe';
+                                ?>
+                                <a href="<?= $v_href ?>" class="video-btn" data-type="<?= $v_type ?>">
+                                    <i class="fi flaticon-play-button"></i>
+                                </a>
                             </li>
                         </ul>
                     </div>
