@@ -2167,10 +2167,14 @@ class Admin extends CI_Controller {
     public function features() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         
-        // Auto-migrate if column missing
+        $this->load->dbforge();
+        // Auto-migrate if columns missing
         if (!$this->db->field_exists('link', 'features')) {
-            $this->load->dbforge();
             $fields = array('link' => array('type' => 'VARCHAR', 'constraint' => '255', 'default' => '#', 'after' => 'title'));
+            $this->dbforge->add_column('features', $fields);
+        }
+        if (!$this->db->field_exists('image', 'features')) {
+            $fields = array('image' => array('type' => 'VARCHAR', 'constraint' => '255', 'null' => TRUE, 'after' => 'icon'));
             $this->dbforge->add_column('features', $fields);
         }
 
@@ -2184,7 +2188,26 @@ class Admin extends CI_Controller {
     public function feature_add() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $data = [
+                'title' => $this->input->post('title'),
+                'link' => $this->input->post('link'),
+                'priority' => (int)$this->input->post('priority'),
+                'is_active' => 1
+            ];
+
+            if (!empty($_FILES['image']['name'])) {
+                $config['upload_path'] = './assets/images/features/';
+                $config['allowed_types'] = 'jpg|jpeg|png|webp|svg';
+                $config['encrypt_name'] = TRUE;
+                if (!is_dir($config['upload_path'])) mkdir($config['upload_path'], 0777, TRUE);
+
+                $this->load->library('upload', $config);
+                if ($this->upload->do_upload('image')) {
+                    $uploadData = $this->upload->data();
+                    $data['image'] = 'assets/images/features/' . $uploadData['file_name'];
+                }
+            }
+
             $this->db->insert('features', $data);
             $this->session->set_flashdata('success', 'Action Card added successfully');
             redirect('admin/features');
@@ -2198,7 +2221,26 @@ class Admin extends CI_Controller {
     public function feature_edit($id) {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $data = [
+                'title' => $this->input->post('title'),
+                'link' => $this->input->post('link'),
+                'priority' => (int)$this->input->post('priority'),
+                'is_active' => (int)$this->input->post('is_active')
+            ];
+
+            if (!empty($_FILES['image']['name'])) {
+                $config['upload_path'] = './assets/images/features/';
+                $config['allowed_types'] = 'jpg|jpeg|png|webp|svg';
+                $config['encrypt_name'] = TRUE;
+                if (!is_dir($config['upload_path'])) mkdir($config['upload_path'], 0777, TRUE);
+
+                $this->load->library('upload', $config);
+                if ($this->upload->do_upload('image')) {
+                    $uploadData = $this->upload->data();
+                    $data['image'] = 'assets/images/features/' . $uploadData['file_name'];
+                }
+            }
+
             $this->db->where('id', $id)->update('features', $data);
             $this->session->set_flashdata('success', 'Action Card updated successfully');
             redirect('admin/features');

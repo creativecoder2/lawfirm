@@ -12,19 +12,23 @@
                 <h3 class="box-title">Card Details</h3>
             </div>
             <div class="box-body">
-                <form action="<?= site_url('admin/feature_edit/'.$feature['id']) ?>" method="post">
-                    <div class="form-group text-center" style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
-                        <label style="display:block;">Current Icon</label>
-                        <i class="<?= $feature['icon'] ?> fa-3x text-primary"></i>
+                <form action="<?= site_url('admin/feature_edit/'.$feature['id']) ?>" method="post" enctype="multipart/form-data">
+                    <div class="form-group text-center" style="background: #f9f9f9; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+                        <label style="display:block;">Current Image</label>
+                        <?php if(!empty($feature['image'])): ?>
+                            <img src="<?= base_url($feature['image']) ?>" style="max-width: 150px; max-height: 150px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <?php else: ?>
+                            <i class="<?= $feature['icon'] ?> fa-4x text-muted"></i>
+                            <p class="text-muted">No image uploaded (using legacy icon: <?= $feature['icon'] ?>)</p>
+                        <?php endif; ?>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Icon Class</label>
-                        <input type="text" name="icon" class="form-control" value="<?= $feature['icon'] ?>" required>
+                        <label>Change Image</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                        <small class="text-muted">Leave blank to keep the current image.</small>
                     </div>
-                    <div class="form-group">
-                        <label>Subtitle (Top Text)</label>
-                        <input type="text" name="subtitle" class="form-control" value="<?= $feature['subtitle'] ?>">
-                    </div>
+
                     <div class="form-group">
                         <label>Title (Main Text)</label>
                         <input type="text" name="title" class="form-control" value="<?= $feature['title'] ?>" required>

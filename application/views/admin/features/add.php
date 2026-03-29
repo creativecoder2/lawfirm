@@ -12,19 +12,15 @@
                 <h3 class="box-title">Card Details</h3>
             </div>
             <div class="box-body">
-                <form action="<?= site_url('admin/feature_add') ?>" method="post">
+                <form action="<?= site_url('admin/feature_add') ?>" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label>Icon Class (e.g. fi flaticon-law)</label>
-                        <input type="text" name="icon" class="form-control" placeholder="fi flaticon-law" required>
-                        <small class="text-muted">Use Flaticon or FontAwesome classes.</small>
+                        <label>Image (Required)</label>
+                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                        <small class="text-muted">Upload a high-quality icon or image (PNG/SVG/JPG).</small>
                     </div>
                     <div class="form-group">
-                        <label>Subtitle (Top Text, e.g. "Book Your")</label>
-                        <input type="text" name="subtitle" class="form-control" placeholder="Book Your">
-                    </div>
-                    <div class="form-group">
-                        <label>Title (Main Text, e.g. "Appointment")</label>
-                        <input type="text" name="title" class="form-control" placeholder="Appointment" required>
+                        <label>Title (Main Text, e.g. "Book Appointment")</label>
+                        <input type="text" name="title" class="form-control" placeholder="Book Appointment" required>
                     </div>
                     <div class="form-group">
                         <label>Target Link (Website URL)</label>

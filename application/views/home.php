@@ -24,18 +24,21 @@
     <!--features start -->
     <div class="features-area">
         <div class="container">
-            <div class="row">
+            <div class="row justify-content-center">
                 <?php if(!empty($features)): foreach($features as $feature): ?>
                 <div class="col-lg-4 col-md-6 col-sm-12 col-p">
                     <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" style="text-decoration: none; display: block;">
-                        <div class="features-item-2 h-100" style="transition: all 0.3s ease;">
-                            <div class="features-icon">
-                                <i class="<?= $feature['icon'] ?>"></i>
+                        <div class="features-item-2 h-100" style="transition: all 0.3s ease; padding: 40px 30px;">
+                            <div class="features-icon" style="margin-bottom: 25px;">
+                                <?php if(!empty($feature['image'])): ?>
+                                    <img src="<?= base_url($feature['image']) ?>" alt="<?= $feature['title'] ?>" style="width: 60px; height: 60px; object-fit: contain;">
+                                <?php else: ?>
+                                    <i class="<?= $feature['icon'] ?>"></i>
+                                <?php endif; ?>
                             </div>
                             <div class="features-content">
-                                <p style="margin-bottom: 5px;"><?= $feature['subtitle'] ?></p>
-                                <h3 style="margin-bottom: 10px;"><?= $feature['title'] ?></h3>
-                                <div class="click-here" style="color: #d0a15e; font-weight: 600; font-size: 14px;">
+                                <h3 style="margin-bottom: 15px; font-size: 24px; font-weight: 700;"><?= $feature['title'] ?></h3>
+                                <div class="click-here" style="color: #d0a15e; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
                                     Click here <i class="fa fa-angle-right"></i>
                                 </div>
                             </div>

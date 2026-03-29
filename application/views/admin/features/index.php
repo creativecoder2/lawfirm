@@ -24,8 +24,8 @@
                     <thead>
                         <tr>
                             <th width="50">ID</th>
-                            <th width="80">Icon</th>
-                            <th>Title / Subtitle</th>
+                            <th width="100">Image</th>
+                            <th>Title</th>
                             <th>Link</th>
                             <th width="80">Status</th>
                             <th width="100">Priority</th>
@@ -38,12 +38,14 @@
                         <tr data-id="<?= $f['id'] ?>" data-priority="<?= $f['priority'] ?>">
                             <td><?= $f['id'] ?></td>
                             <td class="text-center">
-                                <i class="<?= $f['icon'] ?> fa-2x text-primary"></i>
-                                <br><small class="text-muted"><?= $f['icon'] ?></small>
+                                <?php if(!empty($f['image'])): ?>
+                                    <img src="<?= base_url($f['image']) ?>" style="width: 50px; height: 50px; object-fit: contain; background: #eee; padding: 5px; border-radius: 5px;">
+                                <?php else: ?>
+                                    <i class="<?= $f['icon'] ?> fa-2x text-muted"></i>
+                                <?php endif; ?>
                             </td>
                             <td>
-                                <small class="text-uppercase text-muted"><?= $f['subtitle'] ?></small>
-                                <h4 style="margin: 5px 0 0 0;"><strong><?= $f['title'] ?></strong></h4>
+                                <h4 style="margin: 0;"><strong><?= $f['title'] ?></strong></h4>
                             </td>
                             <td><code><?= $f['link'] ?></code></td>
                             <td>
