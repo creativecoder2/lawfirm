@@ -2223,12 +2223,14 @@ class Admin extends CI_Controller {
     public function features() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         
+        /* 
         // Auto-migrate if column missing
         if (!$this->db->field_exists('link', 'features')) {
             $this->load->dbforge();
             $fields = array('link' => array('type' => 'VARCHAR', 'constraint' => '255', 'default' => '#', 'after' => 'title'));
             $this->dbforge->add_column('features', $fields);
         }
+        */
 
         $data['features'] = $this->db->order_by('priority', 'ASC')->get('features')->result_array();
         $this->load->view('admin/includes/header');
