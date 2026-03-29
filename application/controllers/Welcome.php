@@ -620,7 +620,9 @@ class Welcome extends CI_Controller {
     }
 
     public function gallery($id = null) {
+        // Updated Gallery View - Force Refresh
         $this->db->where('is_active', 1);
+       // echo ""; // Empty echo to ensure no previous die() remains
         if($id) {
             // Put the specific video first, then others by priority
             $this->db->order_by("id = $id DESC, priority ASC", '', FALSE);
