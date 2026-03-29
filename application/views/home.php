@@ -124,7 +124,7 @@
                                         <label class="payment-method-card" for="pm_<?= $m['id'] ?>">
                                             <input type="radio" name="payment_method" id="pm_<?= $m['id'] ?>" value="<?= $m['id'] ?>" checked>
                                             <span class="pm-inner">
-                                                <img src="<?= base_url($m['icon']) ?>" alt="<?= $m['label'] ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                <img src="<?= (strpos($m['icon'], 'http') === 0) ? $m['icon'] : base_url($m['icon']) ?>" alt="<?= $m['label'] ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                                 <span class="pm-fallback" style="display:none;"><i class="fa fa-credit-card"></i></span>
                                                 <span class="pm-name"><?= $m['label'] ?></span>
                                             </span>
@@ -427,6 +427,9 @@
         </div>
     </div>
     <!--features-features end -->
+
+    <?php $this->load->view('team_partial'); ?>
+
     <!-- about-area start-->
     <div class="about-style-2">
         <div class="container">
@@ -509,7 +512,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <div class="studies-area section-padding">
         <div class="container">
             <!-- studies area start -->
-            <div class="col-l2">
+            <div class="col-12">
                 <div class="section-title-1 text-center">
                     <span>Here Our Best Work</span>
                     <h2>Our Resent Case Studies</h2>
@@ -597,7 +600,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <!-- blog-area start -->
     <div class="blog-area section-padding">
         <div class="container">
-            <div class="col-l2">
+            <div class="col-12">
                 <div class="section-title-1 text-center">
                     <span>From Our Blog</span>
                     <h2>Latest News</h2>

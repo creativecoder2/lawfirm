@@ -1,4 +1,3 @@
-    <?php $this->load->view('team_partial'); ?>
 <!-- .footer-area start -->
     <div class="footer-area">
         <div class="footer-top">
