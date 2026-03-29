@@ -130,11 +130,11 @@ $total_notifications = $count_appointments + $count_contacts + $count_subscriber
                 <i class="fa fa-home"></i> <span>Home Management</span>
             </a>
             <ul class="nav-dropdown">
-                <li>
+                <!-- <li>
                     <a href="<?= site_url('admin/sliders') ?>" class="nav-link <?= is_active($segment, ['sliders', 'slider_add', 'slider_edit']) ?>">
                         <i class="fa fa-picture-o"></i> Sliders
                     </a>
-                </li>
+                </li> -->
                 <li>
                     <a href="<?= site_url('admin/features') ?>" class="nav-link <?= is_active($segment, ['features', 'feature_add', 'feature_edit']) ?>">
                         <i class="fa fa-th-large"></i> Home Action Cards

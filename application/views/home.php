@@ -1,5 +1,5 @@
     <!-- start of hero -->
-    <section class="hero hero-slider-wrapper hero-style-1">
+    <!-- <section class="hero hero-slider-wrapper hero-style-1">
         <div class="hero-slider">
             <?php if(!empty($sliders)): foreach($sliders as $slider): ?>
             <div class="slide">
@@ -18,205 +18,12 @@
             </div>
             <?php endforeach; endif; ?>
         </div>
-    </section>
+    </section> -->
     <!-- end of hero slider -->
 
-    <!--features start -->
-    <div class="features-area">
-        <div class="container">
-            <div class="row justify-content-center">
-                <?php if(!empty($features)): foreach($features as $feature): ?>
-                <div class="col-lg-4 col-md-6 col-sm-12 col-p">
-                    <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" style="text-decoration: none; display: block;">
-                        <div class="features-item-2 h-100" style="transition: all 0.3s ease; padding: 40px 30px;">
-                            <div class="features-icon" style="margin-bottom: 25px;">
-                                <?php if(!empty($feature['image'])): ?>
-                                    <img src="<?= base_url($feature['image']) ?>" alt="<?= $feature['title'] ?>" style="width: 60px; height: 60px; object-fit: contain;">
-                                <?php else: ?>
-                                    <i class="<?= $feature['icon'] ?>"></i>
-                                <?php endif; ?>
-                            </div>
-                            <div class="features-content">
-                                <h3 style="margin-bottom: 15px; font-size: 24px; font-weight: 700;"><?= $feature['title'] ?></h3>
-                                <div class="click-here" style="color: #d0a15e; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
-                                    Click here <i class="fa fa-angle-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-    </div>
-    <!--features-features end -->
-    <!-- about-area start-->
-    <div class="about-style-2">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-sm-12 col-m">
-                    <div class="about-img">
-                       <img src="<?= base_url(isset($settings['about_image']) ? $settings['about_image'] : 'assets/images/about/img-2.png') ?>" alt=""> 
-                    </div>
-                    <div class="video-btn">
-                        <ul>
-                            <li>
-                                <?php 
-                                    $v_href = !empty($settings['video_file']) ? base_url($settings['video_file']) : (isset($settings['video_url']) ? $settings['video_url'] : 'https://www.youtube.com/embed/uQBL7pSAXR8?autoplay=1');
-                                    $v_type = !empty($settings['video_file']) ? 'video' : 'iframe';
-                                ?>
-                                <a href="<?= $v_href ?>" class="video-btn" data-type="<?= $v_type ?>">
-                                    <i class="fi flaticon-play-button"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-12">
-                    <div class="about-content">
-                        <div class="section-title">
-                            <h2><?= isset($settings['about_title']) ? $settings['about_title'] : 'Building Trust Through Decades of Service' ?></h2>
-                        </div>
-                        <p><?= isset($settings['about_text']) ? nl2br($settings['about_text']) : 'Founded in 2020...' ?></p>
-                        <div class="btns">
-                            <div class="btn-style"><a href="<?= site_url('about') ?>">More About Us..</a></div>
-                        </div>
-                        <div class="signature">
-                            <img src="<?= base_url(isset($settings['signature_image']) ? $settings['signature_image'] : 'assets/images/about/img-1.png') ?>" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- about-area end-->
-    <!-- practice-area start -->
-    <div class="practice-area  ptb-100-70">
-        <div class="container">
-            <div class="col-12">
-                <div class="section-title-1 text-center">
-                    <span>Area Of Practice</span>
-                    <h2>How Can We Help You</h2>
-                    <p>Our experienced legal team provides comprehensive representation across a wide range of
-practice areas, ensuring expert counsel for your specific needs</p>
-                </div>
-            </div>
-            <div class="row">
-                <?php if(!empty($practice)): foreach($practice as $p): ?>
-                <div class="col-lg-4 col-md-6 col-12">
-                    <div class="practice-section">
-                        <div class="practices-wrapper">
-                            <div class="practices-icon-wrapper" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
-                                <div class="practice-dot">
-                                   <div class="dots"></div>
-                                </div>
-                                <?php if(!empty($p['image'])): ?>
-                                    <img src="<?= base_url($p['image']) ?>" alt="<?= $p['title'] ?>" style="width: 100%; height: 100%; object-fit: cover; ">
-                                <?php else: ?>
-                                    <i class="fi flaticon-law"></i>
-                                <?php endif; ?>
-                            </div>
-                            <div class="practice-content">
-                                <h2><?= $p['title'] ?></h2>
-                                <div class="description-content"><?= $p['description'] ?></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-    </div>
-    <!-- practice-area end -->
-      <!-- case studiess area start -->
-    <div class="studies-area section-padding">
-        <div class="container">
-            <!-- studies area start -->
-            <div class="col-l2">
-                <div class="section-title-1 text-center">
-                    <span>Here Our Best Work</span>
-                    <h2>Our Resent Case Studies</h2>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="studies-menu text-center">
-                    <button class="active" data-filter="*">All</button>
-                    <?php if(!empty($case_categories)): foreach($case_categories as $cat): ?>
-                        <button data-filter=".<?= $cat['slug'] ?>"><?= $cat['name'] ?></button>
-                    <?php endforeach; endif; ?>
-                </div>
-            </div>
-            <div class="row grid">
-                <?php if(!empty($case_studies)): foreach($case_studies as $cs): ?>
-                <div class="col-lg-4 col-md-6 col-sm-6 grid-item <?= $cs['category_slug'] ?>">
-                    <div class="studies-item">
-                        <div class="studies-single">
-                            <img src="<?= base_url($cs['image']) ?>" alt="">
-                        </div>
-                        <a href="<?= site_url('case_studies_details/'.$cs['slug']) ?>" class="overlay-text">
-                            <div class="text-inner">
-                                <p class="sub"><?= $cs['category_name'] ?></p>
-                                <h3><?= $cs['title'] ?></h3>
-                            </div>
-                        </a>  
-                    </div>
-                </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-    </div>
-    <!-- case studiess area end -->  
-     <!--why choose us-->
-     <div class="counter-area why-choose">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="why-choose-in">
-                        <span>Why Choose Us</span>
-                        <h1>Dedicated to Your Success</h1>
-                        <p>For over 35 years, Sterling & Associates has been the trusted choice for individuals and businesses seeking exceptional legal representation. Our commitment to excellence and client satisfaction sets us apart.</p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="counter-grids">
-                        <?php if(!empty($counters)): foreach($counters as $counter): ?>
-                        <div class="grid">
-                            <div>
-                                <h2><span class="odometer" data-count="<?= intval($counter['count_value']) ?>">00</span><?= preg_replace('/[0-9]/', '', $counter['count_value']) ?></h2>
-                            </div>
-                            <p><?= $counter['title'] ?></p>
-                        </div>
-                        <?php endforeach; endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>      
-    <!--Testimonial Area Start-->
-    <div class="testimonial-area section-padding">
-        <div class="container">
-            <div class="row">
-                <div class="testimonial-active">
-                    <?php if(!empty($testimonials)): foreach($testimonials as $testimonial): ?>
-                    <div class="my-testimonial">
-                        <div class="inner-content">
-                            <div class="content">
-                                <div class="image-box"><img src="<?= base_url($testimonial['image']) ?>" alt="" /></div>
-                                <div class="quote-icon"><i class="fi flaticon-right-quote"></i></div>
-                                <h4><?= $testimonial['name'] ?></h4>
-                                <div class="designation"><?= $testimonial['designation'] ?></div>
-                                <div class="text"><?= $testimonial['message'] ?></div>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endforeach; endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Testimonial Area End-->
+
     <!-- .contact area start -->
-    <div class="contact-area section-padding" id="consultation-form">
+    <div class="contact-area section-padding" id="consultation-form" style="background: #111; padding-top: 100px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-5">
@@ -253,7 +60,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                     </div>
                 </div>
                 <div class="col col-lg-7 col-md-12 col-sm-12">
-                    <div class="contact-content">
+                    <div class="contact-content" style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
                         <div class="contact-form">
                             <form class="appointment-validation-active" id="cms-appointment-form">
                                 <input type="hidden" name="_token" id="_token" value="<?= md5(uniqid(mt_rand(), true)) ?>">
@@ -343,7 +150,30 @@ practice areas, ensuring expert counsel for your specific needs</p>
     </div>
     <!-- .contact area end -->
 
-    <style>
+    <!-- .counter-area start -->
+    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="consulting-area">
+                    <span>Now Offering Online Consultations</span>
+                     <br clear="all">
+                    <h1><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
+                     <br clear="all">
+                    <p><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights...' ?>
+                    </p>
+                     <br clear="all">
+                    <a href="">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
+                    <a href="">Book Online Consultation</a>
+                     <br clear="all">
+                </div>
+                 <br clear="all">
+            </div>
+             <br clear="all">
+        </div>
+        <br clear="all">
+    </div>
+    <!-- .counter-area end -->
+
     <style>
     /* Attorney Card Premium Styling */
     .cms-team-card {
@@ -587,30 +417,202 @@ practice areas, ensuring expert counsel for your specific needs</p>
         });
     });
     </script>
-    <!-- .contact area start -->
-    <!-- .counter-area start -->
-    <div class="counter-area">
+
+    <!--features start -->
+    <div class="features-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <?php if(!empty($features)): foreach($features as $feature): ?>
+                <div class="col-lg-4 col-md-6 col-sm-12 col-p">
+                    <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" style="text-decoration: none; display: block;">
+                        <div class="features-item-2 h-100" style="transition: all 0.3s ease; padding: 40px 30px;">
+                            <div class="features-icon" style="margin-bottom: 25px;">
+                                <?php if(!empty($feature['image'])): ?>
+                                    <img src="<?= base_url($feature['image']) ?>" alt="<?= $feature['title'] ?>" style="width: 60px; height: 60px; object-fit: contain;">
+                                <?php else: ?>
+                                    <i class="<?= $feature['icon'] ?>"></i>
+                                <?php endif; ?>
+                            </div>
+                            <div class="features-content">
+                                <h3 style="margin-bottom: 15px; font-size: 24px; font-weight: 700;"><?= $feature['title'] ?></h3>
+                                <div class="click-here" style="color: #d0a15e; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                    Click here <i class="fa fa-angle-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+    </div>
+    <!--features-features end -->
+    <!-- about-area start-->
+    <div class="about-style-2">
         <div class="container">
             <div class="row">
-                <div class="consulting-area">
-                    <span>Now Offering Online Consultations</span>
-                     <br clear="all">
-                    <h1><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
-                     <br clear="all">
-                    <p><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights...' ?>
-                    </p>
-                     <br clear="all">
-                    <a href="">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
-                    <a href="">Book Online Consultation</a>
-                     <br clear="all">
+                <div class="col-lg-6 col-sm-12 col-m">
+                    <div class="about-img">
+                       <img src="<?= base_url(isset($settings['about_image']) ? $settings['about_image'] : 'assets/images/about/img-2.png') ?>" alt=""> 
+                    </div>
+                    <div class="video-btn">
+                        <ul>
+                            <li>
+                                <?php 
+                                    $v_href = !empty($settings['video_file']) ? base_url($settings['video_file']) : (isset($settings['video_url']) ? $settings['video_url'] : 'https://www.youtube.com/embed/uQBL7pSAXR8?autoplay=1');
+                                    $v_type = !empty($settings['video_file']) ? 'video' : 'iframe';
+                                ?>
+                                <a href="<?= $v_href ?>" class="video-btn" data-type="<?= $v_type ?>">
+                                    <i class="fi flaticon-play-button"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                 <br clear="all">
+                <div class="col-lg-6 col-12">
+                    <div class="about-content">
+                        <div class="section-title">
+                            <h2><?= isset($settings['about_title']) ? $settings['about_title'] : 'Building Trust Through Decades of Service' ?></h2>
+                        </div>
+                        <p><?= isset($settings['about_text']) ? nl2br($settings['about_text']) : 'Founded in 2020...' ?></p>
+                        <div class="btns">
+                            <div class="btn-style"><a href="<?= site_url('about') ?>">More About Us..</a></div>
+                        </div>
+                        <div class="signature">
+                            <img src="<?= base_url(isset($settings['signature_image']) ? $settings['signature_image'] : 'assets/images/about/img-1.png') ?>" alt="">
+                        </div>
+                    </div>
+                </div>
             </div>
-             <br clear="all">
         </div>
-        <br clear="all">
     </div>
-    <!-- .counter-area end -->
+    <!-- about-area end-->
+    <!-- practice-area start -->
+    <div class="practice-area  ptb-100-70">
+        <div class="container">
+            <div class="col-12">
+                <div class="section-title-1 text-center">
+                    <span>Area Of Practice</span>
+                    <h2>How Can We Help You</h2>
+                    <p>Our experienced legal team provides comprehensive representation across a wide range of
+practice areas, ensuring expert counsel for your specific needs</p>
+                </div>
+            </div>
+            <div class="row">
+                <?php if(!empty($practice)): foreach($practice as $p): ?>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="practice-section">
+                        <div class="practices-wrapper">
+                            <div class="practices-icon-wrapper" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
+                                <div class="practice-dot">
+                                   <div class="dots"></div>
+                                </div>
+                                <?php if(!empty($p['image'])): ?>
+                                    <img src="<?= base_url($p['image']) ?>" alt="<?= $p['title'] ?>" style="width: 100%; height: 100%; object-fit: cover; ">
+                                <?php else: ?>
+                                    <i class="fi flaticon-law"></i>
+                                <?php endif; ?>
+                            </div>
+                            <div class="practice-content">
+                                <h2><?= $p['title'] ?></h2>
+                                <div class="description-content"><?= $p['description'] ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+    </div>
+    <!-- practice-area end -->
+      <!-- case studiess area start -->
+    <div class="studies-area section-padding">
+        <div class="container">
+            <!-- studies area start -->
+            <div class="col-l2">
+                <div class="section-title-1 text-center">
+                    <span>Here Our Best Work</span>
+                    <h2>Our Resent Case Studies</h2>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="studies-menu text-center">
+                    <button class="active" data-filter="*">All</button>
+                    <?php if(!empty($case_categories)): foreach($case_categories as $cat): ?>
+                        <button data-filter=".<?= $cat['slug'] ?>"><?= $cat['name'] ?></button>
+                    <?php endforeach; endif; ?>
+                </div>
+            </div>
+            <div class="row grid">
+                <?php if(!empty($case_studies)): foreach($case_studies as $cs): ?>
+                <div class="col-lg-4 col-md-6 col-sm-6 grid-item <?= $cs['category_slug'] ?>">
+                    <div class="studies-item">
+                        <div class="studies-single">
+                            <img src="<?= base_url($cs['image']) ?>" alt="">
+                        </div>
+                        <a href="<?= site_url('case_studies_details/'.$cs['slug']) ?>" class="overlay-text">
+                            <div class="text-inner">
+                                <p class="sub"><?= $cs['category_name'] ?></p>
+                                <h3><?= $cs['title'] ?></h3>
+                            </div>
+                        </a>  
+                    </div>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+    </div>
+    <!-- case studiess area end -->  
+     <!--why choose us-->
+     <div class="counter-area why-choose">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="why-choose-in">
+                        <span>Why Choose Us</span>
+                        <h1>Dedicated to Your Success</h1>
+                        <p>For over 35 years, Sterling & Associates has been the trusted choice for individuals and businesses seeking exceptional legal representation. Our commitment to excellence and client satisfaction sets us apart.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="counter-grids">
+                        <?php if(!empty($counters)): foreach($counters as $counter): ?>
+                        <div class="grid">
+                            <div>
+                                <h2><span class="odometer" data-count="<?= intval($counter['count_value']) ?>">00</span><?= preg_replace('/[0-9]/', '', $counter['count_value']) ?></h2>
+                            </div>
+                            <p><?= $counter['title'] ?></p>
+                        </div>
+                        <?php endforeach; endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>      
+    <!--Testimonial Area Start-->
+    <div class="testimonial-area section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="testimonial-active">
+                    <?php if(!empty($testimonials)): foreach($testimonials as $testimonial): ?>
+                    <div class="my-testimonial">
+                        <div class="inner-content">
+                            <div class="content">
+                                <div class="image-box"><img src="<?= base_url($testimonial['image']) ?>" alt="" /></div>
+                                <div class="quote-icon"><i class="fi flaticon-right-quote"></i></div>
+                                <h4><?= $testimonial['name'] ?></h4>
+                                <div class="designation"><?= $testimonial['designation'] ?></div>
+                                <div class="text"><?= $testimonial['message'] ?></div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Testimonial Area End-->
+    <!-- area end -->
     <!-- blog-area start -->
     <div class="blog-area section-padding">
         <div class="container">
