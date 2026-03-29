@@ -68,6 +68,11 @@ $total_notifications = $count_appointments + $count_contacts + $count_subscriber
                 <i class="fa fa-search"></i> <span>SEO Settings</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="<?= site_url('admin/gallery') ?>" class="nav-link <?= is_active($segment, 'gallery') ?>">
+                <i class="fa fa-video-camera"></i> <span>Video Gallery</span>
+            </a>
+        </li>
         <li class="nav-item dropdown <?= is_open($segment, ['about_us', 'about_features', 'about_feature_add', 'about_feature_edit']) ?>">
             <a href="javascript:void(0)" class="nav-link dropdown-toggle" onclick="this.parentElement.classList.toggle('active')">
                 <i class="fa fa-info-circle"></i> <span>About Us Mgmt</span>

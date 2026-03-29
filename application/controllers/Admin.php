@@ -2001,4 +2001,97 @@ class Admin extends CI_Controller {
         }
         redirect('admin/admin_profile');
     }
+
+    // Video Gallery
+    public function gallery() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $data['videos'] = $this->db->order_by('priority', 'ASC')->get('video_gallery')->result_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/gallery/index', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function gallery_add() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            
+            if (!empty($_FILES['video']['name'])) {
+                $config['upload_path'] = './assets/videos/gallery/';
+                $config['allowed_types'] = 'mp4|webm|ogg';
+                $config['max_size'] = 51200; // 50MB
+                $config['encrypt_name'] = TRUE;
+
+                if (!is_dir($config['upload_path'])) {
+                    mkdir($config['upload_path'], 0777, TRUE);
+                }
+
+                $this->load->library('upload', $config);
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload('video')) {
+                    $uploadData = $this->upload->data();
+                    $data['video_path'] = 'assets/videos/gallery/' . $uploadData['file_name'];
+                    
+                    $this->db->insert('video_gallery', $data);
+                    $this->session->set_flashdata('success', 'Video added to gallery successfully');
+                    redirect('admin/gallery');
+                } else {
+                    $this->session->set_flashdata('error', $this->upload->display_errors());
+                }
+            } else {
+                $this->session->set_flashdata('error', 'Please select a video file');
+            }
+        }
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/gallery/add');
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function gallery_edit($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            
+            if (!empty($_FILES['video']['name'])) {
+                $config['upload_path'] = './assets/videos/gallery/';
+                $config['allowed_types'] = 'mp4|webm|ogg';
+                $config['max_size'] = 51200;
+                $config['encrypt_name'] = TRUE;
+
+                $this->load->library('upload', $config);
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload('video')) {
+                    $uploadData = $this->upload->data();
+                    $data['video_path'] = 'assets/videos/gallery/' . $uploadData['file_name'];
+                }
+            }
+
+            $this->db->where('id', $id)->update('video_gallery', $data);
+            $this->session->set_flashdata('success', 'Video updated successfully');
+            redirect('admin/gallery');
+        }
+        $data['video'] = $this->db->get_where('video_gallery', ['id' => $id])->row_array();
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/gallery/edit', $data);
+        $this->load->view('admin/includes/footer');
+    }
+
+    public function gallery_delete($id) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->delete('video_gallery');
+        $this->session->set_flashdata('success', 'Video deleted successfully');
+        redirect('admin/gallery');
+    }
+
+    public function gallery_status($id, $status) {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        $this->db->where('id', $id)->update('video_gallery', ['is_active' => $status]);
+        $this->session->set_flashdata('success', 'Video status updated');
+        redirect('admin/gallery');
+    }
 }
