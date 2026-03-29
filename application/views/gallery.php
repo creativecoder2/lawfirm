@@ -140,28 +140,51 @@
         right: 15px;
         color: #fff;
         z-index: 10;
-        pointer-events: none;
-        padding: 20px;
+        padding: 15px 20px;
         background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 400px;
     }
 
     .video-overlay-bottom h3 {
         margin-bottom: 5px;
         font-weight: 700;
         letter-spacing: 0.5px;
+        font-size: 1.1rem;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
-    .video-overlay-bottom p {
-        margin: 0;
-        font-size: 1rem;
-        color: #fff;
-        opacity: 1;
+    .description-container {
+        font-size: 0.85rem;
         line-height: 1.4;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        opacity: 0.95;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .description-container.expanded {
+        -webkit-line-clamp: unset;
+        display: block;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .read-more-btn {
+        display: inline-block;
+        color: #fff;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        pointer-events: auto;
     }
 
     /* Play/Pause Indicator */
@@ -266,8 +289,13 @@
                 </video>
 
                 <div class="video-overlay-bottom">
-                    <h3 style="color:#fff;"><?= $v['title'] ?></h3>
-                    <p><?= $v['description'] ?></p>
+                    <h3><?= $v['title'] ?></h3>
+                    <div class="description-container" id="desc-<?= $v['id'] ?>">
+                        <?= $v['description'] ?>
+                    </div>
+                    <?php if(strlen($v['description']) > 80): ?>
+                    <a class="read-more-btn" onclick="toggleReadMore(event, 'desc-<?= $v['id'] ?>')">Read more</a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="video-overlay-right">
@@ -422,4 +450,18 @@ function initGallery() {
         });
     }
 }
+    function toggleReadMore(e, id) {
+        e.preventDefault();
+        e.stopPropagation();
+        const container = document.getElementById(id);
+        const btn = e.target;
+        
+        if (container.classList.contains('expanded')) {
+            container.classList.remove('expanded');
+            btn.innerText = 'Read more';
+        } else {
+            container.classList.add('expanded');
+            btn.innerText = 'Read less';
+        }
+    }
 </script>
