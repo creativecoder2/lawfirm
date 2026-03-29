@@ -72,6 +72,7 @@
     <meta property="og:image" content="<?= $final_og_image ?>" />
     <meta property="og:url" content="<?= current_url() ?>" />
     <meta property="og:type" content="<?= isset($active_video) ? 'video.other' : 'website' ?>" />
+    <?php if(isset($active_video)): ?>
     <meta property="og:video" content="<?= base_url($active_video['video_path']) ?>" />
     <meta property="og:video:secure_url" content="<?= base_url($active_video['video_path']) ?>" />
     <meta property="og:video:type" content="video/mp4" />
