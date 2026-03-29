@@ -2041,6 +2041,22 @@ class Admin extends CI_Controller {
                     }
                 }
 
+                // Handle Captured Thumbnail (Base64)
+                if (!empty($this->input->post('captured_thumb'))) {
+                    $base64_string = $this->input->post('captured_thumb');
+                    $data_parts = explode(',', $base64_string);
+                    if (count($data_parts) > 1) {
+                        $image_data = base64_decode($data_parts[1]);
+                        $path = './assets/videos/gallery/thumbnails/';
+                        if (!is_dir($path)) mkdir($path, 0777, TRUE);
+                        
+                        $filename = 'thumb_' . time() . '_' . uniqid() . '.jpg';
+                        file_put_contents($path . $filename, $image_data);
+                        $data['thumbnail'] = 'assets/videos/gallery/thumbnails/' . $filename;
+                    }
+                    unset($data['captured_thumb']);
+                }
+
                 if ($this->upload->do_upload('video')) {
                     $uploadData = $this->upload->data();
                     $data['video_path'] = 'assets/videos/gallery/' . $uploadData['file_name'];
@@ -2093,6 +2109,22 @@ class Admin extends CI_Controller {
                     $thumbData = $this->thumb_upload->data();
                     $data['thumbnail'] = 'assets/videos/gallery/thumbnails/' . $thumbData['file_name'];
                 }
+            }
+
+            // Handle Captured Thumbnail (Base64)
+            if (!empty($this->input->post('captured_thumb'))) {
+                $base64_string = $this->input->post('captured_thumb');
+                $data_parts = explode(',', $base64_string);
+                if (count($data_parts) > 1) {
+                    $image_data = base64_decode($data_parts[1]);
+                    $path = './assets/videos/gallery/thumbnails/';
+                    if (!is_dir($path)) mkdir($path, 0777, TRUE);
+                    
+                    $filename = 'thumb_' . time() . '_' . uniqid() . '.jpg';
+                    file_put_contents($path . $filename, $image_data);
+                    $data['thumbnail'] = 'assets/videos/gallery/thumbnails/' . $filename;
+                }
+                unset($data['captured_thumb']); // Don't save raw base64 to DB
             }
 
             $this->db->where('id', $id)->update('video_gallery', $data);

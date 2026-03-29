@@ -22,14 +22,21 @@
                             </div>
                             <div class="form-group">
                                 <label>Change Video File (Optional)</label>
-                                <input type="file" name="video" class="form-control">
+                                <input type="file" name="video" id="video_input" class="form-control">
                                 <p class="help-block">Leave blank if you don't want to change the video. Max: 50MB.</p>
-                                <div class="mt-2">
-                                    <video width="200" controls>
+                                <div class="mt-2 text-center" style="background:#000; padding:10px; border-radius:5px;">
+                                    <video id="video_preview" width="250" controls style="border-radius:5px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
                                         <source src="<?= base_url($video['video_path']) ?>" type="video/mp4">
                                     </video>
+                                    <br>
+                                    <button type="button" id="capture_thumb" class="btn btn-sm btn-info mt-2">
+                                        <i class="fa fa-camera"></i> Capture First Frame as Thumbnail
+                                    </button>
+                                    <div id="capture_status" class="mt-1 small text-info"></div>
                                 </div>
                             </div>
+                            <canvas id="thumb_canvas" style="display:none;"></canvas>
+                            <input type="hidden" name="captured_thumb" id="captured_thumb_input">
                             <div class="form-group">
                                 <label>Change Thumbnail (Optional)</label>
                                 <input type="file" name="thumbnail" class="form-control">
@@ -61,3 +68,47 @@
         </div>
     </section>
 </div>
+
+<script>
+document.getElementById('capture_thumb').addEventListener('click', function() {
+    const video = document.getElementById('video_preview');
+    const canvas = document.getElementById('thumb_canvas');
+    const input = document.getElementById('captured_thumb_input');
+    const status = document.getElementById('capture_status');
+
+    if (video.readyState >= 2) {
+        // Set canvas dimensions to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Draw the current frame
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to base64
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        input.value = dataURL;
+        
+        status.innerHTML = '<i class="fa fa-check"></i> Frame captured! Remember to click "Update Video" to save.';
+        status.className = 'mt-1 small text-success';
+        
+        // Visual feedback (border flash)
+        video.style.border = '2px solid #00c0ef';
+        setTimeout(() => video.style.border = 'none', 300);
+    } else {
+        status.innerText = 'Video not ready. Play it for a second first.';
+    }
+});
+
+// Also handle local file preview if a new video is selected
+document.getElementById('video_input').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const url = URL.createObjectURL(file);
+        const video = document.getElementById('video_preview');
+        video.src = url;
+        video.load();
+        document.getElementById('capture_status').innerText = 'New video loaded. Move to any frame and click Capture.';
+    }
+});
+</script>
