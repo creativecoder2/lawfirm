@@ -137,7 +137,7 @@
         position: absolute;
         bottom: 30px;
         left: 15px;
-        right: 15px;
+        right: 80px; /* Increased to avoid overlap with right icons */
         color: #fff;
         z-index: 10;
         padding: 15px 20px;
@@ -146,7 +146,6 @@
         -webkit-backdrop-filter: blur(15px);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        max-width: 400px;
     }
 
     .video-overlay-bottom h3 {
@@ -154,6 +153,7 @@
         font-weight: 700;
         letter-spacing: 0.5px;
         font-size: 1.1rem;
+        color: #fff !important; /* Force white color */
         text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
