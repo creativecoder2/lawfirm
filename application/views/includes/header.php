@@ -83,7 +83,14 @@
     <?php if($seo_fb_app): ?><meta property="fb:app_id" content="<?= htmlspecialchars($seo_fb_app) ?>" /><?php endif; ?>
 
     <!-- Twitter Card -->
+    <?php if(isset($active_video)): ?>
+    <meta name="twitter:card" content="player">
+    <meta name="twitter:player" content="<?= base_url($active_video['video_path']) ?>">
+    <meta name="twitter:player:width" content="720">
+    <meta name="twitter:player:height" content="1280">
+    <?php else: ?>
     <meta name="twitter:card" content="summary_large_image">
+    <?php endif; ?>
     <?php if($seo_twitter): ?><meta name="twitter:site" content="<?= htmlspecialchars($seo_twitter) ?>"><?php endif; ?>
     <meta name="twitter:title" content="<?= htmlspecialchars($final_og_title) ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($final_og_desc) ?>">

@@ -389,6 +389,7 @@ function initGallery() {
         const $icon = $indicator.find('i');
 
         if (video.paused) {
+            video.muted = false; // Always try to unmute on user click
             video.play();
             $icon.removeClass('fa-play').addClass('fa-pause');
         } else {
