@@ -17,50 +17,65 @@
 
     .grid-item {
         position: relative;
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
         aspect-ratio: 9/16;
-        background: #000;
+        background: #111;
         cursor: pointer;
-        transition: transform 0.3s;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.05);
     }
 
     .grid-item:hover {
-        transform: scale(1.03);
-        z-index: 5;
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        border-color: rgba(208, 161, 94, 0.3);
     }
 
     .grid-item video {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        opacity: 0.8;
-        transition: 0.3s;
+        opacity: 0.7;
+        transition: 0.5s;
     }
 
     .grid-item:hover video {
         opacity: 1;
+        transform: scale(1.05);
     }
 
     .grid-item .item-overlay {
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 15px 10px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
         color: #fff;
         pointer-events: none;
+        transition: 0.3s;
+    }
+
+    .grid-item:hover .item-overlay {
+        background: rgba(208, 161, 94, 0.1);
+        border-color: rgba(208, 161, 94, 0.4);
     }
 
     .grid-item .item-overlay h5 {
         color: #fff;
-        font-size: 0.9rem;
-        margin: 0;
-        white-space: nowrap;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     /* Fullscreen TikTok Overlay */
@@ -330,7 +345,7 @@
                 </div>
 
                 <div class="video-progress-container">
-                    <div class="video-progress-bar" id="progress-<?= v['id'] ?>"></div>
+                    <div class="video-progress-bar" id="progress-<?= $v['id'] ?>"></div>
                 </div>
             </div>
         </div>
@@ -467,7 +482,10 @@ function initGallery() {
 
     function renderNewVideos(videos) {
         const container = document.getElementById('video-gallery');
+        const gridContainer = document.querySelector('.video-grid');
+        
         videos.forEach(v => {
+            // Append to TikTok Overlay
             const slide = document.createElement('div');
             slide.className = 'video-slide';
             slide.id = `slide-${v.id}`;
@@ -492,11 +510,26 @@ function initGallery() {
                             <i class="fa fa-share-alt fa-lg"></i><span id="shares-${v.id}">${v.shares}</span>
                         </button>
                     </div>
-                    <div class="video-progress-container"><div class="video-progress-bar"></div></div>
+                    <div class="video-progress-container"><div class="video-progress-bar" id="progress-${v.id}"></div></div>
                 </div>
             `;
             container.appendChild(slide);
             videoObserver.observe(slide);
+
+            // Append to Grid
+            const gridItem = document.createElement('div');
+            gridItem.className = 'grid-item open-tiktok';
+            gridItem.dataset.id = v.id;
+            gridItem.innerHTML = `
+                <video muted loop preload="metadata">
+                    <source src="<?= base_url() ?>${v.video_path}" type="video/mp4">
+                </video>
+                <div class="item-overlay">
+                    <h5>${v.title}</h5>
+                    <small><i class="fa fa-eye"></i> ${v.views} views</small>
+                </div>
+            `;
+            gridContainer.appendChild(gridItem);
         });
     }
 
