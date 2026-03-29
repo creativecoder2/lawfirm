@@ -645,7 +645,9 @@ class Welcome extends CI_Controller {
         }
         
         $data['settings'] = $this->_get_settings();
+        $this->load->view('includes/header', $data);
         $this->load->view('gallery', $data);
+        $this->load->view('includes/footer', $data);
     }
 
     // AJAX endpoint to track views/shares
