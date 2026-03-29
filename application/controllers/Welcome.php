@@ -620,6 +620,7 @@ class Welcome extends CI_Controller {
     }
 
     public function gallery($id = null) {
+        echo "Gallery method reached! ID: " . $id; die();
         $this->db->where('is_active', 1);
         if($id) {
             // Put the specific video first, then others by priority
@@ -1101,6 +1102,7 @@ class Welcome extends CI_Controller {
 
     public function resolve_slug($slug)
     {
+        $slug = trim($slug, '/');
         $data['settings'] = $this->_get_settings();
         
         // Map common slugs to internal methods (matches our DB migration and routes)
@@ -1111,7 +1113,8 @@ class Welcome extends CI_Controller {
             'blog'          => 'blog',
             'contact-us'    => 'contact',
             'landmark'      => 'landmark',
-            'free-consultation' => 'free_consultation'
+            'free-consultation' => 'free_consultation',
+            'gallery'       => 'gallery'
         ];
 
         if (array_key_exists($slug, $system_mappings)) {
