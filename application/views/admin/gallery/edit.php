@@ -24,15 +24,15 @@
                                 <label>Change Video File (Optional)</label>
                                 <input type="file" name="video" id="video_input" class="form-control">
                                 <p class="help-block">Leave blank if you don't want to change the video. Max: 50MB.</p>
-                                <div class="mt-2 text-center" style="background:#000; padding:10px; border-radius:5px;">
-                                    <video id="video_preview" width="250" controls style="border-radius:5px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                                <div class="mt-2 text-center" style="background:#000; padding:15px; border-radius:8px; border: 2px dashed #444;">
+                                    <!-- Cache Buster: v1.02 -->
+                                    <button type="button" id="capture_thumb" class="btn btn-warning btn-block mb-3" style="font-weight:bold; color:#000;">
+                                        <i class="fa fa-camera"></i> STEP 1: CLICK TO CAPTURE PREVIEW
+                                    </button>
+                                    <video id="video_preview" width="100%" controls style="border-radius:5px; max-width:350px;">
                                         <source src="<?= base_url($video['video_path']) ?>" type="video/mp4">
                                     </video>
-                                    <br>
-                                    <button type="button" id="capture_thumb" class="btn btn-sm btn-info mt-2">
-                                        <i class="fa fa-camera"></i> Capture First Frame as Thumbnail
-                                    </button>
-                                    <div id="capture_status" class="mt-1 small text-info"></div>
+                                    <div id="capture_status" class="mt-2 small text-warning" style="font-weight:bold;"></div>
                                 </div>
                             </div>
                             <canvas id="thumb_canvas" style="display:none;"></canvas>
@@ -89,8 +89,7 @@ document.getElementById('capture_thumb').addEventListener('click', function() {
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
         input.value = dataURL;
         
-        status.innerHTML = '<i class="fa fa-check"></i> Frame captured! Remember to click "Update Video" to save.';
-        status.className = 'mt-1 small text-success';
+        status.innerHTML = '<div class="alert alert-success" style="margin-top:10px;"><i class="fa fa-check"></i> PREVIEW CAPTURED! Now click "Update Video" below to save.</div>';
         
         // Visual feedback (border flash)
         video.style.border = '2px solid #00c0ef';
