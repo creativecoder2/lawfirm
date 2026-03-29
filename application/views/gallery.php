@@ -231,7 +231,18 @@
 <?php $this->load->view('gallery_modals'); // Separated for cleanliness ?>
 
 <script>
-$(document).ready(function() {
+// Wait for jQuery to load
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof jQuery === 'undefined') {
+        // If jQuery is in footer, we might need a small delay or use window.load
+        window.addEventListener('load', initGallery);
+    } else {
+        initGallery();
+    }
+});
+
+function initGallery() {
+    const $ = jQuery;
     const $overlay = $('#tiktok-overlay');
     const $gallery = $('#video-gallery');
 
@@ -251,10 +262,19 @@ $(document).ready(function() {
         $overlay.fadeIn();
         $('body').css('overflow', 'hidden');
         
-        // Scroll to the specific video
+        // Scroll and Play
         const target = document.getElementById('slide-' + id);
         if(target) {
             target.scrollIntoView();
+            const video = target.querySelector('video');
+            if(video) {
+                video.muted = false; // Unmute on click since it's user-initiated
+                video.play().catch(err => {
+                    console.log("Play failed, trying muted:", err);
+                    video.muted = true;
+                    video.play();
+                });
+            }
         }
     });
 
@@ -317,7 +337,5 @@ $(document).ready(function() {
             } catch(e) {}
         });
     }
-
-    // Reuse share functions...
-});
+}
 </script>

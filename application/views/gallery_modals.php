@@ -35,7 +35,16 @@
 </div>
 
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof jQuery === 'undefined') {
+        window.addEventListener('load', initShareModal);
+    } else {
+        initShareModal();
+    }
+});
+
+function initShareModal() {
+    const $ = jQuery;
     // Share Trigger
     $(document).on('click', '.share-trigger', function() {
         const id = $(this).data('id');
@@ -74,5 +83,5 @@ $(document).ready(function() {
         document.execCommand("copy");
         temp.remove();
     }
-});
+}
 </script>
