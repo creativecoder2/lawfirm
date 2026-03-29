@@ -619,18 +619,20 @@ class Welcome extends CI_Controller {
         $this->load->view('includes/footer', $data);
     }
 
-    public function gallery($id = null) {
+    public function gallery($id = null, $offset = 0) {
         // Updated Gallery View - Force Refresh
-        $this->db->where('is_active', 1);
-       // echo ""; // Empty echo to ensure no previous die() remains
+        $limit = 12;
         if($id) {
-            // Put the specific video first, then others by priority
+            // If direct link, show that video first. No pagination logic needed for single view.
             $this->db->order_by("id = $id DESC, priority ASC", '', FALSE);
+            $data['videos'] = $this->db->where('is_active', 1)->get('video_gallery')->result_array();
+            $data['active_video_id'] = $id;
         } else {
+            $this->db->where('is_active', 1);
             $this->db->order_by('priority', 'ASC');
+            $this->db->limit($limit, $offset);
+            $data['videos'] = $this->db->get('video_gallery')->result_array();
         }
-        $data['videos'] = $this->db->get('video_gallery')->result_array();
-        
         // SEO overrides for specific video if shared
         $data['active_video'] = null;
         if($id) {
@@ -641,11 +643,9 @@ class Welcome extends CI_Controller {
                 }
             }
         }
-
+        
         $data['settings'] = $this->_get_settings();
-        $this->load->view('includes/header', $data);
         $this->load->view('gallery', $data);
-        $this->load->view('includes/footer');
     }
 
     // AJAX endpoint to track views/shares
@@ -1148,5 +1148,14 @@ class Welcome extends CI_Controller {
         $this->load->view('includes/header', $data);
         $this->load->view('error_404', $data);
         $this->load->view('includes/footer', $data);
+    }
+    public function load_more_videos($offset = 12) {
+        $limit = 12;
+        $this->db->where('is_active', 1);
+        $this->db->order_by('priority', 'ASC');
+        $this->db->limit($limit, $offset);
+        $videos = $this->db->get('video_gallery')->result_array();
+        
+        echo json_encode(['status' => 'success', 'videos' => $videos]);
     }
 }

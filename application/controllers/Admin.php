@@ -2015,7 +2015,14 @@ class Admin extends CI_Controller {
     public function gallery_add() {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $data = [
+                'title' => $this->input->post('title'),
+                'description' => $this->input->post('description'),
+                'priority' => (int)$this->input->post('priority'),
+                'is_active' => (int)$this->input->post('is_active'),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
             
             if (!empty($_FILES['video']['name'])) {
                 $config['upload_path'] = './assets/videos/gallery/';
@@ -2080,10 +2087,67 @@ class Admin extends CI_Controller {
         $this->load->view('admin/includes/footer');
     }
 
+    public function gallery_bulk_add() {
+        if (!$this->session->userdata('logged_in')) redirect('admin/login');
+        if ($this->input->post('submit')) {
+            $titles = $this->input->post('title');
+            $descriptions = $this->input->post('description');
+            $priorities = $this->input->post('priority');
+            
+            $count = count($titles);
+            $success_count = 0;
+            
+            $this->load->library('upload');
+            
+            for ($i = 0; $i < $count; $i++) {
+                if (!empty($_FILES['video']['name'][$i])) {
+                    $_FILES['temp_video']['name'] = $_FILES['video']['name'][$i];
+                    $_FILES['temp_video']['type'] = $_FILES['video']['type'][$i];
+                    $_FILES['temp_video']['tmp_name'] = $_FILES['video']['tmp_name'][$i];
+                    $_FILES['temp_video']['error'] = $_FILES['video']['error'][$i];
+                    $_FILES['temp_video']['size'] = $_FILES['video']['size'][$i];
+                    
+                    $config['upload_path'] = './assets/videos/gallery/';
+                    $config['allowed_types'] = 'mp4|webm|ogg';
+                    $config['encrypt_name'] = TRUE;
+                    if (!is_dir($config['upload_path'])) mkdir($config['upload_path'], 0777, TRUE);
+                    
+                    $this->upload->initialize($config);
+                    
+                    if ($this->upload->do_upload('temp_video')) {
+                        $uploadData = $this->upload->data();
+                        $data = [
+                            'title' => $titles[$i],
+                            'description' => $descriptions[$i],
+                            'priority' => (int)$priorities[$i],
+                            'video_path' => 'assets/videos/gallery/' . $uploadData['file_name'],
+                            'is_active' => 1,
+                            'created_at' => date('Y-m-d H:i:s')
+                        ];
+                        $this->db->insert('video_gallery', $data);
+                        $success_count++;
+                    }
+                }
+            }
+            $this->session->set_flashdata('success', $success_count . ' videos uploaded successfully');
+            redirect('admin/gallery');
+        }
+        $this->load->view('admin/includes/header');
+        $this->load->view('admin/includes/sidebar');
+        $this->load->view('admin/gallery/bulk_add');
+        $this->load->view('admin/includes/footer');
+    }
+
     public function gallery_edit($id) {
         if (!$this->session->userdata('logged_in')) redirect('admin/login');
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $data = [
+                'title' => $this->input->post('title'),
+                'description' => $this->input->post('description'),
+                'priority' => (int)$this->input->post('priority'),
+                'is_active' => (int)$this->input->post('is_active'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
             
             if (!empty($_FILES['video']['name'])) {
                 $config['upload_path'] = './assets/videos/gallery/';

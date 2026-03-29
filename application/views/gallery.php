@@ -187,7 +187,24 @@
         pointer-events: auto;
     }
 
-    /* Play/Pause Indicator */
+    /* Video Progress Bar */
+    .video-progress-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255,255,255,0.1);
+        z-index: 20;
+    }
+
+    .video-progress-bar {
+        height: 100%;
+        background: #d0a15e; /* Gold color */
+        width: 0%;
+        transition: width 0.1s linear;
+        box-shadow: 0 0 10px rgba(208, 161, 94, 0.5);
+    }
     .play-pause-indicator {
         position: absolute;
         top: 50%;
@@ -311,6 +328,10 @@
                         <i class="fa fa-link fa-lg"></i>
                     </button>
                 </div>
+
+                <div class="video-progress-container">
+                    <div class="video-progress-bar" id="progress-<?= v['id'] ?>"></div>
+                </div>
             </div>
         </div>
         <?php endforeach; endif; ?>
@@ -384,27 +405,100 @@ function initGallery() {
         threshold: 0.7
     };
 
+    let offset = 12;
+    let loading = false;
+    let hasMore = true;
+
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
             const videoId = entry.target.dataset.id;
+            const $progressBar = $(entry.target).find('.video-progress-bar');
             
             if (entry.isIntersecting) {
-                // Preload and play
                 video.preload = "auto";
                 video.play().catch(e => console.log("Autoplay blocked"));
                 
-                if(!$(video).data('tracked')) {
-                    trackAction(videoId, 'view');
-                    $(video).data('tracked', true);
+                // Load More check
+                const $allSlides = $('.video-slide');
+                if ($allSlides.index(entry.target) >= $allSlides.length - 3 && !loading && hasMore) {
+                    loadMoreVideos();
                 }
+
+                // Unique View Tracking
+                const viewed = JSON.parse(localStorage.getItem('gallery_viewed') || '[]');
+                if (!viewed.includes(videoId)) {
+                    trackAction(videoId, 'view');
+                    viewed.push(videoId);
+                    localStorage.setItem('gallery_viewed', JSON.stringify(viewed));
+                }
+
+                // Progress Bar
+                video.ontimeupdate = function() {
+                    const percentage = (video.currentTime / video.duration) * 100;
+                    $progressBar.css('width', percentage + '%');
+                };
+
                 window.history.pushState(null, null, entry.target.dataset.url);
                 document.title = entry.target.dataset.title + " | Gallery";
             } else {
                 video.pause();
+                video.ontimeupdate = null;
             }
         });
     }, observerOptions);
+
+    function loadMoreVideos() {
+        loading = true;
+        $.get('<?= site_url("welcome/load_more_videos") ?>/' + offset, function(res) {
+            try {
+                const data = JSON.parse(res);
+                if (data.status === 'success' && data.videos.length > 0) {
+                    renderNewVideos(data.videos);
+                    offset += data.videos.length;
+                    if (data.videos.length < 12) hasMore = false;
+                } else {
+                    hasMore = false;
+                }
+            } catch(e) { hasMore = false; }
+            loading = false;
+        });
+    }
+
+    function renderNewVideos(videos) {
+        const container = document.getElementById('video-gallery');
+        videos.forEach(v => {
+            const slide = document.createElement('div');
+            slide.className = 'video-slide';
+            slide.id = `slide-${v.id}`;
+            slide.dataset.id = v.id;
+            slide.dataset.title = v.title;
+            slide.dataset.url = `<?= site_url('v/') ?>${v.id}`;
+            
+            slide.innerHTML = `
+                <div class="video-wrapper">
+                    <div class="play-pause-indicator"><i class="fa fa-play fa-2x"></i></div>
+                    <video class="gallery-video" loop preload="none" playsinline>
+                        <source src="<?= base_url() ?>${v.video_path}" type="video/mp4">
+                    </video>
+                    <div class="video-overlay-bottom">
+                        <h3>${v.title}</h3>
+                        <div class="description-container" id="desc-${v.id}">${v.description}</div>
+                        ${v.description.length > 80 ? `<a class="read-more-btn" onclick="toggleReadMore(event, 'desc-${v.id}')">Read more</a>` : ''}
+                    </div>
+                    <div class="video-overlay-right">
+                        <div class="action-btn"><i class="fa fa-eye fa-lg"></i><span id="views-${v.id}">${v.views}</span></div>
+                        <button class="action-btn share-trigger" data-id="${v.id}" data-title="${v.title}" data-link="<?= site_url('v/') ?>${v.id}">
+                            <i class="fa fa-share-alt fa-lg"></i><span id="shares-${v.id}">${v.shares}</span>
+                        </button>
+                    </div>
+                    <div class="video-progress-container"><div class="video-progress-bar"></div></div>
+                </div>
+            `;
+            container.appendChild(slide);
+            videoObserver.observe(slide);
+        });
+    }
 
     document.querySelectorAll('.video-slide').forEach(slide => {
         videoObserver.observe(slide);
@@ -440,6 +534,14 @@ function initGallery() {
     <?php endif; ?>
 
     function trackAction(id, type) {
+        // Unique Share check (Views already handled in observer)
+        if (type === 'share') {
+            const shared = JSON.parse(localStorage.getItem('gallery_shared') || '[]');
+            if (shared.includes(id)) return; // Already shared in this browser
+            shared.push(id);
+            localStorage.setItem('gallery_shared', JSON.stringify(shared));
+        }
+
         $.post('<?= site_url("welcome/track_video_action") ?>', {id: id, type: type}, function(res) {
             try {
                 const data = JSON.parse(res);

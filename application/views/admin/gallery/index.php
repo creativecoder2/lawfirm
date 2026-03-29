@@ -17,6 +17,9 @@
                     <div class="box-header">
                         <h3 class="box-title">Video List</h3>
                         <div class="box-tools">
+                            <a href="<?= site_url('admin/gallery_bulk_add') ?>" class="btn btn-success btn-sm">
+                                <i class="fa fa-cloud-upload"></i> Bulk Add Videos
+                            </a>
                             <a href="<?= site_url('admin/gallery_add') ?>" class="btn btn-primary btn-sm">
                                 <i class="fa fa-plus"></i> Add New Video
                             </a>
