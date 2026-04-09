@@ -21,7 +21,8 @@ $sidebar_ci =& get_instance();
 $count_appointments = $sidebar_ci->db->where('is_read', 0)->count_all_results('appointments');
 $count_contacts = $sidebar_ci->db->where('is_read', 0)->count_all_results('contact_messages');
 $count_subscribers = $sidebar_ci->db->where('is_read', 0)->count_all_results('subscribers');
-$total_notifications = $count_appointments + $count_contacts + $count_subscribers;
+$count_chatbot = $sidebar_ci->db->where('is_read', 0)->count_all_results('chatbot_leads');
+$total_notifications = $count_appointments + $count_contacts + $count_subscribers + $count_chatbot;
 ?>
 
 <div class="sidebar-overlay" onclick="document.querySelector('.admin-sidebar').classList.remove('active'); document.querySelector('.sidebar-overlay').classList.remove('active');"></div>
@@ -67,6 +68,29 @@ $total_notifications = $count_appointments + $count_contacts + $count_subscriber
             <a href="<?= site_url('admin/seo_settings') ?>" class="nav-link <?= is_active($segment, 'seo_settings') ?>">
                 <i class="fa fa-search"></i> <span>SEO Settings</span>
             </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= site_url('admin/chatbot_leads') ?>" class="nav-link <?= is_active($segment, 'chatbot_leads') ?>" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa fa-comments"></i> Chatbot Leads</span>
+                <span class="badge badge-danger sidebar-count-chatbot" style="<?= $count_chatbot > 0 ? '' : 'display: none;' ?>"><?= $count_chatbot ?></span>
+            </a>
+        </li>
+        <li class="nav-item dropdown <?= is_open($segment, ['chatbot_knowledge', 'chatbot_knowledge_add', 'chatbot_knowledge_edit', 'chatbot_history']) ?>">
+            <a href="javascript:void(0)" class="nav-link dropdown-toggle" onclick="this.parentElement.classList.toggle('active')">
+                <i class="fa fa-android"></i> <span>Chatbot Manager</span>
+            </a>
+            <ul class="nav-dropdown">
+                <li>
+                    <a href="<?= site_url('admin/chatbot_knowledge') ?>" class="nav-link <?= is_active($segment, ['chatbot_knowledge', 'chatbot_knowledge_add', 'chatbot_knowledge_edit']) ?>">
+                        <i class="fa fa-brain"></i> Manage Knowledge
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= site_url('admin/chatbot_history') ?>" class="nav-link <?= is_active($segment, 'chatbot_history') ?>">
+                        <i class="fa fa-history"></i> Chat History
+                    </a>
+                </li>
+            </ul>
         </li>
         <li class="nav-item">
             <a href="<?= site_url('admin/gallery') ?>" class="nav-link <?= is_active($segment, 'gallery') ?>">

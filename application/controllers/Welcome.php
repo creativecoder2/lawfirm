@@ -26,7 +26,15 @@ class Welcome extends CI_Controller {
         
         // Make team data globally available for the footer team section
         $teams = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('teams')->result_array();
-        $this->load->vars(['teams' => $teams]);
+        
+        // Make practice areas globally available for the chatbot lead form
+        $practice_areas = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('practice_areas')->result_array();
+        
+        $this->load->vars([
+            'teams' => $teams,
+            'practice_areas' => $practice_areas,
+            'practice' => $practice_areas // alias
+        ]);
     }
 
     private function _get_settings() {
@@ -109,6 +117,7 @@ class Welcome extends CI_Controller {
         $data['case_categories'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('case_categories')->result_array();
         $data['counters'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('counters')->result_array();
         $data['blogs'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->get('blogs')->result_array();
+        $data['videos'] = $this->db->where('is_active', 1)->order_by('priority', 'ASC')->limit(10)->get('video_gallery')->result_array();
 
 		$this->load->view('includes/header', $data); // Pass data to header if needed (e.g. site title)
 		$this->load->view('home', $data);
@@ -694,6 +703,40 @@ class Welcome extends CI_Controller {
         echo json_encode(['status' => 'success', 'message' => 'Your message has been sent! We will contact you shortly.']);
     }
 
+    public function chatbot_lead_submit()
+    {
+        // Allow BOTH AJAX and direct POS (though AJAX is intended)
+        if ($this->input->is_ajax_request() || $this->input->post()) {
+            $name    = trim($this->input->post('name'));
+            $phone   = trim($this->input->post('phone'));
+            $cat_id  = $this->input->post('category_id');
+            $city    = trim($this->input->post('city'));
+
+            if (empty($name) || empty($phone) || empty($cat_id) || empty($city)) {
+                echo json_encode(['status' => 'error', 'message' => 'Please fill all required fields.']);
+                return;
+            }
+
+            $insert_data = [
+                'name'        => $name,
+                'phone'       => $phone,
+                'category_id' => $cat_id,
+                'city'        => $city,
+                'is_read'     => 0
+            ];
+            
+            if ($this->db->insert('chatbot_leads', $insert_data)) {
+                // Store lead data in session for chat logging
+                $this->session->set_userdata('chat_user_name', $name);
+                $this->session->set_userdata('chat_user_phone', $phone);
+                
+                echo json_encode(['status' => 'success', 'message' => 'Details saved. You can now start chatting!']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to save details. Please try again.']);
+            }
+        }
+    }
+
     public function submit_appointment()
     {
         if ($this->input->is_ajax_request() || $this->input->post()) {
@@ -1159,5 +1202,315 @@ class Welcome extends CI_Controller {
         $videos = $this->db->get('video_gallery')->result_array();
         
         echo json_encode(['status' => 'success', 'videos' => $videos]);
+    }
+
+    public function chat_query()
+    {
+        $message = $this->input->post('message', true);
+        if (!$message) {
+            echo json_encode(['status' => 'error', 'message' => 'Message field is empty.']);
+            return;
+        }
+
+        // --- CONFIG (DYNAMIC FROM ADMIN PANEL) ---
+        $settings = $this->_get_settings();
+        $api_key = isset($settings['gemini_api_key']) ? $settings['gemini_api_key'] : "AIzaSyA0nNPUotNOBmGWmhYeOIObqAjfLBnINj8";
+        $api_url = isset($settings['gemini_api_url']) ? $settings['gemini_api_url'] : "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+        
+        $url = $api_url . "?key=" . $api_key;
+
+        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant. Provide detailed, helpful answers. DO NOT just give links. Explain how to use these portals based on the context below.
+
+    LEAD ATTORNEY PROFILE:
+    - Full Name: Maaz Ahmed Warriach (Advocate High Court - AHC).
+    - Role: Founder & Lead Counsel of Legal Eagle Law Firm.
+    - Expertise: Strategic Litigation in Criminal Law, Tax Law, and Corporate Affairs.
+    - Professional Presence:
+        - Lahore High Court: Representing clients in Constitutional Writs, Bail Petitions, and Appellate Advocacy.
+        - District & Sessions Courts: Leading criminal defense trials and complex civil litigation.
+        - Federal Agencies: Expert representation in FIA (Cybercrime, Money Laundering, PECA 2016) and Anti-Corruption dossiers.
+        - Taxation Forums: Active practitioner before the Federal Board of Revenue (FBR), Federal Tax Ombudsman (FTO), and Appellate Tribunals (IR).
+    - Professional Philosophy: Focused on high-stakes advocacy, legal integrity, and result-oriented client solutions.
+
+    ADDITIONAL FIRM KNOWLEDGE (FROM ADMIN):
+    ";
+        
+        $custom_knowledge = $this->db->get_where('chatbot_knowledge', ['is_active' => 1])->result_array();
+        foreach ($custom_knowledge as $ck) {
+            $system_instruction .= "- " . $ck['topic'] . ": " . $ck['content'];
+            if (!empty($ck['link_url'])) {
+                $system_instruction .= " (Link: " . $ck['link_url'] . ")";
+            }
+            $system_instruction .= "\n";
+        }
+
+        $system_instruction .= "
+    LEGAL EAGLE LAW FIRM INFORMATION & NAVIGATION:
+    - Lead Attorney: Maaz Ahmed Warriach AHC.
+    - Services (Practice Areas): Family Law, Business Law, Criminal Law, Real Estate Law, Education Law, Personal Injury, and Tax Law.
+    - Case Studies (/case_studies): Detailed proof of our legal victories and the results we achieve for clients.
+    - Landmark Cases (/landmark): Access to significant legal precedence and our firm's high-profile achievements.
+    - Blog/News (/blog): Latest legal insights, advice, and news updates on Pakistani Law.
+    - Gallery (/gallery): Visual documentation of our law firm's activities and events.
+    - About Us (/about-us): Learn about our history, values, and client-focused mission.
+    - Contact Us (/contact-us): Get our exact office location, view the map, and send an inquiry.
+    - Facebook Page: https://web.facebook.com/profile.php?id=61586375175630
+    - Instagram Profile: https://www.instagram.com/legal_eaglelawfirm/
+    - Location: Office no 3 2nd floor, Kareem chamber, Mozang Chungi, Lahore, 54000.
+    - Phone & WhatsApp: +92 322 4490008.
+    - Hours: Mon-Thu 8 AM - 9 PM, Fri 2 PM - 6 PM, Sat 8 AM - 9:30 PM.
+    - Online Appointment: Available 24/7 on the website.
+    - Firm Persona: Professional, reliable, knowledgeable, and client-focused.
+
+    VERIFIED PAKISTAN LEGAL & JUDICIAL DATABASES:
+    1. Pakistan Code (Federal Laws): pakistancode.gov.pk - Central repository of all Federal Laws of Pakistan.
+    2. Supreme Court of Pakistan (Judgments): https://www.supremecourt.gov.pk/
+    3. Punjab Laws Online (Provincial Statutes): punjablaws.gov.pk - Comprehensive database of Punjab's provincial laws.
+    4. Lahore High Court (LHC) Judgments: https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting
+    5. LHC Case Management: https://data.lhc.gov.pk/case_management/last_hearing_status - Real-time case tracking for District & Sessions courts.
+    6. Sindh High Court (SHC) Decisions: https://sindhhighcourt.gov.pk/
+    7. Peshawar High Court (PHC) Reported Cases: peshawarhighcourt.gov.pk/reported_judgments
+    8. Islamabad High Court (IHC) Judgments: ihc.gov.pk/judgments
+    9. Pakistan Law Site: pakistanlawsite.com - Premium database for PLD, SCMR, CLC, PCrLJ, and other law reports.
+    10. FIA Official Laws & Acts: fia.gov.pk/laws
+    11. Cybercrime Law (PECA 2016): https://www.nccia.gov.pk/
+    12. FBR Statutes: fbr.gov.pk/statutes - Income Tax and Sales Tax laws and regulations.
+    13. Customs Act 1969 & Rules: fbr.gov.pk/customs-act
+    14. SECP Laws: secp.gov.pk/laws - Company and corporate law framework of Pakistan.
+    15. National Assembly of Pakistan: na.gov.pk/en/acts-tenure.php - Access to Acts passed by the National Assembly.
+    16. The Gazette of Pakistan: https://www.dgip.gov.pk/home/
+    17. Federal Tax Ombudsman (FTO) Decisions: fto.gov.pk/decisions
+    18. Election Commission of Pakistan (ECP) Laws: ecp.gov.pk/laws
+    19. Federal Service Tribunal (FST): fst.gov.pk
+    20. Punjab Environmental Protection Tribunal: https://epd.punjab.gov.pk/
+
+    INSTRUCTIONS:
+    - First explain the specific service/procedure, then provide the link.
+    - **LANGUAGE POLICY**: Respond in simple English or **Roman Urdu ONLY** (e.g., using English alphabets like 'Aap kaise hain?'). 
+    - **CRITICAL**: DO NOT use Hindi script (Devanagari) or Urdu script (Alif Bay Pay). Only use English letters for both English and Roman Urdu responses.
+    - Maintain a professional human persona.
+    - If a user asks about general legal advice, provide information based on these resources and suggest booking a consultation with our firm for specific legal representation.";
+
+        $data = [
+            "system_instruction" => [
+                "parts" => [
+                    ["text" => $system_instruction]
+                ]
+            ],
+            "contents" => [
+                ["role" => "user", "parts" => [["text" => $message]]]
+            ],
+            "generationConfig" => [
+                "temperature" => 0.7,
+                "maxOutputTokens" => 1000,
+            ]
+        ];
+
+        $response = false;
+        $http_code = 0;
+
+        if (extension_loaded('curl')) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Localhost ke liye
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+
+            $response = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        } elseif (ini_get('allow_url_fopen')) {
+            // Fallback strategy when cURL is not available
+            $options = [
+                'http' => [
+                    'header'  => "Content-type: application/json\r\n",
+                    'method'  => 'POST',
+                    'content' => json_encode($data),
+                    'ignore_errors' => true,
+                    'timeout' => 20
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+            ];
+            $context  = stream_context_create($options);
+            $response = @file_get_contents($url, false, $context);
+            
+            if ($response !== false) {
+                if (isset($http_response_header) && preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match)) {
+                    $http_code = (int)$match[1];
+                }
+            }
+        }
+
+        if ($http_code == 200 && $response) {
+            $res_obj = json_decode($response, true);
+            if (isset($res_obj['candidates'][0]['content']['parts'][0]['text'])) {
+                $ai_text = $res_obj['candidates'][0]['content']['parts'][0]['text'];
+
+                // Dynamic Links based on response content
+                $links_found = [];
+                if (stripos($ai_text, 'pakistancode.gov.pk') !== false) $links_found[] = ['title' => 'Pakistan Code', 'url' => 'https://pakistancode.gov.pk'];
+                if (stripos($ai_text, 'supremecourt.gov.pk') !== false) $links_found[] = ['title' => 'Supreme Court', 'url' => 'https://www.supremecourt.gov.pk/'];
+                if (stripos($ai_text, 'punjablaws.gov.pk') !== false) $links_found[] = ['title' => 'Punjab Laws', 'url' => 'https://punjablaws.gov.pk'];
+                if (stripos($ai_text, 'lhc.gov.pk') !== false) $links_found[] = ['title' => 'LHC Decisions', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
+                if (stripos($ai_text, 'sindhhighcourt.gov.pk') !== false) $links_found[] = ['title' => 'SHC Decisions', 'url' => 'https://sindhhighcourt.gov.pk/'];
+                if (stripos($ai_text, 'ihc.gov.pk') !== false) $links_found[] = ['title' => 'IHC Judgments', 'url' => 'http://ihc.gov.pk/judgments'];
+                if (stripos($ai_text, 'fia.gov.pk') !== false) $links_found[] = ['title' => 'FIA Laws', 'url' => 'https://fia.gov.pk/laws'];
+                if (stripos($ai_text, 'fbr.gov.pk') !== false) $links_found[] = ['title' => 'FBR Statutes', 'url' => 'https://fbr.gov.pk/statutes'];
+                if (stripos($ai_text, 'secp.gov.pk') !== false) $links_found[] = ['title' => 'SECP Laws', 'url' => 'https://secp.gov.pk/laws'];
+                if (stripos($ai_text, 'pakistanlawsite.com') !== false) $links_found[] = ['title' => 'Pakistan Law Site', 'url' => 'https://pakistanlawsite.com'];
+                
+                // Internal Firm Links
+                if (stripos($ai_text, 'About Us') !== false || stripos($ai_text, 'Legal Eagle') !== false) $links_found[] = ['title' => 'About Our Firm', 'url' => site_url('about-us')];
+                if (stripos($ai_text, 'Attorney') !== false || stripos($ai_text, 'Team') !== false || stripos($ai_text, 'Maaz') !== false || stripos($ai_text, 'AHC') !== false) $links_found[] = ['title' => 'Maaz Ahmed Warriach AHC', 'url' => site_url('attorney/maaz-ahmed-warriach-ahc')];
+                if (stripos($ai_text, 'Services') !== false || stripos($ai_text, 'Practice') !== false) $links_found[] = ['title' => 'View Services', 'url' => site_url('practices-area')];
+                if (stripos($ai_text, 'Case Studies') !== false || stripos($ai_text, 'Victories') !== false || stripos($ai_text, 'Success') !== false) $links_found[] = ['title' => 'Our Case Victories', 'url' => site_url('case_studies')];
+                if (stripos($ai_text, 'Blog') !== false || stripos($ai_text, 'Article') !== false || stripos($ai_text, 'Insight') !== false) $links_found[] = ['title' => 'Legal Blog & News', 'url' => site_url('blog')];
+                if (stripos($ai_text, 'Landmark') !== false || stripos($ai_text, 'Precedents') !== false) $links_found[] = ['title' => 'Landmark Judgments', 'url' => site_url('landmark')];
+                if (stripos($ai_text, 'Gallery') !== false || stripos($ai_text, 'Photos') !== false || stripos($ai_text, 'Visual') !== false) $links_found[] = ['title' => 'View Firm Gallery', 'url' => site_url('gallery')];
+                if (stripos($ai_text, 'Contact Us') !== false || stripos($ai_text, 'Map') !== false) $links_found[] = ['title' => 'Contact & Location', 'url' => site_url('contact-us')];
+                if (stripos($ai_text, 'Facebook') !== false || stripos($ai_text, 'Social') !== false || stripos($ai_text, 'Follow') !== false) $links_found[] = ['title' => 'Official Facebook Page', 'url' => 'https://web.facebook.com/profile.php?id=61586375175630'];
+                if (stripos($ai_text, 'Instagram') !== false || stripos($ai_text, 'Insta') !== false) $links_found[] = ['title' => 'Official Instagram', 'url' => 'https://www.instagram.com/legal_eaglelawfirm/'];
+                
+                // Custom Knowledge Links
+                foreach ($custom_knowledge as $ck) {
+                    if (!empty($ck['link_title']) && !empty($ck['link_url'])) {
+                        if (stripos($ai_text, $ck['link_title']) !== false || stripos($ai_text, $ck['topic']) !== false) {
+                            // Avoid duplicates
+                             $exists = false;
+                             foreach($links_found as $lf) { if($lf['url'] == $ck['link_url']) $exists = true; }
+                             if(!$exists) $links_found[] = ['title' => $ck['link_title'], 'url' => $ck['link_url']];
+                        }
+                    }
+                }
+                
+                if (preg_match('/appointment|consult|meet/i', $ai_text)) $links_found[] = ['title' => 'Book Appointment', 'url' => site_url('free-consultation')];
+
+                // Log the Interaction
+                $this->db->insert('chatbot_logs', [
+                    'session_id' => session_id(),
+                    'user_name' => $this->session->userdata('chat_user_name'),
+                    'user_phone' => $this->session->userdata('chat_user_phone'),
+                    'message' => $message,
+                    'response' => $ai_text,
+                    'links_json' => json_encode($links_found),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $ai_text,
+                    'links' => $links_found
+                ]);
+                exit;
+            }
+        }
+
+        // Manual Logic Fallback
+        $this->_manual_chat_logic($message);
+    }
+
+    private function _manual_chat_logic($message)
+    {
+        $msg = strtolower($message);
+        $response = "";
+        $links = [];
+
+        // Detailed Fallback for Firm Information (Identity & Staff)
+        if (preg_match('/who|attorney|lawyer|maaz|ahc|team|boss|profile/i', $msg)) {
+            $response = "**Maaz Ahmed Warriach (Advocate High Court - AHC)** is the Lead Counsel and Founder of Legal Eagle Law Firm. \n\nHe is a highly respected legal professional specializing in **Criminal Defense (FIA, PECA, Anti-Corruption)**, **Taxation (FBR, FTO)**, and **Corporate Litigation**. \n\nMaaz Ahmed Warriach is active in: \n- **Lahore High Court** (Appellate Advocacy & Writs) \n- **District & Sessions Courts** (Trials) \n- **Specialized Tribunals** (FBR, FIA, Anti-Corruption)";
+            $links[] = ['title' => 'View Profile: Maaz Ahmed Warriach', 'url' => site_url('attorney/maaz-ahmed-warriach-ahc')];
+            $links[] = ['title' => 'About Us', 'url' => site_url('about-us')];
+        }
+
+        // Detailed Fallback for Success Stories & Case Proof
+        else if (preg_match('/proof|success|victory|win|case study|results/i', $msg)) {
+            $response = "We have a strong track record of success. You can view our **Case Studies** to see detailed reports of our legal victories and the results we have achieved for our clients.";
+            $links[] = ['title' => 'Our Case Victories', 'url' => site_url('case_studies')];
+            $links[] = ['title' => 'Landmark Judgments', 'url' => site_url('landmark')];
+        }
+
+        // Detailed Fallback for Articles & News
+        else if (preg_match('/article|blog|news|advice|insight|legal info/i', $msg)) {
+            $response = "Stay updated with the latest in Pakistani Law. Our **Legal Blog** provides insights, news, and professional advice on various legal matters including tax updates and criminal procedures.";
+            $links[] = ['title' => 'Read Our Blog', 'url' => site_url('blog')];
+        }
+
+        // Detailed Fallback for Address & Contact
+        else if (preg_match('/address|location|where|phone|contact|email|whatsapp|map|facebook|instagram|social|follow|insta/i', $msg)) {
+            $response = "We are located at **Office no 3, 2nd Floor, Kareem Chamber, Mozang Chungi, Lahore**. \n- **Phone/WhatsApp**: +92 322 4490008 \n- **Email**: legallaw669@gmail.com \n- **Facebook**: web.facebook.com/profile.php?id=61586375175630 \n- **Instagram**: instagram.com/legal_eaglelawfirm/";
+            $links[] = ['title' => 'Official Instagram', 'url' => 'https://www.instagram.com/legal_eaglelawfirm/'];
+            $links[] = ['title' => 'Official Facebook Page', 'url' => 'https://web.facebook.com/profile.php?id=61586375175630'];
+            $links[] = ['title' => 'Contact & Map', 'url' => site_url('contact-us')];
+            $links[] = ['title' => 'Book Appointment', 'url' => site_url('free-consultation')];
+        }
+
+        // Detailed Fallback for Services
+        else if (preg_match('/service|work|provide|practice|expert/i', $msg)) {
+            $response = "Legal Eagle Law Firm provides expert legal services in: \n1. **Criminal Law** \n2. **Tax Law** \n3. **Family & Civil Law** \n4. **Business & Corporate** \n5. **Real Estate** \n6. **Personal Injury**";
+            $links[] = ['title' => 'View All Services', 'url' => site_url('practices-area')];
+        }
+
+        // Detailed Fallback for Gallery & Visuals
+        else if (preg_match('/photo|image|gallery|video|see firm/i', $msg)) {
+            $response = "You can take a visual journey through our firm's activities and events by visiting our **Official Gallery**.";
+            $links[] = ['title' => 'View Firm Gallery', 'url' => site_url('gallery')];
+        }
+
+        // Detailed Fallback for Laws & Acts
+        else if (preg_match('/law|act|statute|ordinance|code/i', $msg)) {
+            $response = "You can access legal databases across Pakistan. For Federal Laws, check **Pakistan Code**. For provincial legislation, use **Punjab Laws Online**. If you need corporate laws, the **SECP** portal is the primary source. Tax-related statutes are maintained by the **FBR**.";
+            $links[] = ['title' => 'Pakistan Code', 'url' => 'https://pakistancode.gov.pk'];
+            $links[] = ['title' => 'Punjab Laws', 'url' => 'https://punjablaws.gov.pk'];
+            $links[] = ['title' => 'FBR Statutes', 'url' => 'https://fbr.gov.pk/statutes'];
+        }
+
+        // Detailed Fallback for Court Judgments
+        else if (preg_match('/judgment|decision|case|ruling/i', $msg)) {
+            $response = "Reported judgments and decisions can be found on the official websites of the respective courts. The **Supreme Court of Pakistan**, **Lahore High Court**, and **Sindh High Court** maintain searchable databases for judgments approved for reporting.";
+            $links[] = ['title' => 'Supreme Court Judgments', 'url' => 'https://www.supremecourt.gov.pk/'];
+            $links[] = ['title' => 'LHC Reported Cases', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
+            $links[] = ['title' => 'SHC Decisions', 'url' => 'https://sindhhighcourt.gov.pk/'];
+        }
+
+        // Detailed Fallback for Specialized Tribunals/Agencies
+        else if (preg_match('/fia|cybercrime|fbr|secp|fto|fst/i', $msg)) {
+            $response = "For matters related to the FIA, FBR, or SECP, you can visit their official legal sections. Information on Cybercrime laws (PECA) is also available through the NCCIA portal.";
+            $links[] = ['title' => 'FIA Laws', 'url' => 'https://fia.gov.pk/laws'];
+            $links[] = ['title' => 'SECP Laws', 'url' => 'https://secp.gov.pk/laws'];
+            $links[] = ['title' => 'Cybercrime Law', 'url' => 'https://www.nccia.gov.pk/'];
+        }
+
+        // Detailed Fallback for Appointments
+        else if (preg_match('/appointment|meet|consult|book/i', $msg)) {
+            $response = "To discuss your legal matter with our experts, please fill out the **Online Consultation Form** on our website. You can select your practice area (Criminal, Civil, Family, etc.) and pick a preferred time for a professional legal review.";
+            $links[] = ['title' => 'Book Appointment', 'url' => site_url('free-consultation')];
+        }
+
+        // Greetings
+        else if (preg_match('/hi|hello|salam|hey/i', $msg)) {
+            $response = "Hello! I am your Legal AI Assistant at **Legal Eagle Law Firm**. I can help you find information about Pakistani laws, court judgments, and specialized legal databases. How can I assist you today?";
+        } else {
+            $response = "I am trained to help you with: \n- **Federal & Provincial Laws**\n- **Court Judgments** (SC, LHC, SHC, IHC, PHC)\n- **Specialized Statutes** (FBR, FIA, SECP)\n- **Booking Appointments**\n\nPlease let me know which area you are interested in!";
+            $links[] = ['title' => 'Visit Pakistan Code', 'url' => 'https://pakistancode.gov.pk'];
+        }
+
+        // Log the Manual Interaction
+        $this->db->insert('chatbot_logs', [
+            'session_id' => session_id(),
+            'user_name' => $this->session->userdata('chat_user_name'),
+            'user_phone' => $this->session->userdata('chat_user_phone'),
+            'message' => $message,
+            'response' => $response,
+            'links_json' => json_encode($links),
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => $response, 'links' => $links]);
+        exit;
     }
 }

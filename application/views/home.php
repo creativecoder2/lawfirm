@@ -38,7 +38,7 @@
                             </div>
                             <div class="contact-c">
                                 <h4>Our Location</h4>
-                                <span><?= isset($settings['contact_address']) ? $settings['contact_address'] : 'Office no 3...' ?></span>
+                                <span><?= isset($settings['contact_address']) ? $settings['contact_address'] : 'Office no 3 2nd floor, Kareem chamber, road, Mozang Chungi, Lahore, 54000' ?></span>
                             </div>
                         </div>
                         <div class="contact-sub">
@@ -48,6 +48,9 @@
                             <div class="contact-c">
                                 <h4>Phone</h4>
                                 <span><?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></span>
+                                <a href="https://wa.me/923224490008" target="_blank" style="margin-left: 10px; color: #25D366; font-size: 1.2rem;" title="WhatsApp us">
+                                    <i class="fa fa-whatsapp"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="contact-sub">
@@ -404,7 +407,7 @@
             <div class="row justify-content-center">
                 <?php if(!empty($features)): foreach($features as $feature): ?>
                 <div class="col-lg-4 col-md-6 col-sm-12 col-p">
-                    <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" style="text-decoration: none; display: block;">
+                    <a href="<?= !empty($feature['link']) ? $feature['link'] : '#' ?>" class="features-link-wrapper" target="_blank" style="text-decoration: none; display: block;">
                         <div class="features-item-2 h-100" style="transition: all 0.3s ease; padding: 40px 30px;">
                             <div class="features-icon" style="margin-bottom: 25px;">
                                 <?php if(!empty($feature['image'])): ?>
@@ -427,6 +430,96 @@
         </div>
     </div>
     <!--features-features end -->
+    <!-- Gallery Video Segment -->
+    <div class="video-slider-area ptb-100-70" style="background: #fdfaf5;">
+        <div class="container-fluid" style="padding: 0 40px;">
+            <div class="col-12">
+                <div class="section-title-1 text-center">
+                    <span>Watch Our Clips</span>
+                    <h2>Gallery Video</h2>
+                </div>
+            </div>
+            <div class="video-active owl-carousel">
+                <?php if(!empty($videos)): foreach($videos as $video): ?>
+                <div class="video-item" style="padding: 6px;">
+                    <div class="video-inner open-tiktok" 
+                         data-id="<?= $video['id'] ?>" 
+                         data-title="<?= htmlspecialchars($video['title']) ?>"
+                         style="border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); background: #111; aspect-ratio: 9/16; cursor: pointer; position: relative; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease;">
+                        <video src="<?= base_url($video['video_path']) ?>" muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.5s;"></video>
+                        <div class="item-overlay" style="position: absolute; bottom: 8px; left: 8px; right: 8px; padding: 10px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); color: #fff; pointer-events: none; transition: 0.3s;">
+                            <h5 style="color: #fff; font-size: 0.85rem; font-weight: 600; margin: 0 0 2px 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;"><?= $video['title'] ?></h5>
+                            <small style="font-size: 0.75rem;"><i class="fa fa-eye"></i> <?= $video['views'] ?> views</small>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+    </div>
+    <style>
+        .video-slider-area { position: relative; }
+        .video-active.owl-carousel { position: static; }
+        .video-inner:hover video { opacity: 1; transform: scale(1.05); }
+        .video-inner:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: rgba(208, 161, 94, 0.3); }
+        .video-inner:hover .item-overlay { background: rgba(208, 161, 94, 0.1); border-color: rgba(208, 161, 94, 0.4); }
+        
+        /* Owl Nav Custom Styling */
+        .video-active .owl-nav [class*="owl-"] {
+            position: absolute;
+            top: 55%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: #fff !important;
+            color: #bc9355 !important;
+            border-radius: 50% !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            margin: 0 !important;
+        }
+        .video-active .owl-nav .owl-prev { left: 10px; }
+        .video-active .owl-nav .owl-next { right: 10px; }
+        .video-active .owl-nav [class*="owl-"]:hover {
+            background: #bc9355 !important;
+            color: #fff !important;
+            box-shadow: 0 8px 20px rgba(188, 147, 85, 0.3);
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof jQuery !== 'undefined' && jQuery('.video-active').length) {
+                jQuery('.video-active').owlCarousel({
+                    loop: true,
+                    margin: 10,
+                    nav: true,
+                    dots: false,
+                    autoplay: true,
+                    autoplayTimeout: 5000,
+                    navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+                    responsive: {
+                        0: { items: 1 },
+                        480: { items: 2 },
+                        768: { items: 3 },
+                        1000: { items: 7 }
+                    }
+                });
+
+                // Hover play functionality
+                jQuery('.video-inner').hover(
+                    function() { const v = jQuery(this).find('video')[0]; if(v) v.play(); },
+                    function() { const v = jQuery(this).find('video')[0]; if(v) { v.pause(); v.currentTime = 0; } }
+                );
+            }
+
+        });
+    </script>
+    <!-- Gallery Video Segment End -->
 
     <?php $this->load->view('team_partial'); ?>
 
@@ -597,6 +690,26 @@ practice areas, ensuring expert counsel for your specific needs</p>
     <!--Testimonial Area End-->
     <!-- area end -->
 
+     <!-- .counter-area start -->
+    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="consulting-area text-center" style="width: 100%;">
+                    <span style="display: inline-block; padding: 5px 20px; border: 1px solid #bc9355; border-radius: 30px; color: #bc9355; margin-bottom: 20px;">Now Offering Online Consultations</span>
+                    <h1 style="color: #fff; margin-bottom: 20px;"><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
+                    <p style="color: #ccc; max-width: 800px; margin: 0 auto 30px;"><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights. Contact us today for a free, confidential consultation and let our experienced attorneys fight for the justice you deserve.' ?>
+                    </p>
+                    <div class="btns" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="theme-btn" style="background: #bc9355; color: #fff; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
+                        <a href="#consultation-form" class="theme-btn" style="background: transparent; border: 1px solid #bc9355; color: #bc9355; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Book Online Consultation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .counter-area end -->
+
+
     <!-- blog-area start -->
     <div class="blog-area section-padding">
         <div class="container">
@@ -631,24 +744,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
     </div>
     <!-- blog-area start -->
 
-    <!-- .counter-area start -->
-    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="consulting-area text-center" style="width: 100%;">
-                    <span style="display: inline-block; padding: 5px 20px; border: 1px solid #bc9355; border-radius: 30px; color: #bc9355; margin-bottom: 20px;">Now Offering Online Consultations</span>
-                    <h1 style="color: #fff; margin-bottom: 20px;"><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
-                    <p style="color: #ccc; max-width: 800px; margin: 0 auto 30px;"><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights. Contact us today for a free, confidential consultation and let our experienced attorneys fight for the justice you deserve.' ?>
-                    </p>
-                    <div class="btns" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                        <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="theme-btn" style="background: #bc9355; color: #fff; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
-                        <a href="#consultation-form" class="theme-btn" style="background: transparent; border: 1px solid #bc9355; color: #bc9355; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Book Online Consultation</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- .counter-area end -->
+   
 
     <!-- .footer-area start -->
     <script>
@@ -686,10 +782,7 @@ practice areas, ensuring expert counsel for your specific needs</p>
                     jQuery('.studies-menu button').removeClass('active');
                     jQuery(this).addClass('active');
                     
-                    currentFilter = jQuery(this).attr('data-filter');
-                    currentLimit = 4; // Reset limit when filter changes
                     updateCaseStudiesFilter();
-                    
                     // Trigger a layout update
                     $grid.isotope('layout');
                 });
@@ -738,5 +831,5 @@ practice areas, ensuring expert counsel for your specific needs</p>
         });
     </script>
 
-
-
+    <?php $this->load->view('includes/video_overlay'); ?>
+    <?php $this->load->view('gallery_modals'); ?>

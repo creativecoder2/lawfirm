@@ -214,6 +214,55 @@
                                     </div>
                                 </div>
                             </div>
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px; color: #3c8dbc;"><i class="fa fa-plug"></i> Website Widgets</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>AI Chatbot Assistant</label>
+                                        <select class="form-control" name="chatbot_status">
+                                            <option value="enabled" <?= (isset($settings['chatbot_status']) && $settings['chatbot_status'] == 'enabled') ? 'selected' : '' ?>>Enabled</option>
+                                            <option value="disabled" <?= (isset($settings['chatbot_status']) && $settings['chatbot_status'] == 'disabled') ? 'selected' : '' ?>>Disabled</option>
+                                        </select>
+                                        <small class="text-muted">Turn the AI floating chatbot on or off.</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>WhatsApp Floating Button</label>
+                                        <select class="form-control" name="whatsapp_status">
+                                            <option value="enabled" <?= (isset($settings['whatsapp_status']) && $settings['whatsapp_status'] == 'enabled') ? 'selected' : '' ?>>Enabled</option>
+                                            <option value="disabled" <?= (isset($settings['whatsapp_status']) && $settings['whatsapp_status'] == 'disabled') ? 'selected' : '' ?>>Disabled</option>
+                                        </select>
+                                        <small class="text-muted">Turn the WhatsApp contact button on or off.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <h4 class="box-title" style="margin-bottom: 20px; color: #bc9355;"><i class="fa fa-gears"></i> Gemini AI Configuration</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Gemini API Key</label>
+                                        <input type="text" class="form-control" name="gemini_api_key" value="<?= isset($settings['gemini_api_key']) ? $settings['gemini_api_key'] : '' ?>" placeholder="Paste your Gemini API Key here">
+                                        <small class="text-muted"><a href="https://aistudio.google.com/app/apikey" target="_blank">Get API Key from Google AI Studio</a></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Gemini API URL</label>
+                                        <input type="text" class="form-control" name="gemini_api_url" value="<?= isset($settings['gemini_api_url']) ? $settings['gemini_api_url'] : 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent' ?>" placeholder="Gemini API Endpoint URL">
+                                        <small class="text-muted">Default: gemini-1.5-flash endpoint</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="alert alert-danger" style="background-color: #f8d7da !important; color: #721c24 !important; border-color: #f5c6cb !important; margin-top: 10px; font-size: 13px;">
+                                        <i class="fa fa-exclamation-triangle"></i> <strong>CAUTION:</strong> Do not modify these Gemini settings unless you are an authorized developer. Incorrect values will immediately break the AI Chatbot's ability to respond to users.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="box-footer">

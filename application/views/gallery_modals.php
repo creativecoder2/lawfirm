@@ -1,5 +1,5 @@
 <!-- Share Modal -->
-<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 10002;">
+<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 100005;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content text-center" style="border-radius: 20px; border: none; overflow: hidden;">
             <div class="modal-header border-0" style="background: #1a1a1a; color: #fff;">
@@ -83,6 +83,12 @@ function initShareModal() {
         $('.share-link.tiktok').attr('href', `https://www.tiktok.com/`); // TikTok doesn't support web share API directly
 
         // Track share
+        const key = `gallery_shared`;
+        const items = JSON.parse(localStorage.getItem(key) || '[]');
+        if (items.includes(id)) return;
+        items.push(id);
+        localStorage.setItem(key, JSON.stringify(items));
+
         $.post('<?= site_url("welcome/track_video_action") ?>', {id: id, type: 'share'}, function(res) {
             try {
                 const data = JSON.parse(res);

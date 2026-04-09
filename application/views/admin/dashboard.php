@@ -43,6 +43,15 @@
             </div>
         </div>
     </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="dashboard-card" style="border-left: 4px solid #9b59b6;">
+            <div class="card-icon" style="background:rgba(155,89,182,0.12); color:#9b59b6;"><i class="fa fa-comments"></i></div>
+            <div class="card-info">
+                <h3><?= $total_chatbot_leads ?></h3>
+                <p>Chatbot Leads</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Row 2: Secondary Stat Cards -->

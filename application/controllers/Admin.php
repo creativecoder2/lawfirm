@@ -2265,4 +2265,141 @@ class Admin extends CI_Controller {
         $this->session->set_flashdata('success', 'Status updated');
         redirect('admin/features');
     }
+
+    // --- Chatbot Manager ---
+    
+    public function chatbot_knowledge() {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $data["knowledge"] = $this->db->order_by("id", "DESC")->get("chatbot_knowledge")->result_array();
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot/knowledge_list", $data);
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_knowledge_add() {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->insert("chatbot_knowledge", $data);
+            $this->session->set_flashdata("success", "Chatbot Knowledge added successfully");
+            redirect("admin/chatbot_knowledge");
+        }
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot/knowledge_add");
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_knowledge_edit($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $this->db->where("id", $id)->update("chatbot_knowledge", $data);
+            $this->session->set_flashdata("success", "Knowledge updated successfully");
+            redirect("admin/chatbot_knowledge");
+        }
+        $data["k"] = $this->db->get_where("chatbot_knowledge", ["id" => $id])->row_array();
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot/knowledge_edit", $data);
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_knowledge_delete($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $this->db->where("id", $id)->delete("chatbot_knowledge");
+        $this->session->set_flashdata("success", "Knowledge deleted successfully");
+        redirect("admin/chatbot_knowledge");
+    }
+
+    public function chatbot_knowledge_status($id, $status) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $this->db->where("id", $id)->update("chatbot_knowledge", ["is_active" => $status]);
+        $this->session->set_flashdata("success", "Knowledge status updated successfully");
+        redirect("admin/chatbot_knowledge");
+    }
+
+    public function chatbot_history() {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        
+        // Group by user_phone if available, otherwise session_id
+        $this->db->select('user_name, user_phone, session_id, MIN(created_at) as started_at, MAX(created_at) as ended_at, COUNT(*) as msg_count');
+        $this->db->select('COALESCE(NULLIF(user_phone, ""), session_id) as identifier', FALSE);
+        $this->db->from('chatbot_logs');
+        $this->db->group_by('identifier');
+        $this->db->order_by('ended_at', 'DESC');
+        $data["sessions"] = $this->db->get()->result_array();
+
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot/history", $data);
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_history_view($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        
+        // Fetch by either session_id or user_phone
+        $this->db->group_start();
+        $this->db->where('session_id', $id);
+        $this->db->or_where('user_phone', $id);
+        $this->db->group_end();
+        
+        $this->db->order_by('created_at', 'ASC');
+        $data['chats'] = $this->db->get('chatbot_logs')->result_array();
+        
+        if (empty($data['chats'])) redirect('admin/chatbot_history');
+        
+        $data['session_id'] = $id;
+
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot/history_view", $data);
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_history_delete($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $this->db->where("id", $id)->delete("chatbot_logs");
+        $this->session->set_flashdata("success", "Log deleted");
+        redirect("admin/chatbot_history");
+    }
+
+    public function chatbot_history_session_delete($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $this->db->group_start();
+        $this->db->where("session_id", $id);
+        $this->db->or_where("user_phone", $id);
+        $this->db->group_end();
+        $this->db->delete("chatbot_logs");
+        $this->session->set_flashdata("success", "Full chat thread deleted");
+        redirect("admin/chatbot_history");
+    }
+
+    public function chatbot_leads() {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        
+        $this->db->select('chatbot_leads.*, practice_areas.title as category_name');
+        $this->db->from('chatbot_leads');
+        $this->db->join('practice_areas', 'chatbot_leads.category_id = practice_areas.id', 'left');
+        $this->db->order_by('chatbot_leads.id', 'DESC');
+        $data['leads'] = $this->db->get()->result_array();
+
+        // Mark all as read when viewed
+        $this->db->where('is_read', 0)->update('chatbot_leads', ['is_read' => 1]);
+
+        $this->load->view("admin/includes/header");
+        $this->load->view("admin/includes/sidebar");
+        $this->load->view("admin/chatbot_leads/index", $data);
+        $this->load->view("admin/includes/footer");
+    }
+
+    public function chatbot_lead_delete($id) {
+        if (!$this->session->userdata("logged_in")) redirect("admin/login");
+        $this->db->where("id", $id)->delete("chatbot_leads");
+        $this->session->set_flashdata("success", "Lead deleted successfully");
+        redirect("admin/chatbot_leads");
+    }
+
 }
