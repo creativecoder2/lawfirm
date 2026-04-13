@@ -1219,7 +1219,13 @@ class Welcome extends CI_Controller {
         
         $url = $api_url . "?key=" . $api_key;
 
-        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant. Provide detailed, helpful answers including legal summaries (e.g., for Section 489-F PPC). DO NOT just give links. Explain how to use these portals based on the context below.
+        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant and a 'Dynamic Legal Researcher'.
+    - When a user asks about any specific Section, Act, or Ordinance of Pakistani Law (e.g., 489-F, 420, 302 PPC, CrPC, etc.), provide a structured summary including:
+        1. Overview of the Law.
+        2. Punishment/Consequences.
+        3. Essential Ingredients or Conditions.
+    - DO NOT just give links. Explain how to use legal portals based on the context below.
+    - Provide detailed, helpful legal insights from your training data on Pakistani Law.
 
     LEAD ATTORNEY PROFILE:
     - Full Name: Maaz Ahmed Warriach (Advocate High Court - AHC).
@@ -1482,6 +1488,30 @@ class Welcome extends CI_Controller {
             $links[] = ['title' => 'LHC Reported Cases (489-F)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
             $links[] = ['title' => 'Supreme Court Judgments', 'url' => 'https://www.supremecourt.gov.pk/'];
             $links[] = ['title' => 'Book Free Consultation', 'url' => site_url('free-consultation')];
+        }
+
+        // Detailed Fallback for 420 (Fraud/Cheating)
+        else if (preg_match('/420|fraud|cheating|jaal sazi/i', $msg)) {
+            $response = "**Section 420 of the Pakistan Penal Code (PPC)** deals with **Cheating and Dishonestly Inducing Delivery of Property**.\n\n" .
+                        "**Key Details:**\n" .
+                        "- **Punishment:** Up to 7 years imprisonment and fine.\n" .
+                        "- **Ingredients:** \n" .
+                        "  1. Deception of any person.\n" .
+                        "  2. Fraudulently or dishonestly inducing that person to deliver any property.\n\n" .
+                        "Legal Eagle Law Firm can help you file or defend cases related to fraud and white-collar crimes.";
+            $links[] = ['title' => 'LHC Decisions (420)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
+            $links[] = ['title' => 'Book Free Consultation', 'url' => site_url('free-consultation')];
+        }
+
+        // Detailed Fallback for 302 (Murder/Homicide)
+        else if (preg_match('/302|murder|qatl|homicide/i', $msg)) {
+            $response = "**Section 302 of the Pakistan Penal Code (PPC)** deals with **Punishment of Qatl-i-Amd (Murder)**.\n\n" .
+                        "**Key Details:**\n" .
+                        "- **Punishment:** Death, or imprisonment for life as ta'zir.\n" .
+                        "- **Legal Context:** Trials for 302 are high-stakes and require expert criminal defense.\n\n" .
+                        "**Maaz Ahmed Warriach AHC** is a renowned Criminal Defense specialist for such cases.";
+            $links[] = ['title' => 'Supreme Court (302) Cases', 'url' => 'https://www.supremecourt.gov.pk/'];
+            $links[] = ['title' => 'Book Legal Consultation', 'url' => site_url('free-consultation')];
         }
 
         // Detailed Fallback for Court Judgments
