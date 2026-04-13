@@ -1219,7 +1219,7 @@ class Welcome extends CI_Controller {
         
         $url = $api_url . "?key=" . $api_key;
 
-        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant. Provide detailed, helpful answers. DO NOT just give links. Explain how to use these portals based on the context below.
+        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant. Provide detailed, helpful answers including legal summaries (e.g., for Section 489-F PPC). DO NOT just give links. Explain how to use these portals based on the context below.
 
     LEAD ATTORNEY PROFILE:
     - Full Name: Maaz Ahmed Warriach (Advocate High Court - AHC).
@@ -1467,6 +1467,21 @@ class Welcome extends CI_Controller {
             $links[] = ['title' => 'Pakistan Code', 'url' => 'https://pakistancode.gov.pk'];
             $links[] = ['title' => 'Punjab Laws', 'url' => 'https://punjablaws.gov.pk'];
             $links[] = ['title' => 'FBR Statutes', 'url' => 'https://fbr.gov.pk/statutes'];
+        }
+
+        // Detailed Fallback for 489-F (Dishonoring of Cheque)
+        else if (preg_match('/489\s*f|cheque bounce|check bounce|dishonor|489f/i', $msg)) {
+            $response = "**Section 489-F of the Pakistan Penal Code (PPC)** deals with the **Dishonoring of Cheques** issued for repayment of a loan or fulfillment of an obligation.\n\n" .
+                        "**Key Details:**\n" .
+                        "- **Punishment:** Up to 3 years imprisonment, fine, or both.\n" .
+                        "- **Essential Ingredients:** \n" .
+                        "  1. Issuance of cheque with dishonest intent.\n" .
+                        "  2. Towards repayment of a loan or fulfillment of an obligation.\n" .
+                        "  3. Dishonoring of the cheque on presentation.\n\n" .
+                        "For detailed judgments and specific legal advice, it is highly recommended to consult with our lead attorney, **Maaz Ahmed Warriach AHC**.";
+            $links[] = ['title' => 'LHC Reported Cases (489-F)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
+            $links[] = ['title' => 'Supreme Court Judgments', 'url' => 'https://www.supremecourt.gov.pk/'];
+            $links[] = ['title' => 'Book Free Consultation', 'url' => site_url('free-consultation')];
         }
 
         // Detailed Fallback for Court Judgments
