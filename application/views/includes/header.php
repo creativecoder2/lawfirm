@@ -130,10 +130,14 @@
     <?php endif; ?>
 
     <!-- Google Analytics -->
-    <?php if($seo_ga): ?>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $seo_ga ?>"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','<?= $seo_ga ?>');</script>
-    <?php endif; ?>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P9TXLMXY7Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P9TXLMXY7Q');
+    </script>
+
 
     <!-- Facebook Pixel -->
     <?php if($seo_fb_pixel): ?>
