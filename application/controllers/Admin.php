@@ -1147,6 +1147,7 @@ class Admin extends CI_Controller {
             }
         }
         $data['categories'] = $this->db->where('is_active', 1)->get('blog_categories')->result_array();
+        $data['last_blog'] = $this->db->order_by('id', 'DESC')->get('blogs', 1)->row_array();
         $this->load_view('admin/blogs/add', $data);
     }
 

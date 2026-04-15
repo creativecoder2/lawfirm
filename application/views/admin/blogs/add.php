@@ -50,11 +50,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Author Name</label>
-                                        <input type="text" class="form-control" name="author" required placeholder="e.g. Aliza Anne">
+                                        <input type="text" class="form-control" name="author" required value="<?= isset($last_blog['author']) ? $last_blog['author'] : '' ?>" placeholder="e.g. Aliza Anne">
                                     </div>
                                     <div class="form-group">
                                         <label>Author Bio</label>
-                                        <textarea class="form-control" name="author_bio" rows="3" placeholder="Short description about the author"></textarea>
+                                        <textarea class="form-control" name="author_bio" rows="3" placeholder="Short description about the author"><?= isset($last_blog['author_bio']) ? $last_blog['author_bio'] : '' ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label>Date Published</label>
@@ -68,19 +68,19 @@
                                     <h4>Author Social Links</h4>
                                     <div class="form-group">
                                         <label>Author Facebook</label>
-                                        <input type="text" class="form-control" name="author_facebook" placeholder="https://facebook.com/username">
+                                        <input type="text" class="form-control" name="author_facebook" value="<?= isset($last_blog['author_facebook']) ? $last_blog['author_facebook'] : '' ?>" placeholder="https://facebook.com/username">
                                     </div>
                                     <div class="form-group">
                                         <label>Author Twitter</label>
-                                        <input type="text" class="form-control" name="author_twitter" placeholder="https://twitter.com/username">
+                                        <input type="text" class="form-control" name="author_twitter" value="<?= isset($last_blog['author_twitter']) ? $last_blog['author_twitter'] : '' ?>" placeholder="https://twitter.com/username">
                                     </div>
                                     <div class="form-group">
                                         <label>Author LinkedIn</label>
-                                        <input type="text" class="form-control" name="author_linkedin" placeholder="https://linkedin.com/in/username">
+                                        <input type="text" class="form-control" name="author_linkedin" value="<?= isset($last_blog['author_linkedin']) ? $last_blog['author_linkedin'] : '' ?>" placeholder="https://linkedin.com/in/username">
                                     </div>
                                     <div class="form-group">
                                         <label>Author Instagram</label>
-                                        <input type="text" class="form-control" name="author_instagram" placeholder="https://instagram.com/username">
+                                        <input type="text" class="form-control" name="author_instagram" value="<?= isset($last_blog['author_instagram']) ? $last_blog['author_instagram'] : '' ?>" placeholder="https://instagram.com/username">
                                     </div>
                                 </div>
                             </div>
