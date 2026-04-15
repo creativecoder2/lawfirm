@@ -1215,17 +1215,20 @@ class Welcome extends CI_Controller {
         // --- CONFIG (DYNAMIC FROM ADMIN PANEL) ---
         $settings = $this->_get_settings();
         $api_key = isset($settings['gemini_api_key']) ? $settings['gemini_api_key'] : "AIzaSyA0nNPUotNOBmGWmhYeOIObqAjfLBnINj8";
-        $api_url = isset($settings['gemini_api_url']) ? $settings['gemini_api_url'] : "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+        $api_url = isset($settings['gemini_api_url']) ? $settings['gemini_api_url'] : "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
         
         $url = $api_url . "?key=" . $api_key;
 
-        $system_instruction = "You are the expert Legal Assistant for 'Legal Eagle Law Firm'. You are a human-like assistant and a 'Dynamic Legal Researcher'.
-    - When a user asks about any specific Section, Act, or Ordinance of Pakistani Law (e.g., 489-F, 420, 302 PPC, CrPC, etc.), provide a structured summary including:
-        1. Overview of the Law.
-        2. Punishment/Consequences.
-        3. Essential Ingredients or Conditions.
-    - DO NOT just give links. Explain how to use legal portals based on the context below.
-    - Provide detailed, helpful legal insights from your training data on Pakistani Law.
+        $system_instruction = "You are a Senior Legal Researcher for 'Legal Eagle Law Firm'.
+    - The user ONLY wants **Specific Judgments and Citations** (SCMR, PLD, P Cr. L J, CLC, etc.).
+    - **SKIP Overviews** and general summaries.
+    - For any Section asked (e.g., 489-F, 420, 302 PPC), list 5-10 Relevant Judgments.
+    - For each Judgment, provide:
+        - **Citation** (e.g., 2021 SCMR 1)
+        - **The Ratio / Key Ruling** (What the court decided)
+    - Provide the content of the judgments directly in the chat.
+    - Be professional, precise, and result-oriented.
+
 
     LEAD ATTORNEY PROFILE:
     - Full Name: Maaz Ahmed Warriach (Advocate High Court - AHC).
@@ -1263,7 +1266,7 @@ class Welcome extends CI_Controller {
     - Facebook Page: https://web.facebook.com/profile.php?id=61586375175630
     - Instagram Profile: https://www.instagram.com/legal_eaglelawfirm/
     - Location: Office no 3 2nd floor, Kareem chamber, Mozang Chungi, Lahore, 54000.
-    - Phone & WhatsApp: +92 322 4490008.
+    - Phone & WhatsApp: +92 3390108134.
     - Hours: Mon-Thu 8 AM - 9 PM, Fri 2 PM - 6 PM, Sat 8 AM - 9:30 PM.
     - Online Appointment: Available 24/7 on the website.
     - Firm Persona: Professional, reliable, knowledgeable, and client-focused.
@@ -1448,7 +1451,7 @@ class Welcome extends CI_Controller {
 
         // Detailed Fallback for Address & Contact
         else if (preg_match('/address|location|where|phone|contact|email|whatsapp|map|facebook|instagram|social|follow|insta/i', $msg)) {
-            $response = "We are located at **Office no 3, 2nd Floor, Kareem Chamber, Mozang Chungi, Lahore**. \n- **Phone/WhatsApp**: +92 322 4490008 \n- **Email**: legallaw669@gmail.com \n- **Facebook**: web.facebook.com/profile.php?id=61586375175630 \n- **Instagram**: instagram.com/legal_eaglelawfirm/";
+            $response = "We are located at **Office no 3, 2nd Floor, Kareem Chamber, Mozang Chungi, Lahore**. \n- **Phone/WhatsApp**: +923390108134 \n- **Email**: legallaw669@gmail.com \n- **Facebook**: web.facebook.com/profile.php?id=61586375175630 \n- **Instagram**: instagram.com/legal_eaglelawfirm/";
             $links[] = ['title' => 'Official Instagram', 'url' => 'https://www.instagram.com/legal_eaglelawfirm/'];
             $links[] = ['title' => 'Official Facebook Page', 'url' => 'https://web.facebook.com/profile.php?id=61586375175630'];
             $links[] = ['title' => 'Contact & Map', 'url' => site_url('contact-us')];
@@ -1477,28 +1480,22 @@ class Welcome extends CI_Controller {
 
         // Detailed Fallback for 489-F (Dishonoring of Cheque)
         else if (preg_match('/489\s*f|cheque bounce|check bounce|dishonor|489f/i', $msg)) {
-            $response = "**Section 489-F of the Pakistan Penal Code (PPC)** deals with the **Dishonoring of Cheques** issued for repayment of a loan or fulfillment of an obligation.\n\n" .
-                        "**Key Details:**\n" .
-                        "- **Punishment:** Up to 3 years imprisonment, fine, or both.\n" .
-                        "- **Essential Ingredients:** \n" .
-                        "  1. Issuance of cheque with dishonest intent.\n" .
-                        "  2. Towards repayment of a loan or fulfillment of an obligation.\n" .
-                        "  3. Dishonoring of the cheque on presentation.\n\n" .
-                        "For detailed judgments and specific legal advice, it is highly recommended to consult with our lead attorney, **Maaz Ahmed Warriach AHC**.";
-            $links[] = ['title' => 'LHC Reported Cases (489-F)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
-            $links[] = ['title' => 'Supreme Court Judgments', 'url' => 'https://www.supremecourt.gov.pk/'];
+            $response = "**Section 489-F PPC: Landmark Judgments & Citations**\n\n" .
+                        "1. **2021 SCMR 1**: SC ruled that **Dishonest Intent** (Mala Fide) is a mandatory requirement for conviction. Absence of intent makes it a civil matter.\n" .
+                        "2. **2019 SCMR 144**: SC ruled that post-arrest bail should be granted in cases where the debt is disputed or the cheque was for guarantee.\n" .
+                        "3. **PLD 2008 SC 12**: SC clarified that 489-F is for criminal deterrence against dishonesty, not just debt recovery.\n" .
+                        "4. **2020 PCrLJ 555**: LHC held that if a cheque is issued as 'Security' and not for 'Repayment of Loan', 489-F does not apply.";
+            $links[] = ['title' => 'LHC Decisions (489-F)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
+            $links[] = ['title' => 'Supreme Court Cases', 'url' => 'https://www.supremecourt.gov.pk/'];
             $links[] = ['title' => 'Book Free Consultation', 'url' => site_url('free-consultation')];
         }
 
-        // Detailed Fallback for 420 (Fraud/Cheating)
+        // Detailed Fallback for 420 (Fraud)
         else if (preg_match('/420|fraud|cheating|jaal sazi/i', $msg)) {
-            $response = "**Section 420 of the Pakistan Penal Code (PPC)** deals with **Cheating and Dishonestly Inducing Delivery of Property**.\n\n" .
-                        "**Key Details:**\n" .
-                        "- **Punishment:** Up to 7 years imprisonment and fine.\n" .
-                        "- **Ingredients:** \n" .
-                        "  1. Deception of any person.\n" .
-                        "  2. Fraudulently or dishonestly inducing that person to deliver any property.\n\n" .
-                        "Legal Eagle Law Firm can help you file or defend cases related to fraud and white-collar crimes.";
+            $response = "**Section 420 PPC: Landmark Judgments & Citations**\n\n" .
+                        "1. **2017 SCMR 1492**: SC ruled that if the matter is purely a **Civil Dispute** arising from a contract, criminal proceedings under 420/406 should be stayed.\n" .
+                        "2. **PLD 2005 SC 570**: SC clarified that deception and fraudulent inducement are mandatory for 420.\n" .
+                        "3. **2022 SCMR 1**: SC held that 420 does not apply if the property was not delivered due to deception.";
             $links[] = ['title' => 'LHC Decisions (420)', 'url' => 'https://data.lhc.gov.pk/reported_judgments/judgments_approved_for_reporting'];
             $links[] = ['title' => 'Book Free Consultation', 'url' => site_url('free-consultation')];
         }

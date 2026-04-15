@@ -665,29 +665,230 @@ practice areas, ensuring expert counsel for your specific needs</p>
             </div>
         </div>
     </div>      
-    <!--Testimonial Area Start-->
-    <div class="testimonial-area section-padding">
+    <!--Google Reviews Area Start-->
+    <div class="testimonial-area section-padding" style="background: #fdfaf5; padding: 100px 0;">
         <div class="container">
-            <div class="row">
-                <div class="testimonial-active">
-                    <?php if(!empty($testimonials)): foreach($testimonials as $testimonial): ?>
-                    <div class="my-testimonial">
-                        <div class="inner-content">
-                            <div class="content">
-                                <div class="image-box"><img src="<?= base_url($testimonial['image']) ?>" alt="" /></div>
-                                <div class="quote-icon"><i class="fi flaticon-right-quote"></i></div>
-                                <h4><?= $testimonial['name'] ?></h4>
-                                <div class="designation"><?= $testimonial['designation'] ?></div>
-                                <div class="text"><?= $testimonial['message'] ?></div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="section-title-1 text-center" style="margin-bottom: 60px;">
+                        <div class="google-rating-summary" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                            <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google" style="height: 35px; margin-bottom: 10px;">
+                            <h2 style="margin-bottom: 15px; font-weight: 700;">What Our Clients Say</h2>
+                            <div style="display: flex; align-items: center; gap: 15px; background: #fff; padding: 10px 25px; border-radius: 50px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                                <span style="font-size: 32px; font-weight: 800; color: #333;">4.9</span>
+                                <div style="text-align: left;">
+                                    <div style="color: #fbbc04; font-size: 16px; line-height: 1;">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                    <div style="font-size: 13px; color: #666; font-weight: 600; margin-top: 4px;">85 Reviews on Google</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <?php endforeach; endif; ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="testimonial-active">
+                    
+                    <!-- Review 1: Junaid Ashraf -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Junaid+Ashraf&background=4285F4&color=fff&bold=true" alt="Junaid Ashraf" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Junaid Ashraf</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">5 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Exceptional service and professional expertise! The team at Legal Eagle Law firm truly goes above and beyond for their clients. Highly recommended"</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 2: Mohammad Raza -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Mohammad+Raza&background=EA4335&color=fff&bold=true" alt="Mohammad Raza" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Mohammad Raza</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">12 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"I highly recommend Muhammad Mazz Ahmad for Criminal and Tax cases. They handled all my cases with exceptional knowledge and communication."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3: Noor -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Noor&background=34A853&color=fff&bold=true" alt="Noor" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Noor</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">8 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Great experience with Legal Eagle Law Firm. The team was highly professional, knowledgeable, and responsive throughout the entire process."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 4: Ahmad Naeem -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Ahmad+Naeem&background=FBBC05&color=fff&bold=true" alt="Ahmad Naeem" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Ahmad Naeem</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">3 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Very thankful to this law firm for helping me with FBR. They explained everything clearly and supported me throughout the process. Truly professional."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 5: Taiba -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Taiba&background=4285F4&color=fff&bold=true" alt="Taiba" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Taiba</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">1 review • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Best advocate in Lahore. Legal Eagle Law Firm provided strong legal support. Maaz Ahmed Advocate is the best! Unique guidance and very professional approach."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 6: Sajjad Haider -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Sajjad+Haider&background=EA4335&color=fff&bold=true" alt="Sajjad Haider" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Sajjad Haider</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">4 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Professional, reliable, and knowledgeable. Great legal service with a professional and supportive team. Highly recommended in Lahore."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 7: muhammad Ibrahim -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Muhammad+Ibrahim&background=34A853&color=fff&bold=true" alt="Muhammad Ibrahim" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Muhammad Ibrahim</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">6 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Great service and very professional team. They guided me properly and handled my case efficiently."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 8: Ey m_mak -->
+                    <div class="my-testimonial">
+                        <div class="inner-content" style="background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); margin: 15px; min-height: 250px;">
+                            <div class="content" style="padding: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="https://ui-avatars.com/api/?name=Ey+M&background=FBBC05&color=fff&bold=true" alt="Ey m_mak" style="width: 45px; height: 45px; border-radius: 50%;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #333;">Ey m_mak</h4>
+                                            <div style="font-size: 11px; color: #888; font-weight: 500;">2 reviews • Google Review</div>
+                                        </div>
+                                    </div>
+                                    <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="G" style="width: 18px;">
+                                </div>
+                                <div style="color: #fbbc04; font-size: 13px; margin-bottom: 12px;">
+                                    <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                </div>
+                                <div class="text" style="font-size: 14px; line-height: 1.5; color: #555; font-style: normal; font-weight: 400;">"Such a great law firm. Whenever I need them they always give me good advice which help me alot. They still stand by me."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row justify-content-center" style="margin-top: 40px;">
+                <div class="col-auto text-center">
+                    <div style="margin-bottom: 15px; font-size: 14px; color: #666; font-weight: 500;">
+                        Showing our top 8 reviews out of 85
+                    </div>
+                    <a href="https://www.google.com/search?q=Legal+Eagle+Law+Firm+Mozang+Chungi+Lahore#lrd=0x3919010899214771:0x2aa5247171c778fa,1" target="_blank" class="theme-btn" style="background: #fff; color: #4285F4; border: 2px solid #4285F4; border-radius: 50px; font-weight: 700; padding: 12px 35px; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.3s ease;">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google" style="width: 20px;">
+                        View All 85 Reviews on Google
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    <!--Testimonial Area End-->
+    <!--Google Reviews Area End-->
+
+
+
     <!-- area end -->
 
      <!-- .counter-area start -->
