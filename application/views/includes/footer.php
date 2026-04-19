@@ -625,13 +625,16 @@ if($seo_gtm_footer): ?>
                 }
             }
 
-            // Auto-open logic
-            setTimeout(() => {
-                windowEl.style.display = 'flex';
-                const notif = document.querySelector('.bubble-notif');
-                if (notif) notif.style.display = 'none';
-                loadChatHistory();
-            }, 1000);
+            // Auto-open logic - Only for the first time
+            if (!localStorage.getItem('chatbot_auto_opened')) {
+                setTimeout(() => {
+                    windowEl.style.display = 'flex';
+                    const notif = document.querySelector('.bubble-notif');
+                    if (notif) notif.style.display = 'none';
+                    localStorage.setItem('chatbot_auto_opened', 'true');
+                }, 1000);
+            }
+            loadChatHistory();
 
             // Add Chat Start Time
             function addChatTimestamp() {
@@ -826,6 +829,7 @@ if($seo_gtm_footer): ?>
                     if (confirm("Are you sure you want to reset the chat? This will clear your history.")) {
                         localStorage.removeItem('chatbot_lead_submitted');
                         localStorage.removeItem('chatbot_history');
+                        localStorage.removeItem('chatbot_auto_opened');
                         isSubmitted = false;
                         if (messagesWrap) {
                             messagesWrap.innerHTML = '<div class="msg-bot">Hello! Welcome to <b>Legal Eagle Law</b>. I am your Legal Assistant. How can I help you today?</div>';
