@@ -924,22 +924,26 @@
                     <h2>Latest News</h2>
                 </div>
             </div>
-            <div class="row">
+            <div class="row d-flex align-items-stretch">
                 <?php if(!empty($blogs)): foreach($blogs as $blog): ?>
-                <div class="col-lg-4 col-md-6 col-12">
-                    <div class="blog-item">
-                        <div class="blog-img">
+                <div class="col-lg-4 col-md-6 col-12 mb-4 d-flex">
+                    <div class="blog-item w-100 h-100 d-flex flex-column">
+                        <div class="blog-img" style="flex-shrink: 0;">
                             <a href="<?= site_url('blog_detail/'.$blog['slug']) ?>">
                                 <img src="<?= base_url($blog['image']) ?>" alt="<?= $blog['title'] ?>">
                             </a>
                         </div>
-                        <div class="blog-content">
+                        <div class="blog-content d-flex flex-column flex-grow-1">
                             <h3><a href="<?= site_url('blog_detail/'.$blog['slug']) ?>"><?= $blog['title'] ?></a></h3>
-                            <ul class="post-meta">
-                                <li><img src="https://ui-avatars.com/api/?name=<?= urlencode($blog['author']) ?>&background=bc9355&color=fff" alt="" style="border-radius: 50%; width: 20px;"></li>
-                                <li><a href="#"><?= $blog['author'] ?></a></li>
-                                <li> <?= date('M d, Y', strtotime($blog['date_published'])) ?></li>
-                            </ul>
+                            <div class="mt-auto">
+                                <ul class="post-meta d-flex align-items-center">
+                                    <li class="d-flex align-items-center gap-2">
+                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($blog['author']) ?>&background=bc9355&color=fff" alt="" style="border-radius: 50%; width: 24px; height: 24px;">
+                                        <a href="#"><?= $blog['author'] ?></a>
+                                    </li>
+                                    <li style="margin-left: auto;"> <?= date('M d, Y', strtotime($blog['date_published'])) ?></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
