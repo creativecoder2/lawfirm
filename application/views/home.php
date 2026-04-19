@@ -564,34 +564,38 @@
     </div>
     <!-- about-area end-->
     <!-- practice-area start -->
-    <div class="practice-area  ptb-100-70">
+    <div class="practice-area ptb-100-70">
         <div class="container">
             <div class="col-12">
                 <div class="section-title-1 text-center">
                     <span>Area Of Practice</span>
                     <h2>How Can We Help You</h2>
-                    <p>Our experienced legal team provides comprehensive representation across a wide range of
-practice areas, ensuring expert counsel for your specific needs</p>
+                    <p>Our experienced legal team provides comprehensive representation across a wide range of practice areas, ensuring expert counsel for your specific needs</p>
                 </div>
             </div>
-            <div class="row">
+            <div class="row d-flex align-items-stretch">
                 <?php if(!empty($practice)): foreach($practice as $p): ?>
-                <div class="col-lg-4 col-md-6 col-12">
-                    <div class="practice-section">
-                        <div class="practices-wrapper">
-                            <div class="practices-icon-wrapper" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
+                <div class="col-lg-4 col-md-6 col-12 mb-4 d-flex">
+                    <div class="practice-section w-100">
+                        <div class="practices-wrapper h-100 d-flex flex-column">
+                            <div class="practices-icon-wrapper" style="overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; flex-shrink: 0;">
                                 <div class="practice-dot">
                                    <div class="dots"></div>
                                 </div>
                                 <?php if(!empty($p['image'])): ?>
-                                    <img src="<?= base_url($p['image']) ?>" alt="<?= $p['title'] ?>" style="width: 100%; height: 100%; object-fit: cover; ">
+                                    <img src="<?= base_url($p['image']) ?>" alt="<?= $p['title'] ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                 <?php else: ?>
                                     <i class="fi flaticon-law"></i>
                                 <?php endif; ?>
                             </div>
-                            <div class="practice-content">
+                            <div class="practice-content d-flex flex-column flex-grow-1">
                                 <h2><?= $p['title'] ?></h2>
-                                <div class="description-content"><?= $p['description'] ?></div>
+                                <div class="description-content flex-grow-1">
+                                    <?= (strlen(strip_tags($p['description'])) > 150) ? substr(strip_tags($p['description']), 0, 150) . '...' : strip_tags($p['description']) ?>
+                                </div>
+                                <div class="practice-more-btn" style="margin-top: 20px;">
+                                    <a href="<?= site_url('practice/' . $p['slug']) ?>" style="color: #bc9355; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Learn More <i class="fa fa-angle-right"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
