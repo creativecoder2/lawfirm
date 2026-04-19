@@ -432,7 +432,7 @@
     <!--features-features end -->
     <!-- Gallery Video Segment -->
     <div class="video-slider-area ptb-100-70" style="background: #fdfaf5;">
-        <div class="container-fluid" style="padding: 0 40px;">
+        <div class="container">
             <div class="col-12">
                 <div class="section-title-1 text-center">
                     <span>Watch Our Clips</span>
@@ -482,8 +482,8 @@
             transition: 0.3s;
             margin: 0 !important;
         }
-        .video-active .owl-nav .owl-prev { left: 10px; }
-        .video-active .owl-nav .owl-next { right: 10px; }
+        .video-active .owl-nav .owl-prev { left: -20px; }
+        .video-active .owl-nav .owl-next { right: -20px; }
         .video-active .owl-nav [class*="owl-"]:hover {
             background: #bc9355 !important;
             color: #fff !important;
