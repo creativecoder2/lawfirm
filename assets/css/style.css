@@ -2532,7 +2532,9 @@ mobile menu
 }
 
 .footer-top p {
-    color: #ddd;
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.8;
 }
 
 .footer-top a {
@@ -2540,61 +2542,47 @@ mobile menu
 }
 
 .footer-top h3 {
-    font-size: 36px;
+    font-size: 22px;
+    font-weight: 700;
     color: #fff;
-    margin-bottom: 20px;
-}
-
-.footer-link ul li a {
-    padding-top: 10px;
-    display: block;
-    transition: all .3s;
-    position: relative;
-    padding-left: 30px;
-}
-
-.footer-link ul li a:before {
-    font-family: FontAwesome;
-    content: "\f101";
-    font-size: 15px;
-    position: absolute;
-    left: 5px;
-    top: 12px;
-    border-radius: 50%;
-}
-
-.footer-link ul li a:hover {
-    color: #d0a15e;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
 }
 
 .footer-link {
     margin-bottom: 30px;
 }
 
-.footer-practice {
-    margin-bottom: 30px;
-}
-
+.footer-link ul li a,
 .footer-practice ul li a {
     padding-top: 10px;
     display: block;
     transition: all .3s;
     position: relative;
-    padding-left: 30px;
+    padding-left: 25px;
+    font-size: 14px;
+    color: #ccc !important;
 }
 
+.footer-link ul li a:before,
 .footer-practice ul li a:before {
     font-family: FontAwesome;
     content: "\f101";
-    font-size: 15px;
+    font-size: 13px;
     position: absolute;
-    left: 5px;
+    left: 0;
     top: 12px;
-    border-radius: 50%;
+    color: #bc9355;
+}
+
+.footer-link ul li a:hover,
+.footer-practice ul li a:hover {
+    color: #bc9355 !important;
+    padding-left: 30px;
 }
 
 .footer-practice ul li a:hover {
-    color: #d0a15e;
+    color: #bc9355;
 }
 
 .footer-top .newsletter-widget form {
@@ -2655,6 +2643,13 @@ mobile menu
 
 .footer-bottom-content ul li a {
     color: #ddd;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+.footer-bottom-content ul li a:hover {
+    color: #bc9355;
+    transform: translateY(-3px);
 }
 
 .newsletter-widget ::-webkit-input-placeholder {
@@ -4687,5 +4682,51 @@ mobile menu
         width: 100% !important;
         height: 45px !important;
         font-size: 14px !important;
+    }
+
+    /* Footer - Compact App Layout */
+    .footer-top {
+        padding: 40px 0 20px !important;
+    }
+
+    .footer-top h3 {
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+        margin-top: 10px !important;
+    }
+
+    .footer-top p {
+        font-size: 13px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .footer-link,
+    .footer-practice {
+        margin-bottom: 25px !important;
+    }
+
+    .footer-link ul li a,
+    .footer-practice ul li a {
+        font-size: 13px !important;
+        padding-top: 8px !important;
+    }
+
+    .footer-bottom-content {
+        padding: 20px 0 !important;
+        text-align: center !important;
+    }
+
+    .footer-bottom-content span {
+        font-size: 13px !important;
+        display: block !important;
+        margin-bottom: 15px !important;
+    }
+
+    .footer-bottom-content ul {
+        justify-content: center !important;
+    }
+
+    .footer-bottom-content ul li a {
+        font-size: 20px !important; /* Larger touch targets */
     }
 }
