@@ -508,7 +508,7 @@ if($seo_gtm_footer): ?>
 
     @media (max-width: 767px) {
         #legal-chatbot-wrapper {
-            bottom: 0px !important; /* Managed for ergonomics */
+            bottom: 85px !important; /* Move above sticky bar */
             right: 15px !important;
             left: auto !important;
         }
