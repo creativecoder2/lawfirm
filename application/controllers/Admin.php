@@ -2325,7 +2325,8 @@ class Admin extends CI_Controller {
         if (!$this->session->userdata("logged_in")) redirect("admin/login");
         
         // Group by user_phone if available, otherwise session_id
-        $this->db->select('user_name, user_phone, session_id, MIN(created_at) as started_at, MAX(created_at) as ended_at, COUNT(*) as msg_count');
+        // Use aggregate functions (MAX) to comply with ONLY_FULL_GROUP_BY mode
+        $this->db->select('MAX(user_name) as user_name, MAX(user_phone) as user_phone, MAX(session_id) as session_id, MIN(created_at) as started_at, MAX(created_at) as ended_at, COUNT(*) as msg_count');
         $this->db->select('COALESCE(NULLIF(user_phone, ""), session_id) as identifier', FALSE);
         $this->db->from('chatbot_logs');
         $this->db->group_by('identifier');
