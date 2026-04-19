@@ -434,6 +434,95 @@ if($seo_gtm_footer): ?>
         </div>
     </div>
 
+    <!-- Mobile Sticky Bottom Bar -->
+    <div class="mobile-app-bar d-md-none">
+        <div class="app-bar-inner">
+            <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="app-bar-item">
+                <i class="fa fa-phone"></i>
+                <span>Call Now</span>
+            </a>
+            <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', isset($settings['contact_phone']) ? $settings['contact_phone'] : '923224490008') ?>" target="_blank" class="app-bar-item whatsapp">
+                <i class="fa fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </a>
+            <a href="#consultation-form" class="app-bar-item">
+                <i class="fa fa-calendar-check-o"></i>
+                <span>Book Now</span>
+            </a>
+            <a href="mailto:<?= isset($settings['contact_email']) ? $settings['contact_email'] : 'legallaw669@gmail.com' ?>" class="app-bar-item">
+                <i class="fa fa-envelope"></i>
+                <span>Email</span>
+            </a>
+        </div>
+    </div>
+
+    <style>
+    /* Mobile App Bar Styling */
+    .mobile-app-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: #fff;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        z-index: 9999999;
+        padding: 8px 0 5px;
+        border-top: 2px solid #bc9355;
+        overflow: hidden !important;
+    }
+
+    .app-bar-inner {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .app-bar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #444;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: 0.3s;
+    }
+
+    .app-bar-item i {
+        font-size: 22px;
+        margin-bottom: 3px;
+        color: #bc9355;
+    }
+
+    .app-bar-item.whatsapp i {
+        color: #25D366;
+    }
+
+    .app-bar-item:hover, .app-bar-item:active {
+        color: #bc9355;
+        text-decoration: none;
+    }
+
+    @media (max-width: 767px) {
+        #legal-chatbot-wrapper {
+            bottom: 0px !important; /* Managed for ergonomics */
+            right: 15px !important;
+            left: auto !important;
+        }
+        #chatbot-bubble {
+            width: 45px !important;
+            height: 45px !important;
+            font-size: 22px !important;
+        }
+        .whatsapp-float {
+            display: none !important; /* Redundant with sticky app bar */
+        }
+    }
+    </style>
+
     <style>
         #legal-chatbot-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 999999; font-family: 'Inter', sans-serif; }
         #chatbot-bubble { 
@@ -882,15 +971,6 @@ if($seo_gtm_footer): ?>
             0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
             100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        @media screen and (max-width: 767px) {
-            .whatsapp-float {
-                width: 50px;
-                height: 50px;
-                bottom: 30px;
-                right: 85px;
-                font-size: 25px;
-            }
         }
     </style>
     <!-- End WhatsApp Floating Button -->

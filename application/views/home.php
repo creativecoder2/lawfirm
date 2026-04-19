@@ -612,7 +612,7 @@
             <div class="col-12">
                 <div class="section-title-1 text-center">
                     <span>Here Our Best Work</span>
-                    <h2>Our Resent Case Studies</h2>
+                    <h2>Our Recent Case Studies</h2>
                 </div>
             </div>
             <div class="col-12">
@@ -623,7 +623,8 @@
                     <?php endforeach; endif; ?>
                 </div>
             </div>
-            <div class="row grid">
+            <!-- Desktop Grid View -->
+            <div class="row grid d-none d-md-flex">
                 <?php if(!empty($case_studies)): foreach($case_studies as $cs): ?>
                 <div class="col-lg-4 col-md-6 col-sm-6 grid-item <?= $cs['category_slug'] ?>">
                     <div class="studies-item">
@@ -637,6 +638,23 @@
                             </div>
                         </a>  
                     </div>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+
+            <!-- Mobile Slider View (Guaranteed Visibility) -->
+            <div class="case-studies-mobile-slider d-md-none owl-carousel owl-theme">
+                <?php if(!empty($case_studies)): foreach($case_studies as $cs): ?>
+                <div class="studies-item">
+                    <div class="studies-single">
+                        <img src="<?= base_url($cs['image']) ?>" alt="">
+                    </div>
+                    <a href="<?= site_url('case_studies_details/'.$cs['slug']) ?>" class="overlay-text">
+                        <div class="text-inner">
+                            <p class="sub"><?= $cs['category_name'] ?></p>
+                            <h3><?= $cs['title'] ?></h3>
+                        </div>
+                    </a>  
                 </div>
                 <?php endforeach; endif; ?>
             </div>
@@ -896,24 +914,24 @@
     <!-- area end -->
 
      <!-- .counter-area start -->
-    <div class="counter-area" style="background: #1a1a1a; padding: 60px 0;">
+    <div class="counter-area consultation-section">
         <div class="container">
             <div class="row">
-                <div class="consulting-area text-center" style="width: 100%;">
-                    <span style="display: inline-block; padding: 5px 20px; border: 1px solid #bc9355; border-radius: 30px; color: #bc9355; margin-bottom: 20px;">Now Offering Online Consultations</span>
-                    <h1 style="color: #fff; margin-bottom: 20px;"><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
-                    <p style="color: #ccc; max-width: 800px; margin: 0 auto 30px;"><?= isset($settings['consultation_text']) ? nl2br($settings['consultation_text']) : 'Don’t wait to protect your rights. Contact us today for a free, confidential consultation and let our experienced attorneys fight for the justice you deserve.' ?>
+                <div class="consulting-area text-center">
+                    <span class="consultation-badge">Now Offering Online Consultations</span>
+                    <h1 class="consultation-title"><?= isset($settings['consultation_title']) ? $settings['consultation_title'] : 'Ready to Discuss Your Case?' ?></h1>
+                    <p class="consultation-text"><?= isset($settings['consultation_text']) ? nl2br(str_replace('’', "'", $settings['consultation_text'])) : "Don't wait to protect your rights. Contact us today for a free, confidential consultation and let our experienced attorneys fight for the justice you deserve." ?>
                     </p>
-                    <div class="btns" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                        <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="theme-btn" style="background: #bc9355; color: #fff; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
-                        <a href="#consultation-form" class="theme-btn" style="background: transparent; border: 1px solid #bc9355; color: #bc9355; padding: 12px 30px; border-radius: 30px; text-decoration: none;">Book Online Consultation</a>
+                    <div class="btns consultation-btns">
+                        <a href="tel:<?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?>" class="theme-btn">Call Now : <?= isset($settings['contact_phone']) ? $settings['contact_phone'] : '+92 322 4490008' ?></a>
+                        <a href="#consultation-form" class="theme-btn btn-outline">Book Online Consultation</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- .counter-area end -->
-
+    
 
     <!-- blog-area start -->
     <div class="blog-area section-padding">
@@ -938,7 +956,7 @@
                             <div class="mt-auto">
                                 <ul class="post-meta d-flex align-items-center">
                                     <li class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($blog['author']) ?>&background=bc9355&color=fff" alt="" style="border-radius: 50%; width: 24px; height: 24px;">
+                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($blog['author']) ?>&background=bc9355&color=fff" alt="" style="border-radius: 50%; width: 24px; height: 24px;    margin-right: 8px;">
                                         <a href="#"><?= $blog['author'] ?></a>
                                     </li>
                                     <li style="margin-left: auto;"> <?= date('M d, Y', strtotime($blog['date_published'])) ?></li>
@@ -959,66 +977,81 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            // Case Studies Infinite Scroll Logic
-            var $grid = jQuery('.grid');
-            if ($grid.length) {
-                var currentLimit = 4;
-                var currentFilter = '*';
-
-                function updateCaseStudiesFilter() {
-                    $grid.isotope({
-                        filter: function() {
-                            var $this = jQuery(this);
-                            var isMatched = (currentFilter === '*') || $this.is(currentFilter);
-                            if (!isMatched) return false;
-
-                            // Find the index among items that match currentFilter
-                            var selector = (currentFilter === '*') ? '.grid-item' : '.grid-item' + currentFilter;
-                            var index = $grid.find(selector).index($this);
-                            return index < currentLimit;
+            // Case Studies Switch: Dedicated Mobile Slider or Desktop Isotope
+            if (window.innerWidth < 768) {
+                var $mobSlider = jQuery('.case-studies-mobile-slider');
+                if ($mobSlider.length) {
+                    $mobSlider.owlCarousel({
+                        loop: true,
+                        margin: 15,
+                        nav: false,
+                        dots: true,
+                        items: 1.2,
+                        center: true,
+                        autoplay: true,
+                        autoplayTimeout: 4000,
+                        responsive: {
+                            0: { items: 1.2 },
+                            480: { items: 1.5 }
                         }
                     });
                 }
+            } else {
+                var $grid = jQuery('.grid');
+                if ($grid.length) {
+                    var currentLimit = 4;
+                    var currentFilter = '*';
 
-                // Wait for imagesLoaded (handled in script.js, but we override here)
-                $grid.imagesLoaded(function() {
-                    updateCaseStudiesFilter();
-                });
+                    function updateCaseStudiesFilter() {
+                        $grid.isotope({
+                            filter: function() {
+                                var $this = jQuery(this);
+                                var isMatched = (currentFilter === '*') || $this.is(currentFilter);
+                                if (!isMatched) return false;
 
-                // Override filter menu click
-                jQuery('.studies-menu').off('click', 'button');
-                jQuery('.studies-menu').on('click', 'button', function() {
-                    jQuery('.studies-menu button').removeClass('active');
-                    jQuery(this).addClass('active');
-                    
-                    updateCaseStudiesFilter();
-                    // Trigger a layout update
-                    $grid.isotope('layout');
-                });
-
-                // Scroll to Load More
-                var isHandlingScroll = false;
-                jQuery(window).on('scroll', function() {
-                    if (isHandlingScroll) return;
-                    
-                    var totalMatching = (currentFilter === '*') ? 
-                        $grid.find('.grid-item').length : 
-                        $grid.find('.grid-item' + currentFilter).length;
-                    
-                    if (currentLimit >= totalMatching) return;
-
-                    var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
-                    var sectionBottom = jQuery('.studies-area').offset().top + jQuery('.studies-area').outerHeight();
-
-                    if (scrollY > sectionBottom - 150) {
-                        isHandlingScroll = true;
-                        setTimeout(function() {
-                            currentLimit += 4;
-                            updateCaseStudiesFilter();
-                            isHandlingScroll = false;
-                        }, 200); // Small debounce for smoother behavior
+                                var selector = (currentFilter === '*') ? '.grid-item' : '.grid-item' + currentFilter;
+                                var index = $grid.find(selector).index($this);
+                                return index < currentLimit;
+                            }
+                        });
                     }
-                });
+
+                    $grid.imagesLoaded(function() {
+                        updateCaseStudiesFilter();
+                    });
+
+                    jQuery('.studies-menu').off('click', 'button');
+                    jQuery('.studies-menu').on('click', 'button', function() {
+                        jQuery('.studies-menu button').removeClass('active');
+                        jQuery(this).addClass('active');
+                        currentFilter = jQuery(this).attr('data-filter') === '*' ? '*' : jQuery(this).attr('data-filter');
+                        updateCaseStudiesFilter();
+                        $grid.isotope('layout');
+                    });
+
+                    var isHandlingScroll = false;
+                    jQuery(window).on('scroll', function() {
+                        if (isHandlingScroll) return;
+                        
+                        var totalMatching = (currentFilter === '*') ? 
+                            $grid.find('.grid-item').length : 
+                            $grid.find('.grid-item' + currentFilter).length;
+                        
+                        if (currentLimit >= totalMatching) return;
+
+                        var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
+                        var sectionBottom = jQuery('.studies-area').offset().top + jQuery('.studies-area').outerHeight();
+
+                        if (scrollY > sectionBottom - 150) {
+                            isHandlingScroll = true;
+                            setTimeout(function() {
+                                currentLimit += 4;
+                                updateCaseStudiesFilter();
+                                isHandlingScroll = false;
+                            }, 200);
+                        }
+                    });
+                }
             }
 
             const urlParams = new URLSearchParams(window.location.search);

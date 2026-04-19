@@ -2242,7 +2242,7 @@ mobile menu
 }
 
 .why-choose-in {
-    margin-top: 30%;
+    margin-top: 10%;
     color: #fff;
 }
 
@@ -2282,7 +2282,6 @@ mobile menu
     color: #fff;
     text-align: center;
     width: 100%;
-    height: 350px;
     padding: 40px 0;
     display: block;
 }
@@ -2340,7 +2339,7 @@ mobile menu
 
 .counter-area .counter-grids {
     overflow: hidden;
-    padding: 100px 0 95px;
+    padding: 100px 0 30px;
     position: relative;
 }
 
@@ -2364,9 +2363,9 @@ mobile menu
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
     transition: all 0.4s ease;
-    border: 1px solid rgba(0,0,0,0.03);
+    border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .blog-item:hover {
@@ -2420,7 +2419,7 @@ mobile menu
     margin: 0;
     padding: 15px 0 0;
     list-style: none;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 13px;
     color: #777;
     font-weight: 500;
@@ -4259,5 +4258,417 @@ mobile menu
     .header-style-1 .search ul li>ul {
         right: 0 !important;
         top: 100% !important;
+    }
+}
+
+/* Consultation Section Responsive Fixes */
+.consultation-section {
+    background: #1a1a1a;
+}
+
+.consultation-badge {
+    display: inline-block;
+    padding: 5px 20px;
+    border: 1px solid #bc9355;
+    border-radius: 30px;
+    color: #bc9355;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.consultation-title {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.consultation-text {
+    color: #ccc;
+    max-width: 800px;
+    margin: 0 auto 35px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.consultation-btns {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.consultation-btns .theme-btn {
+    background: #bc9355;
+    color: #fff;
+    padding: 14px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 1px solid #bc9355;
+}
+
+.consultation-btns .btn-outline {
+    background: transparent;
+    border: 1px solid #bc9355;
+    color: #bc9355;
+}
+
+.consultation-btns .theme-btn:hover {
+    background: #a47d44;
+    border-color: #a47d44;
+    color: #fff;
+}
+
+@media (max-width: 767px) {
+
+    .section-padding,
+    .ptb-100-70 {
+        padding: 50px 0 !important;
+    }
+
+    .section-title h2,
+    .section-title-1 h2 {
+        font-size: 28px !important;
+        margin-bottom: 30px !important;
+    }
+
+    .consultation-section {
+        padding: 60px 0;
+    }
+
+    .consultation-title {
+        font-size: 26px !important;
+        line-height: 1.3 !important;
+    }
+
+    .consultation-badge {
+        font-size: 12px;
+        padding: 4px 15px;
+        margin-bottom: 15px;
+    }
+
+    .consultation-text {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .consultation-btns {
+        flex-direction: column;
+        gap: 0px;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .consultation-btns .theme-btn {
+        width: 100%;
+        padding: 12px 20px !important;
+        font-size: 14px;
+        text-align: center;
+    }
+}
+
+/* Mobile App Experience Overhaul - High Density UI */
+@media (max-width: 575px) {
+
+    /* Global Section Compactness */
+    /* Global Horizontal Scroll Fix */
+    html,
+    body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        position: relative !important;
+    }
+
+    .section-padding,
+    .ptb-100-70,
+    .practice-area.section-padding,
+    .blog-area.section-padding,
+    .video-slider-area.ptb-100-70,
+    .studies-area,
+    .footer-area {
+        overflow-x: hidden !important;
+        padding: 35px 0 !important;
+    }
+
+    /* Aggressive Typography Scaling */
+    h1,
+    .consultation-title {
+        font-size: 24px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 12px !important;
+    }
+
+    h2,
+    .section-title h2,
+    .section-title-1 h2 {
+        font-size: 22px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 20px !important;
+    }
+
+    h3 {
+        font-size: 18px !important;
+    }
+
+    p,
+    .section-title span,
+    .section-title-1 span {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Container Tightening */
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    /* Compact Header & Logo */
+    .header-style-1 {
+        padding: 5px 0 !important;
+    }
+
+    .logo img {
+        max-height: 40px !important;
+        width: auto !important;
+    }
+
+    .header-style-1 .search {
+        padding-top: 5px !important;
+    }
+
+    .mobile_menu {
+        margin-top: 5px !important;
+    }
+
+    /* Features Section - Compact Icons */
+    .features-item-2 {
+        padding: 25px 20px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .features-icon img {
+        width: 45px !important;
+        height: 45px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .features-content h3 {
+        font-size: 18px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Practice Area - Dense Cards */
+    .practices-wrapper {
+        padding: 25px 15px !important;
+    }
+
+    .practices-icon i {
+        font-size: 30px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .practices-content h3 {
+        font-size: 17px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .description-content {
+        font-size: 13px !important;
+        margin-bottom: 15px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    /* Header Search Fix */
+    .header-style-1 .search {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+    }
+
+    .header-style-1 .search-btn ul li a i {
+        font-size: 18px !important;
+        margin-right: 15px !important;
+        color: #333 !important;
+    }
+
+    /* Case Studies - App Style Scroll Menu */
+    .studies-menu {
+        display: flex !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 5px 0 15px !important;
+        margin-bottom: 15px !important;
+        gap: 8px !important;
+        justify-content: flex-start !important;
+        scrollbar-width: none;
+        /* Hide scrollbar Firefox */
+    }
+
+    .studies-menu::-webkit-scrollbar {
+        display: none;
+        /* Hide scrollbar Chrome/Safari */
+    }
+
+    .studies-menu button {
+        padding: 6px 16px !important;
+        font-size: 12px !important;
+        flex: 0 0 auto !important;
+        border-radius: 20px !important;
+        margin: 0 !important;
+        background: #f5f5f5 !important;
+        color: #666 !important;
+        border: 1px solid #eee !important;
+    }
+
+    .studies-menu button.active {
+        background: #bc9355 !important;
+        color: #fff !important;
+        border-color: #bc9355 !important;
+    }
+
+    /* Gallery Video - Compact Grid */
+    .video-inner {
+        border-radius: 10px !important;
+    }
+
+    .item-overlay h5 {
+        font-size: 12px !important;
+    }
+
+    /* Case Studies - Tighter Spacing */
+    .case-item {
+        margin-bottom: 15px !important;
+    }
+
+    /* Blog Section - Smaller Thumbnails */
+    .blog-item {
+        border-radius: 10px !important;
+    }
+
+    .blog-img {
+        height: 180px !important;
+    }
+
+    .blog-content {
+        padding: 15px !important;
+    }
+
+    .blog-content h3 {
+        font-size: 15px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .post-meta {
+        font-size: 11px !important;
+        padding-top: 10px !important;
+    }
+
+    /* Consultation Section - App Layout */
+    .consultation-section {
+        padding: 0px 0 !important;
+    }
+
+    .consultation-badge {
+        font-size: 11px !important;
+        padding: 3px 12px !important;
+        margin-bottom: 10px !important;
+    }
+
+
+
+    .consultation-btns .theme-btn {
+        padding: 10px 15px !important;
+        font-size: 13px !important;
+    }
+
+    /* Floating Action Buttons - Side by Side on Mobile */
+    .whatsapp-float {
+        width: 45px !important;
+        height: 45px !important;
+        bottom: 85px !important;
+        /* Managed in footer.php style mostly, but ensuring here */
+        font-size: 24px !important;
+        right: 75px !important;
+        /* Shifted left */
+        box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3) !important;
+    }
+
+    #chatbot-bubble {
+        width: 45px !important;
+        height: 45px !important;
+        bottom: 85px !important;
+        right: 15px !important;
+        /* Pinned to right */
+        box-shadow: 0 4px 10px rgba(188, 147, 85, 0.3) !important;
+    }
+
+    .bubble-notif {
+        top: -3px !important;
+        right: -3px !important;
+        font-size: 8px !important;
+        padding: 1px 4px !important;
+    }
+
+    /* Case Studies - Compact Images & Slider Support */
+    .studies-item {
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        margin-bottom: 0 !important;
+        /* Slider handles spacing */
+    }
+
+    .studies-single img {
+        height: 200px !important;
+        /* Thinner images for app feel */
+        width: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .overlay-text .text-inner h3 {
+        font-size: 14px !important;
+    }
+
+    .overlay-text .text-inner .sub {
+        font-size: 10px !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* Appointment Form - Compact Inputs */
+    .contact-text h2 {
+        font-size: 22px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .contact-form .form-control {
+        height: 40px !important;
+        font-size: 13px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .contact-content {
+        padding: 20px !important;
+    }
+
+    .contact-sub h4 {
+        font-size: 15px !important;
+    }
+
+    .contact-sub span {
+        font-size: 13px !important;
+    }
+
+    .submit-btn-wrapper button {
+        width: 100% !important;
+        height: 45px !important;
+        font-size: 14px !important;
     }
 }
