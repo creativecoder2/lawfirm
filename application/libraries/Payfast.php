@@ -126,7 +126,6 @@ class Payfast {
         $headers = array_merge($default_headers, $headers);
         
         $options = [
-            CURLOPT_PORT           => $this->port,
             CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING       => "",
@@ -140,13 +139,10 @@ class Payfast {
             $options[CURLOPT_POSTFIELDS] = http_build_query($params);
         }
 
-        if (!empty($headers)) {
-            $options[CURLOPT_HTTPHEADER] = $headers;
-        } else {
-            $options[CURLOPT_HTTPHEADER] = [
-                "cache-control: no-cache",
-                "content-type: application/x-www-form-urlencoded"
-            ];
+        $options[CURLOPT_HTTPHEADER] = $headers;
+
+        if (!empty($this->port)) {
+            $options[CURLOPT_PORT] = $this->port;
         }
 
         curl_setopt_array($curl, $options);
