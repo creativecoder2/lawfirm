@@ -186,31 +186,34 @@
                             </div>
 
                             <hr>
-                            <h4 class="box-title" style="margin-bottom: 20px; color: #bc9355;"><i class="fa fa-credit-card"></i> PayPro Configuration (PKR Only)</h4>
+                            <h4 class="box-title" style="margin-bottom: 20px; color: #bc9355;"><i class="fa fa-credit-card"></i> PayFast Configuration</h4>
                             
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>PayPro Username</label>
-                                        <input type="text" class="form-control" name="paypro_username" value="<?= isset($settings['paypro_username']) ? $settings['paypro_username'] : '' ?>" placeholder="E.g. LE_Law_Firm">
+                                        <label>PayFast Merchant ID</label>
+                                        <input type="text" class="form-control" name="payfast_merchant_id" value="<?= isset($settings['payfast_merchant_id']) ? $settings['payfast_merchant_id'] : '' ?>" placeholder="Merchant ID">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>PayPro Password</label>
-                                        <input type="password" class="form-control" name="paypro_password" value="<?= isset($settings['paypro_password']) ? $settings['paypro_password'] : '' ?>" placeholder="Your Password">
+                                        <label>PayFast Secured Key</label>
+                                        <input type="password" class="form-control" name="payfast_secured_key" value="<?= isset($settings['payfast_secured_key']) ? $settings['payfast_secured_key'] : '' ?>" placeholder="Secured Key">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>PayPro Client ID</label>
-                                        <input type="text" class="form-control" name="paypro_client_id" value="<?= isset($settings['paypro_client_id']) ? $settings['paypro_client_id'] : '' ?>" placeholder="Client ID">
+                                        <label>PayFast Base URL</label>
+                                        <input type="text" class="form-control" name="payfast_base_url" value="<?= isset($settings['payfast_base_url']) ? $settings['payfast_base_url'] : 'https://ipguat.gopayfast.com' ?>" placeholder="https://ipguat.gopayfast.com">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>PayPro Client Secret</label>
-                                        <input type="password" class="form-control" name="paypro_client_secret" value="<?= isset($settings['paypro_client_secret']) ? $settings['paypro_client_secret'] : '' ?>" placeholder="Client Secret">
+                                        <label>PayFast Mode</label>
+                                        <select class="form-control" name="payfast_mode">
+                                            <option value="sandbox" <?= (isset($settings['payfast_mode']) && $settings['payfast_mode'] == 'sandbox') ? 'selected' : '' ?>>Sandbox / UAT</option>
+                                            <option value="live" <?= (isset($settings['payfast_mode']) && $settings['payfast_mode'] == 'live') ? 'selected' : '' ?>>Live</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

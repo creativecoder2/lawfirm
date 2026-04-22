@@ -826,7 +826,7 @@ class Welcome extends CI_Controller {
         $this->load->view('includes/footer', $data);
     }
 
-    public function process_paypro($uuid = null)
+    public function process_payfast($uuid = null)
     {
         if (!$uuid) {
             echo json_encode(['status' => 'error', 'message' => 'Missing appointment ID']);
@@ -839,191 +839,71 @@ class Welcome extends CI_Controller {
             return;
         }
 
-        // Check if already paid to prevent back-navigation/re-payment
-        $pending = $this->db->get_where('appointments', ['uuid' => $uuid])->row_array();
-        if (!$pending) {
-            $this->session->set_flashdata('error', 'Appointment not found.');
-            redirect('welcome/free_consultation');
+        // Check if already paid
+        $actual_app = $this->db->get_where('appointments', ['uuid' => $uuid])->row_array();
+        if ($actual_app && $actual_app['payment_status'] === 'paid') {
+            echo json_encode(['status' => 'error', 'message' => 'This appointment is already paid.']);
             return;
         }
 
-        if ($pending['payment_status'] === 'paid') {
-            $this->session->set_flashdata('success', 'This appointment has already been paid and confirmed.');
-            redirect('welcome/free_consultation');
+        $this->load->library('payfast');
+        
+        // 1. Get Token
+        $token_res = $this->payfast->get_token();
+        if (!isset($token_res['token'])) {
+            $msg = $token_res['message'] ?? $token_res['error'] ?? 'Unknown authentication error';
+            echo json_encode(['status' => 'error', 'message' => 'Failed to authenticate with PayFast: ' . $msg]);
             return;
         }
+        $token = $token_res['token'];
 
-        $is_demo = true; // User provided credentials with 'Demo' in password, switching to true
-        $base_host = $is_demo ? "https://demoapi.paypro.com.pk/v2" : "https://api.paypro.com.pk/v2";
+        // 2. Initiate Transaction
+        // For simplicity, we are using the basic initiation. 
+        // In a real scenario, you might need customer validation or 3DS handling.
+        $txn_res = $this->payfast->initiate_transaction($token, $pending);
 
-        // Hardcoded credentials as requested by user
-        $username = "LE_Law_Firm";
-        $client_id = "WkBTyYw6PSusC4l";
-        $client_secret = "AeoKOCQAQsKGox1";
-
-        // 1. Get Access Token (API V2.1)
-        $auth_url = $base_host . "/ppro/auth";
-        $auth_payload = json_encode([
-            'ClientID' => $client_id,
-            'ClientSecret' => $client_secret
-        ]);
-
-        $ch = curl_init($auth_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $auth_payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
-        ]);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-
-        $response = curl_exec($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header = substr($response, 0, $header_size);
-        $body = substr($response, $header_size);
-        curl_close($ch);
-
-        $access_token = '';
-        if (preg_match('/Token:\s*(.*)$/mi', $header, $matches)) {
-            $access_token = trim($matches[1]);
-        }
-
-        if (empty($access_token)) {
-            $token_data = json_decode($body, true);
-            $access_token = $token_data['Token'] ?? $token_data['token'] ?? '';
-        }
-
-        if ($access_token) {
-            // 2. Create Order (API V2.1 - CSO)
-            $order_id = $uuid . '-' . substr(time(), -5); // Add suffix to prevent 'already exists' error on retries
-            $amount = $pending['consultation_fee'];
-            $due_date = date('Y-m-d', strtotime('+7 days'));
-
-            $order_payload = [
-                [
-                    "MerchantId" => $username
-                ],
-                [
-                    "OrderNumber" => $order_id,
-                    "OrderAmount" => $amount,
-                    "OrderDueDate" => $due_date,
-                    "OrderType" => "Service",
-                    "IssueDate" => date('Y-m-d'),
-                    "OrderExpireAfterSeconds" => "0",
-                    "CustomerName" => substr($pending['name'], 0, 50),
-                    "CustomerMobile" => substr(str_replace(['+', '-', ' '], '', $pending['phone']), 0, 15) ?: '03000000000',
-                    "CustomerEmail" => substr($pending['email'], 0, 50) ?: 'no-reply@domain.com',
-                    "CustomerAddress" => substr($pending['address'] ?? '', 0, 100),
-                    "ReturnUrl" => site_url('welcome/free_consultation') // Return after success
-                ]
-            ];
-
-            $create_url = $base_host . "/ppro/co";
-            $ch = curl_init($create_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($order_payload));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Token: ' . $access_token,
-                'Content-Type: application/json'
-            ]);
-            $order_response = curl_exec($ch);
-            curl_close($ch);
-
-            $order_data = json_decode($order_response, true);
-            
-            if (isset($order_data[0]['Status']) && $order_data[0]['Status'] == '00') {
-                $paypro_id = $order_data[1]['PayProId'] ?? $order_data[0]['PayProId'] ?? '';
-                $click2pay_url = $order_data[1]['Click2Pay'] ?? $order_data[1]['short_Click2Pay'] ?? $order_data[0]['Click2PayUrl'] ?? $order_data[0]['ClickPayUrl'] ?? '';
-
-                if ($click2pay_url) {
-                    echo json_encode(['status' => 'success', 'redirect' => $click2pay_url]);
-                } else {
-                    $raw = substr(strip_tags($order_response), 0, 300);
-                    echo json_encode(['status' => 'error', 'message' => 'Failed to get payment URL from PayPro. Response: ' . $raw]);
-                }
+        if (isset($txn_res['code']) && $txn_res['code'] == '00') {
+            // Success or 3DS Redirection
+            if (isset($txn_res['data_3ds_html']) && !empty($txn_res['data_3ds_html'])) {
+                echo json_encode(['status' => '3ds', 'html' => $txn_res['data_3ds_html']]);
             } else {
-                // Better error logging
-                $error_msg = $order_data[0]['Description'] ?? $order_data['Description'] ?? 'Unknown error';
-                if ($error_msg == 'Unknown error') {
-                    $error_msg .= ' Raw Response: ' . substr(strip_tags($order_response), 0, 200);
-                }
-                echo json_encode(['status' => 'error', 'message' => 'PayPro Order Creation Failed: ' . $error_msg]);
+                // Direct success (rare for cards, but possible for some instruments)
+                $this->db->where('uuid', $uuid)->update('appointments', [
+                    'status' => 'confirmed',
+                    'payment_status' => 'paid',
+                    'transaction_id' => $txn_res['transaction_id'] ?? 'PF-' . time()
+                ]);
+                echo json_encode(['status' => 'success', 'message' => 'Payment successful!']);
             }
         } else {
-            $snippet = substr(strip_tags($body), 0, 100);
-            $msg = 'Failed to authenticate with PayPro. ';
-            if (strpos($body, '<!DOCTYPE html>') !== false || strpos($body, '<html>') !== false) {
-                $msg .= 'Your server IP might not be whitelisted on PayPro. (PayPro returned an HTML page).';
-            } else {
-                $msg .= 'Please check your Client ID and Client Secret. Response: ' . $snippet;
-            }
-            echo json_encode(['status' => 'error', 'message' => $msg]);
+            echo json_encode(['status' => 'error', 'message' => 'PayFast Transaction Failed: ' . ($txn_res['message'] ?? 'Error code ' . ($txn_res['code'] ?? 'unknown'))]);
         }
     }
 
-    public function paypro_callback()
+    public function payfast_callback()
     {
-        // PayPro V2.1 Callback sends parameters via GET
-        $username = $this->input->get('username');
-        $password = $this->input->get('password');
-        $csv_invoice_ids = $this->input->get('csvinvoiceids');
+        $this->load->library('payfast');
+        $token_res = $this->payfast->get_token();
+        $token = $token_res['token'] ?? '';
 
-        // Log the incoming callback for debugging
-        $log_data = date('Y-m-d H:i:s') . " - Callback received: " . $_SERVER['QUERY_STRING'] . "\n";
-        file_put_contents(FCPATH . 'paypro_callback_log.txt', $log_data, FILE_APPEND);
+        $basket_id = $this->input->get('basket_id');
+        $transaction_id = $this->input->get('transaction_id');
 
-        $settings = $this->_get_settings();
-        $stored_username = $settings['paypro_username'] ?? '';
-        // Note: For real security, we should store a separate callback password if PayPro provides one
-        // But for now, we'll verify against the username as a basic check
-        
-        if (empty($csv_invoice_ids)) {
-            echo json_encode(['status' => 'error', 'message' => 'No invoices provided.']);
-            return;
-        }
-
-        $invoice_ids = explode(',', $csv_invoice_ids);
-        $response = [];
-
-        foreach ($invoice_ids as $invoice_id) {
-            $invoice_id = trim($invoice_id);
-            if (empty($invoice_id)) continue;
-
-            // Handle suffix (uuid-suffix)
-            $uuid = explode('-', $invoice_id)[0];
-
-            // Search for the appointment by UUID (used as base for OrderNumber)
-            $appointment = $this->db->get_where('appointments', ['uuid' => $uuid])->row_array();
-            
-            if ($appointment) {
-                // Mark as paid if not already
-                if ($appointment['payment_status'] !== 'paid') {
-                    $this->db->where('uuid', $uuid)->update('appointments', [
-                        'status' => 'confirmed',
-                        'payment_status' => 'paid',
-                        'transaction_id' => 'PAYPRO-' . time()
-                    ]);
-                }
-                
-                $response[] = [
-                    "StatusCode" => "00",
-                    "InvoiceID" => $invoice_id,
-                    "Description" => "Invoice successfully marked as paid"
-                ];
+        if ($basket_id && $transaction_id) {
+            $status = $this->payfast->get_transaction_status($token, $transaction_id);
+            if (isset($status['code']) && $status['code'] == '00') {
+                $this->db->where('uuid', $basket_id)->update('appointments', [
+                    'status' => 'confirmed',
+                    'payment_status' => 'paid',
+                    'transaction_id' => $transaction_id
+                ]);
+                redirect('welcome/free_consultation?status=success');
             } else {
-                $response[] = [
-                    "StatusCode" => "01",
-                    "InvoiceID" => $invoice_id,
-                    "Description" => "Invoice not found in system"
-                ];
+                redirect('welcome/free_consultation?status=failed');
             }
         }
-
-        // Return JSON response as required by PayPro V2.1
-        header('Content-Type: application/json');
-        echo json_encode($response);
     }
+
 
     public function subscribe() {
         if ($this->input->post('email')) {

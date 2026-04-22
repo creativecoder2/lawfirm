@@ -58,7 +58,7 @@
                                 <th style="background: #f9f9f9;">Payment Method</th>
                                 <td>
                                     <?php
-                                    $pm_labels = ['paypro'=>'PayPro','twocheckout'=>'2Checkout','easypaisa'=>'EasyPaisa','jazzcash'=>'JazzCash','paypal'=>'PayPal','credit_card'=>'Credit Card','pioneer'=>'Payoneer','manual'=>'Manual Transfer'];
+                                    $pm_labels = ['payfast'=>'PayFast','paypro'=>'PayPro','twocheckout'=>'2Checkout','easypaisa'=>'EasyPaisa','jazzcash'=>'JazzCash','paypal'=>'PayPal','credit_card'=>'Credit Card','pioneer'=>'Payoneer','manual'=>'Manual Transfer'];
                                     $pm = $appointment['payment_method'];
                                     $pm_colors = ['paypro'=>'#bc9355','twocheckout'=>'#bc9355','easypaisa'=>'#2ecc40','jazzcash'=>'#e31f26','paypal'=>'#003087','credit_card'=>'#1a1f71','pioneer'=>'#FF4800','manual'=>'#607D8B'];
                                     $pm_icons  = ['paypro'=>'fa-credit-card','twocheckout'=>'fa-credit-card','easypaisa'=>'fa-mobile','jazzcash'=>'fa-mobile','paypal'=>'fa-paypal','credit_card'=>'fa-credit-card','pioneer'=>'fa-globe','manual'=>'fa-money'];

@@ -71,13 +71,13 @@ $twocheckout_merchant_code = isset($settings['twocheckout_merchant_code']) ? $se
                         <div class="d-flex align-items-center p-3" style="background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
                             <div class="payment-icon mr-3">
                                 <?php 
-                                $pm = $appointment['payment_method'] ?? 'twocheckout';
-                                $icon_url = ($pm === 'paypro') ? 'https://paypro.com.pk/wp-content/uploads/2022/08/cropped-Logo_Blue.png' : base_url('assets/images/payments/' . $pm . '.svg');
+                                $pm = $appointment['payment_method'] ?? 'payfast';
+                                $icon_url = 'https://gopayfast.com/wp-content/uploads/2021/04/Logo.png';
                                 ?>
-                                <img src="<?= $icon_url ?>" alt="<?= $pm ?>" style="height: 40px; width: 60px; object-fit: contain;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/337/337946.png';">
+                                <img src="<?= $icon_url ?>" alt="<?= $pm ?>" style="height: 40px; width: 80px; object-fit: contain;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/337/337946.png';">
                             </div>
                             <div>
-                                <h5 class="mb-0 text-capitalize"><?= str_replace('_', ' ', $pm) ?></h5>
+                                <h5 class="mb-0 text-capitalize">PayFast (Cards/Bank/Wallet)</h5>
                                 <span class="text-success small"><i class="fa fa-lock"></i> Secure Transaction</span>
                             </div>
                             <div class="ml-auto">
@@ -99,33 +99,46 @@ $twocheckout_merchant_code = isset($settings['twocheckout_merchant_code']) ? $se
                         <div class="divider my-4" style="height: 1px; background: #eee;"></div>
                         
                         <div class="payment-actions px-3">
-                            <?php if(isset($appointment['payment_method']) && $appointment['payment_method'] === 'paypro'): ?>
-                                <button id="paypro-button" class="btn btn-block py-3 mt-3" style="background:#00a2e8; color:#fff;">
-                                    Pay with PayPro
+                            <?php if(isset($appointment['payment_method']) && $appointment['payment_method'] === 'payfast'): ?>
+                                <button id="payfast-button" class="btn btn-block py-3 mt-3 btn-gold">
+                                    Pay with PayFast
                                 </button>
                                 
+                                <div id="pf-form-container" style="display:none;"></div>
+
                                 <script>
-                                document.getElementById('paypro-button').addEventListener('click', function(e) {
+                                document.getElementById('payfast-button').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     var btn = this;
                                     btn.disabled = true;
-                                    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+                                    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Initializing...';
                                     
                                     $.ajax({
-                                        url: '<?= site_url("welcome/process_paypro/" . ($appointment["uuid"] ?? "")) ?>',
+                                        url: '<?= site_url("welcome/process_payfast/" . ($appointment["uuid"] ?? "")) ?>',
                                         type: 'POST',
                                         dataType: 'json',
                                         success: function(res) {
                                             if (res.status === 'success' && res.redirect) {
                                                 window.location.href = res.redirect;
+                                            } else if (res.status === '3ds' && res.html) {
+                                                // Handle 3DS redirection by writing the HTML to a container and letting it auto-submit
+                                                document.getElementById('pf-form-container').innerHTML = res.html;
+                                                // Search for a form inside the injected HTML and submit it
+                                                var form = document.querySelector('#pf-form-container form');
+                                                if(form) {
+                                                    form.submit();
+                                                } else {
+                                                    Swal.fire('Error', '3DS Form not found in response', 'error');
+                                                    btn.disabled = false;
+                                                }
                                             } else {
                                                 Swal.fire({
                                                     icon: 'error',
                                                     title: 'Payment Error',
-                                                    text: res.message || 'Could not initiate PayPro checkout.',
+                                                    text: res.message || 'Could not initiate PayFast checkout.',
                                                 });
                                                 btn.disabled = false;
-                                                btn.innerHTML = 'Pay with PayPro';
+                                                btn.innerHTML = 'Pay with PayFast';
                                             }
                                         },
                                         error: function() {
@@ -135,7 +148,7 @@ $twocheckout_merchant_code = isset($settings['twocheckout_merchant_code']) ? $se
                                                 text: 'Failed to connect to the server.'
                                             });
                                             btn.disabled = false;
-                                            btn.innerHTML = 'Pay with PayPro';
+                                            btn.innerHTML = 'Pay with PayFast';
                                         }
                                     });
                                 });

@@ -11,6 +11,21 @@ class Migrate_payment extends CI_Controller {
         $this->db->query("ALTER TABLE `appointments` ADD COLUMN IF NOT EXISTS `practice_category_id` int(11) DEFAULT NULL;");
         $this->db->query("ALTER TABLE `appointments` ADD COLUMN IF NOT EXISTS `consultation_fee` decimal(10,2) DEFAULT NULL;");
 
+        // Add PayFast settings
+        $payfast_settings = [
+            'payfast_merchant_id' => '',
+            'payfast_secured_key' => '',
+            'payfast_base_url'    => 'https://ipguat.gopayfast.com',
+            'payfast_mode'        => 'sandbox'
+        ];
+
+        foreach ($payfast_settings as $key => $val) {
+            $exists = $this->db->get_where('settings', ['key_name' => $key])->row_array();
+            if (!$exists) {
+                $this->db->insert('settings', ['key_name' => $key, 'value' => $val]);
+            }
+        }
+
         echo "Payment migration completed successfully!";
     }
 }

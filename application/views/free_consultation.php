@@ -163,7 +163,7 @@
                                     <div class="payment-methods-grid">
                                         <?php
                                         $methods = [
-                                            ['id'=>'paypro', 'label'=>'PayPro', 'icon'=>'https://paypro.com.pk/wp-content/uploads/2022/08/cropped-Logo_Blue.png']
+                                            ['id'=>'payfast', 'label'=>'PayFast', 'icon'=>'https://gopayfast.com/wp-content/uploads/2021/04/Logo.png']
                                         ];
                                         foreach($methods as $m): ?>
                                         <label class="payment-method-card" for="pm_<?= $m['id'] ?>">
