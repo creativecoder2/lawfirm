@@ -189,13 +189,13 @@
                             <h4 class="box-title" style="margin-bottom: 20px; color: #bc9355;"><i class="fa fa-credit-card"></i> PayFast Configuration</h4>
                             
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <div class="form-group">
                                         <label>PayFast Merchant ID</label>
                                         <input type="text" class="form-control" name="payfast_merchant_id" value="<?= isset($settings['payfast_merchant_id']) ? $settings['payfast_merchant_id'] : '' ?>" placeholder="Merchant ID">
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <div class="form-group">
                                         <label>PayFast Secured Key</label>
                                         <input type="password" class="form-control" name="payfast_secured_key" value="<?= isset($settings['payfast_secured_key']) ? $settings['payfast_secured_key'] : '' ?>" placeholder="Secured Key">
@@ -204,7 +204,13 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>PayFast Base URL</label>
-                                        <input type="text" class="form-control" name="payfast_base_url" value="<?= isset($settings['payfast_base_url']) ? $settings['payfast_base_url'] : 'https://ipguat.gopayfast.com' ?>" placeholder="https://ipguat.gopayfast.com">
+                                        <input type="text" class="form-control" name="payfast_base_url" value="<?= isset($settings['payfast_base_url']) ? $settings['payfast_base_url'] : 'https://ipg2.apps.net.pk' ?>" placeholder="https://ipg2.apps.net.pk">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>PayFast Port</label>
+                                        <input type="text" class="form-control" name="payfast_port" value="<?= isset($settings['payfast_port']) ? $settings['payfast_port'] : '8443' ?>" placeholder="8443">
                                     </div>
                                 </div>
                                 <div class="col-md-3">

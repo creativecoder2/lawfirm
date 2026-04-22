@@ -848,8 +848,8 @@ class Welcome extends CI_Controller {
 
         $this->load->library('payfast');
         
-        // 1. Get Token
-        $token_res = $this->payfast->get_token();
+        // 1. Get Token (New flow requires amount and basket_id)
+        $token_res = $this->payfast->get_token($appointment['consultation_fee'], $appointment['uuid'], 'PKR');
         if (!isset($token_res['token'])) {
             $msg = $token_res['message'] ?? $token_res['error'] ?? 'Unknown authentication error';
             echo json_encode(['status' => 'error', 'message' => 'Failed to authenticate with PayFast: ' . $msg]);

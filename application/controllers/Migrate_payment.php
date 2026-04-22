@@ -15,7 +15,8 @@ class Migrate_payment extends CI_Controller {
         $payfast_settings = [
             'payfast_merchant_id' => '',
             'payfast_secured_key' => '',
-            'payfast_base_url'    => 'https://ipguat.gopayfast.com',
+            'payfast_base_url'    => 'https://ipg2.apps.net.pk',
+            'payfast_port'        => '8443',
             'payfast_mode'        => 'sandbox'
         ];
 
